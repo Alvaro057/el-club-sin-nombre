@@ -916,6 +916,7 @@ button .ico,.gb .ico{color:inherit}
 .vz-prog{height:6px;background:#1c201e;border-radius:4px;overflow:hidden}.vz-prog i{display:block;height:100%;background:var(--gold)}
 .vz-msg{min-height:1.4em;color:var(--gold2);font-size:14px}.co-b.small{justify-content:space-between;align-items:center;margin-top:8px}.co-b.small .lnk{font-size:13px;cursor:pointer}
 #clubov{overflow-y:auto;padding:4vh 0;box-sizing:border-box}#clubov .co-in{margin:auto}.vozov{gap:.4vh!important;max-width:820px;width:60vw!important}.vozov .note{font-size:15px;line-height:1.45}.vozov textarea.field{min-height:70px;resize:vertical;font:inherit;font-size:15px}
+.vz-pub{border:1px solid var(--gold);border-radius:10px;padding:10px 14px;color:var(--gold2);font-size:15px;margin:0 0 6px}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -4199,8 +4200,11 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
 // nunca va dentro del archivo, porque los móviles de los invitados abren este mismo archivo.
 // Si falta una frase y no hay clave o conexión, habla la voz del navegador.
 // =====================================================================
-const VZ = {cfg: null, keys: new Set(), urls: new Map(), db: null, busy: false, stop: false, ready: null};
-const VZ_DEF = {on: false, key: '', voice: '', vname: '', model: 'eleven_multilingual_v2', live: true, stab: .45, style: .35};
+const VZ = {cfg: null, keys: new Set(), urls: new Map(), db: null, busy: false, stop: false, ready: null, man: new Map(), manInfo: null};
+// voces publicadas junto a la web (carpeta voces/): suenan en cualquier navegador, sin clave ni preparación
+const VZ_MAN = (async () => { try { if (typeof location === 'undefined' || !/^https?:/.test(location.protocol)) return; const r = await fetch('voces/manifest.json', {cache: 'no-cache'}); if (!r.ok) return; const j = await r.json();
+  VZ.manInfo = {voice: j.voice || '', vname: j.vname || '', n: Object.keys(j.files || {}).length}; Object.entries(j.files || {}).forEach(([t, f]) => VZ.man.set(vzNorm(t), 'voces/' + f)); } catch {} })();
+const VZ_DEF = {on: null, key: '', voice: '', vname: '', model: 'eleven_multilingual_v2', live: true, stab: .45, style: .35};
 function vzCfg(){ if (!VZ.cfg){ let c = {}; try { c = JSON.parse(localStorage.getItem('ccsn-voz') || '{}'); } catch {} VZ.cfg = Object.assign({}, VZ_DEF, c); } return VZ.cfg; }
 function vzSave(){ try { localStorage.setItem('ccsn-voz', JSON.stringify(VZ.cfg)); } catch {} }
 const vzNorm = s => String(s).replace(/\s+/g, ' ').trim();
@@ -4218,7 +4222,9 @@ async function vzFetch(text, c = vzCfg()){
   return await r.blob(); }
 async function vzEnsure(part){ const k = vzKey(part); if (VZ.keys.has(k)) return true; const c = vzCfg(); if (!c.key || !c.voice || !navigator.onLine) return false;
   try { const b = await vzFetch(part); await vzPut(k, b); return true; } catch (e) { console.warn('ElevenLabs', e); return false; } }
-const vzActive = () => { const c = vzCfg(); return c.on && c.voice && typeof document !== 'undefined' && document.body && document.body.classList.contains('v-tv'); };
+const vzActive = () => { const c = vzCfg(); const tv = typeof document !== 'undefined' && document.body && document.body.classList.contains('v-tv'); return tv && ((c.on && c.voice) || (VZ.man.size && c.on !== false)); };
+const vzHas = p => VZ.keys.has(vzKey(p)) || VZ.man.has(vzNorm(p));
+const vzUrl = async p => VZ.keys.has(vzKey(p)) ? vzGet(vzKey(p)) : VZ.man.get(vzNorm(p)) || null;
 // reproduce una lista de audios uno tras otro
 const VZP = {a: null, gen: 0};
 function vzPlay(urls, gen, onend){ let i = 0; const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length) return onend && onend();
@@ -4229,10 +4235,10 @@ say = function(text, onend, opts){
   if (!vzActive() || !voiceOn || !text) return sayWeb(text, onend, opts);
   const gen = ++VZP.gen; try { VZP.a && VZP.a.pause(); } catch {} try { speechSynthesis.cancel(); } catch {}
   const parts = sayParts(text); const c = vzCfg();
-  (async () => { await vzDB(); const have = parts.every(p => VZ.keys.has(vzKey(p)));
+  (async () => { await vzDB(); await VZ_MAN; const have = parts.every(vzHas);
     if (!have){ if (!c.live || !c.key) { if (gen === VZP.gen) sayWeb(text, onend, opts); return; }
-      const ok = await Promise.all(parts.map(vzEnsure)); if (gen !== VZP.gen) return; if (!ok.every(Boolean)) return sayWeb(text, onend, opts); }
-    const urls = await Promise.all(parts.map(p => vzGet(vzKey(p)))); if (gen !== VZP.gen) return; if (urls.some(u => !u)) return sayWeb(text, onend, opts);
+      const ok = await Promise.all(parts.map(p => vzHas(p) ? true : vzEnsure(p))); if (gen !== VZP.gen) return; if (!ok.every(Boolean)) return sayWeb(text, onend, opts); }
+    const urls = await Promise.all(parts.map(vzUrl)); if (gen !== VZP.gen) return; if (urls.some(u => !u)) return sayWeb(text, onend, opts);
     vzPlay(urls, gen, onend); })(); };
 // ---------- todas las frases de la noche ----------
 function vzNames(){ const S = window.__E && __E.S; const set = new Set(); if (S){ pidsAll(S).forEach(p => S.players[p] && !S.players[p].bot && set.add(S.players[p].name)); ((S.club && S.club.form) || []).forEach(f => f.name && set.add(String(f.name).trim().slice(0, 14))); ((S.club && S.club.guests) || []).forEach(n => set.add(n)); } return [...set].filter(Boolean); }
@@ -4252,7 +4258,7 @@ function vzLines(){ const L = []; const add = (...t) => t.forEach(x => x && L.pu
   names.forEach(n => add(`${n}.`, `${n} asciende.`, `${n} ha sido desenmascarado.`, `El infiltrado era ${n}.`, `El club señala a ${n}.`, `${n} queda condenado.`, `${n} queda absuelto.`, `${n} cae.`,
     `${n} entra en el Círculo Interno.`, `El Presidente concede su favor a ${n}.`));
   const seen = new Set(), out = []; L.forEach(t => sayParts(t).forEach(p => { const k = vzNorm(p); if (!seen.has(k)){ seen.add(k); out.push(k); } })); return out; }
-async function vzPrepare(onp){ await vzDB(); const c = vzCfg(); const all = vzLines(); const todo = all.filter(p => !VZ.keys.has(vzKey(p))); VZ.stop = false; VZ.busy = true; let done = 0, fail = 0, err = '';
+async function vzPrepare(onp){ await vzDB(); const c = vzCfg(); const all = vzLines(); const todo = all.filter(p => !vzHas(p)); VZ.stop = false; VZ.busy = true; let done = 0, fail = 0, err = '';
   const run = async () => { while (todo.length && !VZ.stop){ const p = todo.shift(); try { const b = await vzFetch(p, c); await vzPut(vzKey(p, c), b); } catch (e) { fail++; err = e.message || String(e); if (e.status === 401 || e.status === 402 || /quota|credit|limit/i.test(err)) VZ.stop = true; } done++; onp && onp(done, done + todo.length, fail, err); } };
   await Promise.all([run(), run(), run()]); VZ.busy = false; return {fail, err, total: all.length}; }
 async function vzSub(){ const c = vzCfg(); const r = await fetch('https://api.elevenlabs.io/v1/user/subscription', {headers: {'xi-api-key': c.key}}); if (!r.ok) throw new Error('La clave no es válida (' + r.status + ')'); return r.json(); }
@@ -4267,13 +4273,13 @@ async function vzImport(file){ await vzDB(); const j = JSON.parse(await file.tex
 async function vzClear(){ await vzDB(); await new Promise(res => { const tx = VZ.db.transaction('a', 'readwrite'); tx.objectStore('a').clear(); tx.oncomplete = res; tx.onerror = res; }); VZ.keys.clear(); VZ.urls.clear(); }
 // ---------- la pantalla de la voz (en la tele) ----------
 function vozOverlay(){ const el = ovEl(); const c = vzCfg(); vzDB().then(() => draw());
-  const draw = (msg = '') => { const all = vzLines(); const have = all.filter(p => VZ.keys.has(vzKey(p))).length; const chars = all.filter(p => !VZ.keys.has(vzKey(p))).reduce((a, p) => a + p.length, 0);
-    el.innerHTML = `<div class="co-in vozov"><h2>La voz del club</h2><p class="note">Con ElevenLabs, el narrador suena de verdad. Cada frase se genera una sola vez y se guarda en esta tele: después suena gratis y sin internet. La clave se guarda solo en este aparato, nunca en el archivo que abren los móviles.</p>
+  const draw = (msg = '') => { const all = vzLines(); const have = all.filter(vzHas).length; const chars = all.filter(p => !vzHas(p)).reduce((a, p) => a + p.length, 0);
+    el.innerHTML = `<div class="co-in vozov"><h2>La voz del club</h2>${VZ.manInfo ? `<p class="vz-pub">Esta web ya trae ${VZ.manInfo.n} frases grabadas${VZ.manInfo.vname ? ' con la voz ' + esc(VZ.manInfo.vname) : ''}. Suenan en cualquier navegador sin hacer nada. Solo necesitas la clave si quieres generar frases nuevas.</p>` : ''}<p class="note">Con ElevenLabs, el narrador suena de verdad. Cada frase se genera una sola vez y se guarda en esta tele: después suena gratis y sin internet. La clave se guarda solo en este aparato, nunca en el archivo que abren los móviles.</p>
       <label class="vz-row"><span>Clave de ElevenLabs (API key)</span><input class="field" id="vzk" type="password" autocomplete="off" value="${esc(c.key)}" placeholder="sk_…"></label>
       <div class="vz-row"><span>Voz</span><div class="vz-v"><input class="field" id="vzv" value="${esc(c.voice)}" placeholder="Identificador de la voz (voice ID)"><button class="btn" data-vz="voices">Ver mis voces</button></div><small id="vzvn">${c.vname ? 'Elegida: ' + esc(c.vname) : 'Añade antes la voz a «Mis voces» en ElevenLabs para poder usarla aquí.'}</small><div id="vzlist"></div></div>
       <div class="vz-row two"><label><span>Estabilidad</span><input type="range" id="vzs" min="0" max="1" step=".05" value="${c.stab}"></label><label><span>Dramatismo</span><input type="range" id="vzy" min="0" max="1" step=".05" value="${c.style}"></label></div>
       <label class="vz-row"><span>Tus invitados, uno por línea (para preparar las frases con su nombre)</span><textarea class="field" id="vzg" rows="3" placeholder="Marta&#10;Luis&#10;Ana">${esc(((__E.S.club && __E.S.club.guests) || []).join('\n'))}</textarea><small>${vzNames().length} nombres en total, contando las respuestas del cuestionario. También aparecerán en el móvil, en «¿Quién eres?».</small></label>
-      <label class="vz-ck"><input type="checkbox" id="vzon" ${c.on ? 'checked' : ''}> Usar esta voz en la tele</label>
+      <label class="vz-ck"><input type="checkbox" id="vzon" ${c.on || (c.on == null && VZ.man.size) ? 'checked' : ''}> Usar esta voz en la tele</label>
       <label class="vz-ck"><input type="checkbox" id="vzlive" ${c.live ? 'checked' : ''}> Generar en el momento las frases que falten (gasta créditos durante la fiesta)</label>
       <div class="vz-st" id="vzst"><b>${have} de ${all.length}</b> frases preparadas${chars ? ` · faltan unos ${chars.toLocaleString('es-ES')} caracteres` : ' · todo listo'}<span id="vzsub"></span></div>
       <div class="vz-prog" id="vzprog"></div><p class="vz-msg" id="vzmsg">${esc(msg)}</p>
