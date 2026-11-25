@@ -11,6 +11,8 @@ n = 0
 for k, b64 in j.get('a', {}).items():
     voice, model, text = k.split('|', 2) if k.count('|') >= 2 else ('', '', k)
     name = hashlib.sha1((model + '|' + text).encode()).hexdigest()[:14] + '.mp3'
+    cur = files.get(text)
+    if cur and cur.get('m') == 'eleven_v4' and model != 'eleven_v4': continue
     (out / name).write_bytes(base64.b64decode(b64)); files[text] = {'f': name, 'm': model, 'v': voice}; n += 1
 cfg = j.get('cfg', {})
 mf.write_text(json.dumps({'voice': cfg.get('voice', old.get('voice', '')), 'vname': cfg.get('vname', old.get('vname', '')), 'model': cfg.get('model', ''), 'files': files}, ensure_ascii=False))
