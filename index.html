@@ -917,6 +917,13 @@ button .ico,.gb .ico{color:inherit}
 .vz-msg{min-height:1.4em;color:var(--gold2);font-size:14px}.co-b.small{justify-content:space-between;align-items:center;margin-top:8px}.co-b.small .lnk{font-size:13px;cursor:pointer}
 #clubov{overflow-y:auto;padding:4vh 0;box-sizing:border-box}#clubov .co-in{margin:auto}.vozov{gap:.4vh!important;max-width:820px;width:60vw!important}.vozov .note{font-size:15px;line-height:1.45}.vozov textarea.field{min-height:70px;resize:vertical;font:inherit;font-size:15px}
 .vz-pub{border:1px solid var(--gold);border-radius:10px;padding:10px 14px;color:var(--gold2);font-size:15px;margin:0 0 6px}
+
+.isc-year{font-family:var(--disp);font-size:6vh;letter-spacing:.3em;color:var(--gold);margin-top:2vh;opacity:0;animation:fadeUp 2s 1s both}
+.isc-years{display:flex;gap:3vw;font-family:var(--disp);font-size:5vh;color:var(--gold2)}.isc-years span{opacity:0;animation:yearFade 3.4s both}
+@keyframes yearFade{0%{opacity:0;filter:blur(6px)}30%{opacity:1;filter:none}70%{opacity:.9}100%{opacity:.18}}
+.isc-chair{position:relative;display:grid;place-items:center}.isc-chair .ico .ic{width:22vh;height:22vh;stroke-width:1}.chair-light{position:absolute;width:40vh;height:40vh;background:radial-gradient(circle,#c9a45c33,transparent 65%);animation:breathe 3s infinite}
+.isc-candle .ico .ic{width:20vh;height:20vh;stroke-width:1;filter:drop-shadow(0 0 3vh #e6cd9255)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(2vh)}to{opacity:1;transform:none}}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -1009,6 +1016,7 @@ const ICP = {
   pointer: '<path d="M9 11V4.5a1.5 1.5 0 0 1 3 0V10l5 1a2 2 0 0 1 1.6 2.3L17.5 20h-8L6 15l1.5-1.5L9 15"/>',
   dot: '<circle cx="12" cy="12" r="2.5"/>',
   diamond: '<path d="M12 3l9 9-9 9-9-9z"/><circle cx="12" cy="12" r="2"/>',
+  chair: '<path d="M7 3h10v9H7zM5 12h14v3H5zM7 15v6M17 15v6M9 6h6"/>',
 };
 // emoji → icono (lo que no está en la lista se convierte en el rombo del sello)
 const EMO_MAP = {'🗝️': 'key', '🔑': 'key', '👁️': 'eye', '👀': 'eye', '🥂': 'glass', '🍸': 'cocktail', '🍹': 'cocktail', '✉️': 'mail', '📩': 'mail', '🗡️': 'dagger', '⚔️': 'dagger', '⚖️': 'scale', '🔔': 'bell', '🃏': 'card', '🂡': 'card', '🂠': 'card', '🎩': 'hat', '🔒': 'lock', '🚪': 'door', '👑': 'crown',
@@ -1016,7 +1024,7 @@ const EMO_MAP = {'🗝️': 'key', '🔑': 'key', '👁️': 'eye', '👀': 'eye
   '🎲': 'dice', '🎭': 'mask', '🤝': 'hand', '🫱🏻‍🫲🏼': 'hand', '👥': 'users', '👂': 'ear', '✓': 'check', '✔': 'check', '✗': 'cross', '✖️': 'cross', '✖': 'cross', '✏️': 'pen', '🖋️': 'pen', '✎': 'pen', '✍️': 'pen', '⚙️': 'gear', '📈': 'chart', '📉': 'chart', '📊': 'bars', '🖨️': 'printer', '🩸': 'drop', '💀': 'skull', '☠️': 'skull', '⏳': 'hourglass', '🕯️': 'candle',
   '❓': 'question', '❔': 'question', '🤔': 'think', '🎵': 'music', '🎤': 'mic', '🎨': 'palette', '🖼️': 'palette', '⏱️': 'timer', '⏰': 'clock', '📣': 'megaphone', '🏛️': 'pillar', '🧭': 'compass', '♟️': 'pawn', '🔥': 'fire', '❤️': 'heart', '♥': 'heart', '🎬': 'film', '🧠': 'brain', '🏇': 'horse', '⬆️': 'up', '⬇️': 'down', '⏭': 'next',
   '🎁': 'gift', '🍳': 'pan', '⛔': 'noentry', '🚫': 'noentry', '🎰': 'slot', '🎡': 'wheel', '🔨': 'hammer', '🧮': 'calc', '🔢': 'calc', '➕': 'plus', '🌍': 'world', '😂': 'laugh', '🤪': 'laugh', '🤫': 'shush', '🤐': 'shush', '🙊': 'shush', '👍': 'thumb', '🏃': 'run', '🎟️': 'ticket', '🎫': 'ticket', '👉': 'pointer', '👆': 'pointer',
-  '🕳️': 'dot', '🕵️': 'search', '🧩': 'card', '💎': 'diamond', '🎛️': 'gear', '📋': 'scroll', '💱': 'coin', '🗳️': 'mail', '🎉': 'sparkle', '⚠️': 'bolt', '🔘': 'dot', '🆚': 'scale', '🕴️': 'hat', '🙂': 'think', '😩': 'think', '😱': 'laugh', '🙈': 'shush', '🧍': 'run', '🤥': 'mask', '✊': 'hand', '✋': 'hand', '✌️': 'hand', '🕹️': 'phone', '🔙': 'up', '⌫': 'cross', '🔴': 'dot', '🟢': 'dot', '🟥': 'dot', '🟦': 'dot', '🔊': 'voice', '🍿': 'film', '🎈': 'sparkle', '🤖': 'gear'};
+  '🕳️': 'dot', '🕵️': 'search', '🧩': 'card', '💎': 'diamond', '🎛️': 'gear', '📋': 'scroll', '💱': 'coin', '🗳️': 'mail', '🎉': 'sparkle', '⚠️': 'bolt', '🔘': 'dot', '🆚': 'scale', '🕴️': 'hat', '🙂': 'think', '😩': 'think', '😱': 'laugh', '🙈': 'shush', '🧍': 'run', '🤥': 'mask', '✊': 'hand', '✋': 'hand', '✌️': 'hand', '🕹️': 'phone', '🔙': 'up', '⌫': 'cross', '🔴': 'dot', '🟢': 'dot', '🟥': 'dot', '🟦': 'dot', '🔊': 'voice', '🍿': 'film', '🎈': 'sparkle', '🤖': 'gear', '🪑': 'chair'};
 const icon = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICP[n] || ICP.diamond}</svg>`;
 const EMO_RE = /(?:[\u{1F1E6}-\u{1F1FF}]{2})|(?:(?:[\u{1F300}-\u{1FAFF}\u{2600}-\u{265F}\u{2668}-\u{27BF}\u{2B00}-\u{2BFF}\u{2300}-\u{23FF}\u{1F000}-\u{1F2FF}★✓✔✖✗✎]|[♠-♧]️)(?:️)?(?:‍[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}](?:️)?)*(?:[\u{1F3FB}-\u{1F3FF}])?(?:‍[\u{1F300}-\u{1FAFF}](?:[\u{1F3FB}-\u{1F3FF}])?)*)/gu;
 const emoKey = e => e.replace(/️/g, '');
@@ -3262,18 +3270,20 @@ function infPublicClue(S){ const I = S.club.inf; if (!I.pid || I.pubN >= I.clues
 // ---------- el director de la noche ----------
 // ---------- la escena de introducción ----------
 const INTRO = [
-  {v: 'city', h: 'Madrid · 12 de diciembre', say: 'Madrid. Doce de diciembre. Esta noche, tras una puerta sin nombre, se reúne una sociedad que no aparece en ningún registro.'},
-  {v: 'logo', h: 'El Club Sin Nombre', say: 'Desde hace generaciones, el Club Sin Nombre elige en secreto a quienes merecen entrar en sus altas esferas.'},
-  {v: 'guests', h: 'Los convocados', say: 'Esta noche, {n} invitados han recibido la llamada. Ninguno sabe por qué. Todos empiezan igual: como desconocidos.'},
-  {v: 'ranks', h: 'El camino del poder', say: 'Para ascender necesitaréis experiencia, astucia y la confianza de los demás. El Desconocido. El Aspirante. El Iniciado. El Confidente. La Élite. Y en la cima… el Círculo Interno.'},
-  {v: 'phone', h: 'Vuestro expediente', say: 'Vuestro móvil es vuestro expediente confidencial. Allí recibiréis misiones secretas. Para cumplirlas tendréis que buscaros, preguntar, investigar y negociar. Cara a cara.'},
-  {v: 'code', h: 'El código de encuentro', say: 'Cada miembro lleva un código de tres cifras que cambia cada minuto. Pedídselo a quien tengáis delante: es la prueba de que os habéis encontrado.'},
-  {v: 'house', h: 'La casa', say: 'El club ocupa toda la casa. En el Gran Salón se celebran las pruebas. En Las Cocinas, algo se cuece. Y la Trastienda es para los asuntos que no pueden tratarse en público: dentro está su libro de firmas. Por la casa hay tarjetas secretas escondidas. Pero donde ponga prohibido el paso… no hay nada del club.'},
-  {v: 'tv', h: 'Las pruebas del club', say: 'Cuando suene la campana, todos a la tele. Aquí se celebran las pruebas del club. Quien gana, asciende.'},
-  {v: 'pres', h: 'El Presidente', pres: true, say: 'Nadie conoce su rostro. El Presidente dirige el club desde la sombra… y esta noche está entre vosotros. Antes del final, el club intentará descubrir quién es.'},
-  {v: 'danger', h: 'Nada es lo que parece', say: 'Pero cuidado. Habrá ofertas irrechazables, alianzas, traiciones, votaciones… y un infiltrado entre vosotros.'},
-  {v: 'purga', h: 'La purga', say: 'Y recordad: la invitación no garantiza la permanencia. Antes del final, el club purgará a los más débiles.'},
-  {v: 'circle', h: 'Solo uno', say: 'Al terminar la noche, solo uno cruzará la última puerta y entrará en el Círculo Interno. Las altas esferas no se regalan. Se conquistan. Que empiece la noche.'},
+  {v: 'city', h: 'Madrid, 1926', say: 'Madrid. Invierno de mil novecientos veintiséis. En un sótano sin rótulo, siete desconocidos se reúnen a la luz de una sola vela. No dan sus nombres. No dejan rastro.'},
+  {v: 'logo', h: 'El juramento', say: 'Esa noche fundan una sociedad que no figura en ningún registro. No le ponen nombre, porque lo que no tiene nombre no se puede delatar. Así nació el Club Sin Nombre.'},
+  {v: 'years', h: 'Cien años de secretos', say: 'Desde entonces, el club ha movido hilos que nadie ve. Banqueros, artistas, ministros… Todos empezaron igual: siendo nadie.'},
+  {v: 'chair', h: 'La silla vacía', say: 'En lo más alto del club está el Círculo Interno. Y cada cierto tiempo, una de sus sillas queda vacía. Esta noche, esa silla espera dueño.'},
+  {v: 'guests', h: 'Los convocados', say: 'Por eso estáis aquí. Todos los que estáis en esta sala habéis recibido la llamada. Ninguno sabe por qué ha sido elegido. Esta noche, todos sois desconocidos.'},
+  {v: 'ranks', h: 'El camino', say: 'Para llegar a la silla hay que subir. Desconocido. Aspirante. Iniciado. Confidente. Élite. Cada peldaño se gana hablando, investigando y cerrando tratos. Nadie asciende solo.'},
+  {v: 'phone', h: 'El expediente', say: 'El club os ha abierto un expediente. Lo lleváis en el bolsillo. Ahí están vuestras misiones, y nadie más puede verlas.'},
+  {v: 'code', h: 'La contraseña', say: 'Cada miembro tiene una contraseña que cambia cada minuto. Solo se entrega cara a cara. Si alguien os la pide, es que os está buscando.'},
+  {v: 'house', h: 'La casa', say: 'El club se reúne en tres estancias: el Salón, la Cocina y la Trastienda. Y no todo lo que hay en ellas está a la vista.'},
+  {v: 'tv', h: 'La campana', say: 'Cuando suene la campana, todos ante la tele. Aquí se celebran las pruebas del club. Quien gana, asciende.'},
+  {v: 'pres', h: 'El Presidente', pres: true, say: 'Nadie conoce el rostro del Presidente. Esta noche está entre vosotros. Os observa, os pone a prueba… y quizá esté sentado a vuestro lado.'},
+  {v: 'danger', h: 'El traidor', say: 'Pero cuidado. No todos los que han cruzado esa puerta son quienes dicen ser. Hay alguien entre vosotros que trabaja para otros. El club lo descubrirá… o lo pagará.'},
+  {v: 'purga', h: 'La primera regla', say: 'Y recordad la primera regla del club: la invitación no garantiza la permanencia.'},
+  {v: 'candle', h: 'Que empiece la noche', say: 'Solo uno ocupará la silla vacía. Miembros del club… que empiece la noche.'},
 ];
 const introSay = (S, i) => INTRO[i].say.replace('{n}', memberIds(S).length);
 const introMs = (S, i) => Math.round(estSpeak(introSay(S, i)) / EPIC_RATE) + (i === 0 ? 3500 : 2200);
@@ -3866,16 +3876,19 @@ function tvNocheFinal(P){ const F = P.club.final; const W = F.find(x => x.rank =
 // la escena de introducción: una diapositiva por momento, con narración
 function tvIntroScene(P, V){ const C = P.club; const ps = P.players; let art = '';
   switch (V.sc){
-    case 'city': art = `<div class="isc-city"><div class="isc-door">🚪</div></div>`; break;
+    case 'city': art = `<div class="isc-city"><div class="isc-door">🕯️</div><div class="isc-year">1926</div></div>`; break;
+    case 'years': art = `<div class="isc-years">${['1926', '1939', '1953', '1977', '1992', '2008', '2026'].map((y, i) => `<span style="animation-delay:${.3 + i * .9}s">${y}</span>`).join('')}</div>`; break;
+    case 'chair': art = `<div class="isc-chair"><div class="chair-light"></div><span>🪑</span></div>`; break;
+    case 'candle': art = `<div class="isc-candle"><span>🕯️</span></div>`; break;
     case 'logo': art = `<div class="isc-logo">${sealSVG('huge')}</div>`; break;
     case 'guests': art = `<div class="isc-guests">${ps.map((p, i) => `<div class="ig" style="animation-delay:${.4 + i * .35}s">${avH(p, 'xl')}<b>${esc(p.name)}</b><small>El Desconocido</small></div>`).join('')}</div>`; break;
     case 'ranks': art = `<div class="isc-ranks">${RANKS.map((R, i) => `<div class="ir r${i}" style="animation-delay:${.6 + i * 1.1}s"><span>${R.ic}</span><b>${R.n}</b></div>`).join('')}</div>`; break;
     case 'phone': art = `<div class="isc-phone"><div class="iph"><div class="iph-st">CONFIDENCIAL</div><div class="iph-r">🕳️ El Desconocido</div><div class="iph-m"><small>Misión principal · Contactos</small><b>Contacto con ${esc((ps[1] || ps[0] || {name: 'alguien'}).name)}</b><p>Búscale, preséntate y pídele su código de encuentro.</p></div><div class="iph-m side"><small>Misión secundaria · Investigación</small><b>Se busca</b><p>Encuentra a alguien que prefiera la montaña.</p></div></div></div>`; break;
     case 'code': art = `<div class="isc-code"><div class="icd">${[4, 1, 9].map((d, i) => `<span style="animation-delay:${.5 + i * .4}s">${d}</span>`).join('')}</div><div class="icd-bar"><i></i></div><p>Cambia cada minuto</p></div>`; break;
-    case 'house': art = `<div class="isc-house">${[['🥂', 'El Gran Salón', 'Las pruebas'], ['🍳', 'Las Cocinas', 'Algo se cuece'], ['🚪', 'La Trastienda', 'Asuntos privados'], ['⛔', 'Prohibido el paso', 'Aquí no hay nada']].map(([e, n, s], i) => `<div class="ih ${i === 3 ? 'no' : ''}" style="animation-delay:${.5 + i * 1.6}s"><span>${e}</span><b>${n}</b><small>${s}</small></div>`).join('')}</div>`; break;
+    case 'house': art = `<div class="isc-house">${[['🥂', 'El Salón', 'Las pruebas'], ['🍳', 'La Cocina', 'Algo se cuece'], ['🚪', 'La Trastienda', 'Asuntos privados'], ['⛔', 'Prohibido el paso', 'Aquí no hay nada']].map(([e, n, s], i) => `<div class="ih ${i === 3 ? 'no' : ''}" style="animation-delay:${.5 + i * 1.6}s"><span>${e}</span><b>${n}</b><small>${s}</small></div>`).join('')}</div>`; break;
     case 'tv': art = `<div class="isc-tv"><span class="bellx">🔔</span><span class="tvx">📺</span></div>`; break;
     case 'pres': art = `<div class="isc-pres"><span>🎩</span></div>`; break;
-    case 'danger': art = `<div class="isc-danger">${['🖋️', '🤝', '🗡️', '⚖️', '🕵️'].map((e, i) => `<span style="animation-delay:${.5 + i * .9}s">${e}</span>`).join('')}</div>`; break;
+    case 'danger': art = `<div class="isc-danger">${['🎭', '🗡️', '🕵️'].map((e, i) => `<span style="animation-delay:${.5 + i * 1.2}s">${e}</span>`).join('')}</div>`; break;
     case 'purga': art = `<div class="isc-purga"><span>🩸</span></div>`; break;
     case 'circle': art = `<div class="isc-circle"><span class="eye">👁️</span></div>`; break;
   }
@@ -3898,7 +3911,7 @@ function clubAnnTick(E, P){ const el = $('#trov'); if (!el) return; const C = P.
 function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) return; const V = C.v;
   if (TVS.cMus !== V.k){ TVS.cMus = V.k; MUSIC.play(V.k === 'intro' || V.k === 'cere' ? 'noir' : ['trib', 'senal', 'purga'].includes(V.k) ? 'night' : 'lounge'); }
   const k = V.k + ':' + (V.st || '') + ':' + V.t0; if (TVS.cSaid === k) return; TVS.cSaid = k;
-  if (V.k === 'intro'){ const fx = {pres: () => SFX.heart(3), house: () => SFX.cards(), city: () => { SFX.bell(1); }, logo: () => SFX.stinger(), guests: () => SFX.glass(), ranks: () => SFX.reveal(), phone: () => SFX.tap(), code: () => SFX.coin(), tv: () => SFX.bell(2), danger: () => SFX.heart(3), purga: () => SFX.boom(), circle: () => { SFX.drum(10); setTimeout(() => SFX.gold(), 1000); }}; try { (fx[V.sc] || (() => {}))(); } catch {} setTimeout(() => say(V.say, null, EPIC), V.si === 0 ? 1800 : 700); return; }
+  if (V.k === 'intro'){ const fx = {pres: () => SFX.heart(3), house: () => SFX.cards(), city: () => { SFX.bell(1); }, logo: () => SFX.stinger(), guests: () => SFX.glass(), ranks: () => SFX.reveal(), phone: () => SFX.tap(), code: () => SFX.coin(), tv: () => SFX.bell(2), danger: () => SFX.heart(3), purga: () => SFX.boom(), circle: () => { SFX.drum(10); setTimeout(() => SFX.gold(), 1000); }}; try { (fx[V.sc] || (() => {}))(); } catch {} setTimeout(() => say(V.say, null, Object.assign({}, EPIC, {onDur: ms => { try { const S = __E.S, W = S.club && S.club.v; if (W && W.k === 'intro' && W.si === V.si){ const end = vnow(S) + ms + 1600; if (end > W.t1){ W.t1 = end; S.ends = end; __E.change(); } } } catch {} }})), V.si === 0 ? 1800 : 700); return; }
   const nm = p => pOf(P, p).name;
   const L = {call: `Convocatoria. ${V.n}. Todos los miembros, a la tele.`, ops: `${V.n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`,
     'trib:talk': 'Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'trib:vote': 'Votad en secreto.', 'trib:rev': V.inf ? (V.caught ? `${nm(V.inf)} ha sido desenmascarado.` : `El infiltrado era ${nm(V.inf)}. Y se ha salido con la suya.`) : '',
@@ -4203,11 +4216,11 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
 const VZ = {cfg: null, keys: new Set(), urls: new Map(), db: null, busy: false, stop: false, ready: null, man: new Map(), manInfo: null};
 // voces publicadas junto a la web (carpeta voces/): suenan en cualquier navegador, sin clave ni preparación
 const VZ_MAN = (async () => { try { if (typeof location === 'undefined' || !/^https?:/.test(location.protocol)) return; const r = await fetch('voces/manifest.json', {cache: 'no-cache'}); if (!r.ok) return; const j = await r.json();
-  VZ.manInfo = {voice: j.voice || '', vname: j.vname || '', n: Object.keys(j.files || {}).length}; Object.entries(j.files || {}).forEach(([t, f]) => VZ.man.set(vzNorm(t), 'voces/' + f)); } catch {} })();
-const VZ_DEF = {on: null, key: '', voice: '', vname: '', model: 'eleven_multilingual_v2', live: true, stab: .45, style: .35};
-function vzCfg(){ if (!VZ.cfg){ let c = {}; try { c = JSON.parse(localStorage.getItem('ccsn-voz') || '{}'); } catch {} VZ.cfg = Object.assign({}, VZ_DEF, c); } return VZ.cfg; }
+  VZ.manInfo = {voice: j.voice || '', vname: j.vname || '', n: Object.keys(j.files || {}).length}; { const c = vzCfg(); if (!c.voice && j.voice){ c.voice = j.voice; c.vname = j.vname || ''; vzSave(); } } Object.entries(j.files || {}).forEach(([t, f]) => { const o = typeof f === 'string' ? {f, m: j.model || 'eleven_multilingual_v2', v: j.voice} : f; VZ.man.set(vzNorm(t), {u: 'voces/' + o.f, m: o.m, v: o.v || j.voice}); }); } catch {} })();
+const VZ_DEF = {on: null, key: '', voice: '', vname: '', model: 'eleven_v4', live: true, stab: .5, style: .35};
+function vzCfg(){ if (!VZ.cfg){ let c = {}; try { c = JSON.parse(localStorage.getItem('ccsn-voz') || '{}'); } catch {} VZ.cfg = Object.assign({}, VZ_DEF, c); if (!VZ.cfg.mig4){ VZ.cfg.mig4 = 1; VZ.cfg.model = 'eleven_v4'; VZ.cfg.stab = .5; try { localStorage.setItem('ccsn-voz', JSON.stringify(VZ.cfg)); } catch {} } } return VZ.cfg; }
 function vzSave(){ try { localStorage.setItem('ccsn-voz', JSON.stringify(VZ.cfg)); } catch {} }
-const vzNorm = s => String(s).replace(/\s+/g, ' ').trim();
+const vzNorm = s => String(s).replace(/[«»]/g, '').replace(/\s+/g, ' ').trim();
 const vzKey = (s, c = vzCfg()) => c.voice + '|' + c.model + '|' + vzNorm(s);
 function vzDB(){ if (VZ.ready) return VZ.ready; VZ.ready = new Promise(res => { try { const r = indexedDB.open('ccsn-voz', 1);
   r.onupgradeneeded = () => r.result.createObjectStore('a'); r.onerror = () => res(null);
@@ -4217,48 +4230,56 @@ function vzGet(k){ return new Promise(res => { if (VZ.urls.has(k)) return res(VZ
 function vzPut(k, blob){ return new Promise(res => { if (!VZ.db) return res(); const tx = VZ.db.transaction('a', 'readwrite'); tx.objectStore('a').put(blob, k); tx.oncomplete = () => { VZ.keys.add(k); res(); }; tx.onerror = () => res(); }); }
 async function vzFetch(text, c = vzCfg()){
   const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(c.voice)}?output_format=mp3_44100_64`, {method: 'POST', headers: {'xi-api-key': c.key, 'Content-Type': 'application/json', Accept: 'audio/mpeg'},
-    body: JSON.stringify({text: vzNorm(text), model_id: c.model, language_code: c.model === 'eleven_multilingual_v2' ? undefined : 'es', voice_settings: {stability: c.stab, similarity_boost: .8, style: c.style, use_speaker_boost: true}})});
+    body: JSON.stringify({text: vzNorm(text), model_id: c.model, language_code: c.model === 'eleven_multilingual_v2' ? undefined : 'es', voice_settings: c.model === 'eleven_multilingual_v2' ? {stability: c.stab, similarity_boost: .8, style: c.style, use_speaker_boost: true} : {stability: c.stab, similarity_boost: .8}})});
   if (!r.ok){ let m = ''; try { const j = await r.json(); m = (j.detail && (j.detail.message || j.detail.status)) || JSON.stringify(j.detail || j); } catch {} const e = new Error(m || ('Error ' + r.status)); e.status = r.status; throw e; }
   return await r.blob(); }
 async function vzEnsure(part){ const k = vzKey(part); if (VZ.keys.has(k)) return true; const c = vzCfg(); if (!c.key || !c.voice || !navigator.onLine) return false;
   try { const b = await vzFetch(part); await vzPut(k, b); return true; } catch (e) { console.warn('ElevenLabs', e); return false; } }
 const vzActive = () => { const c = vzCfg(); const tv = typeof document !== 'undefined' && document.body && document.body.classList.contains('v-tv'); return tv && ((c.on && c.voice) || (VZ.man.size && c.on !== false)); };
+const vzFresh = p => { if (VZ.keys.has(vzKey(p))) return true; const m = VZ.man.get(vzNorm(p)); const c = vzCfg(); return !!m && m.m === c.model && (!c.voice || m.v === c.voice); };
 const vzHas = p => VZ.keys.has(vzKey(p)) || VZ.man.has(vzNorm(p));
-const vzUrl = async p => VZ.keys.has(vzKey(p)) ? vzGet(vzKey(p)) : VZ.man.get(vzNorm(p)) || null;
+const vzUrl = async p => { if (VZ.keys.has(vzKey(p))) return vzGet(vzKey(p)); const m = VZ.man.get(vzNorm(p)); return m ? m.u : null; };
+// trocea una frase en los tramos grabados más largos posibles (mejor entonación)
+function vzSegs(text, ok = vzHas){ const full = vzNorm(text); if (ok(full)) return [full]; const parts = sayParts(text).map(vzNorm); const out = []; let i = 0;
+  while (i < parts.length){ let j = parts.length, hit = null; for (; j > i; j--){ const seg = parts.slice(i, j).join(' '); if (ok(seg)){ hit = seg; break; } } if (!hit) return null; out.push(hit); i = j; } return out; }
 // reproduce una lista de audios uno tras otro
 const VZP = {a: null, gen: 0};
-function vzPlay(urls, gen, onend){ let i = 0; const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length) return onend && onend();
-    const a = new Audio(urls[i++]); VZP.a = a; a.volume = Math.min(1, (typeof VOL === 'number' ? VOL : .8) + .2); a.onended = () => setTimeout(next, 140); a.onerror = () => next(); a.play().catch(() => next()); }; next(); }
+function vzPlay(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length) return onend && onend();
+    const a = new Audio(urls[i++]); a.onloadedmetadata = () => { tot += (a.duration || 0) * 1000; if (opts && opts.onDur && i === urls.length && !told){ told = true; opts.onDur(tot + (urls.length - 1) * 140); } }; VZP.a = a; a.volume = Math.min(1, (typeof VOL === 'number' ? VOL : .8) + .2); a.onended = () => setTimeout(next, 140); a.onerror = () => next(); a.play().catch(() => next()); }; next(); }
 // sustituye a la voz del navegador cuando ElevenLabs está activo
 const sayWeb = say;
 say = function(text, onend, opts){
   if (!vzActive() || !voiceOn || !text) return sayWeb(text, onend, opts);
   const gen = ++VZP.gen; try { VZP.a && VZP.a.pause(); } catch {} try { speechSynthesis.cancel(); } catch {}
-  const parts = sayParts(text); const c = vzCfg();
-  (async () => { await vzDB(); await VZ_MAN; const have = parts.every(vzHas);
-    if (!have){ if (!c.live || !c.key) { if (gen === VZP.gen) sayWeb(text, onend, opts); return; }
-      const ok = await Promise.all(parts.map(p => vzHas(p) ? true : vzEnsure(p))); if (gen !== VZP.gen) return; if (!ok.every(Boolean)) return sayWeb(text, onend, opts); }
-    const urls = await Promise.all(parts.map(vzUrl)); if (gen !== VZP.gen) return; if (urls.some(u => !u)) return sayWeb(text, onend, opts);
-    vzPlay(urls, gen, onend); })(); };
+  const c = vzCfg();
+  (async () => { await vzDB(); await VZ_MAN; let segs = vzSegs(text, vzFresh);
+    if (!segs && c.live && c.key && navigator.onLine){ const full = vzNorm(text); if (await vzEnsure(full)) segs = [full]; if (gen !== VZP.gen) return; }
+    if (!segs) segs = vzSegs(text, vzHas);
+    if (!segs) return sayWeb(text, onend, opts);
+    const urls = await Promise.all(segs.map(vzUrl)); if (gen !== VZP.gen) return; if (urls.some(u => !u)) return sayWeb(text, onend, opts);
+    vzPlay(urls, gen, onend, opts); })(); };
 // ---------- todas las frases de la noche ----------
 function vzNames(){ const S = window.__E && __E.S; const set = new Set(); if (S){ pidsAll(S).forEach(p => S.players[p] && !S.players[p].bot && set.add(S.players[p].name)); ((S.club && S.club.form) || []).forEach(f => f.name && set.add(String(f.name).trim().slice(0, 14))); ((S.club && S.club.guests) || []).forEach(n => set.add(n)); } return [...set].filter(Boolean); }
+function vzClues(){ const S = window.__E && __E.S; const out = new Set(); const ans = []; if (S && S.club){ (S.club.form || []).forEach(f => ans.push(f.a || {})); Object.values(S.club.m || {}).forEach(m => ans.push(m.q || {})); }
+  ans.forEach(a => Object.entries(a).forEach(([k, v]) => { const Q = QS.find(q => q.k === k); if (Q && Q.o && Q.o[v]) out.add(Q.o[v][1]); })); return [...out]; }
+// todas las frases de la noche, en orden de importancia (si se acaban los créditos, lo primero ya está)
 function vzLines(){ const L = []; const add = (...t) => t.forEach(x => x && L.push(x)); const names = vzNames();
-  INTRO.forEach(s => { if (s.say.includes('{n}')) for (let n = 3; n <= 20; n++) add(s.say.replace('{n}', n)); else add(s.say); });
+  INTRO.forEach(s => add(s.say));
   NIGHT().forEach(B => { const n = blockName(B); if (B.k === 'conv') add(`Convocatoria. ${n}. Todos los miembros, a la tele.`); if (B.k === 'ops') add(`${n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`); });
-  add('Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'Votad en secreto.', '¿Absolver o condenar? Votad.', 'Tiene la palabra.', 'Y se ha salido con la suya.',
-    'Queda un último secreto. Toda la noche, el Presidente ha movido los hilos desde dentro. ¿Quién es? Votad.', 'El Presidente se revela. Durante toda la noche, el Presidente en la sombra era…', 'El club le ha descubierto.', 'Y ha engañado a todo el club.',
-    'Los aspirantes al Círculo Interno son:', 'Que vote el club.', 'Damas y caballeros. El Presidente abre la última puerta.', 'Ha llegado la purga.', 'La invitación no garantiza la permanencia.', 'Intermedio. El club se toma un respiro.',
+  add('Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'Votad en secreto.', '¿Absolver o condenar? Votad.', 'Tiene la palabra.',
+    'Queda un último secreto. Toda la noche, el Presidente ha movido los hilos desde dentro. ¿Quién es? Votad.', 'El club le ha descubierto.', 'Y ha engañado a todo el club.',
+    'Los aspirantes al Círculo Interno son:', 'Que vote el club.', 'Damas y caballeros. El Presidente abre la última puerta.', 'Damas y caballeros.', 'Ha llegado la purga.', 'La invitación no garantiza la permanencia.', 'Intermedio. El club se toma un respiro.',
     'Se abre el mercado negro. Desde ahora, las fichas compran ventajas.', 'La Trastienda abre sus puertas.', 'Alguien acaba de recoger un encargo en la Trastienda. ¿Quién ha salido de allí hace un momento?',
     'Algunos miembros acaban de recibir una oferta del Presidente. Una oferta… irrechazable.', 'Algunos miembros han recibido una invitación exclusiva. Tendrán que colaborar.',
-    'Atención, miembros del club. Hay un infiltrado entre vosotros. Primera pista.', 'Nueva pista sobre el infiltrado.', 'El infiltrado está en esta sala.', 'Prueba final.', 'Siguiente prueba:', 'El Presidente dice:', 'A partir de ahora es…');
-  QS.forEach(Q => (Q.o || []).forEach(o => o[1] && add(`El infiltrado ${o[1]}.`)));
-  RANKS.forEach(R => add(R.n + '.'));
+    'Atención, miembros del club. Hay un infiltrado entre vosotros. Primera pista.', 'Nueva pista sobre el infiltrado.', 'El infiltrado está en esta sala.', 'Prueba final.', 'Siguiente prueba:', 'El Presidente dice:');
+  RANKS.slice(1).forEach(R => add(`A partir de ahora es… ${R.n}.`));
+  vzClues().forEach(t => add(`El infiltrado ${t}.`));
   Object.values(GAMES).forEach(g => g && g.name && add(g.name.replace(/[¿?:]/g, '') + '.'));
   ['El más sociable', 'El más ambicioso', 'El banquero', 'El mejor competidor', 'El mejor estratega', 'El mejor infiltrado', 'El más activo'].forEach(t => add(t + '.'));
-  names.forEach(n => add(`${n}.`, `${n} asciende.`, `${n} ha sido desenmascarado.`, `El infiltrado era ${n}.`, `El club señala a ${n}.`, `${n} queda condenado.`, `${n} queda absuelto.`, `${n} cae.`,
-    `${n} entra en el Círculo Interno.`, `El Presidente concede su favor a ${n}.`));
-  const seen = new Set(), out = []; L.forEach(t => sayParts(t).forEach(p => { const k = vzNorm(p); if (!seen.has(k)){ seen.add(k); out.push(k); } })); return out; }
-async function vzPrepare(onp){ await vzDB(); const c = vzCfg(); const all = vzLines(); const todo = all.filter(p => !vzHas(p)); VZ.stop = false; VZ.busy = true; let done = 0, fail = 0, err = '';
+  names.forEach(n => add(`${n}.`, `${n} asciende.`, `${n} ha sido desenmascarado.`, `El infiltrado era ${n}. Y se ha salido con la suya.`, `El club señala a ${n}.`, `${n} queda condenado.`, `${n} queda absuelto.`,
+    `Ha llegado la purga. ${n} cae. La invitación no garantiza la permanencia.`, `${n} entra en el Círculo Interno.`, `El Presidente concede su favor a ${n}.`, `El Presidente se revela. Durante toda la noche, el Presidente en la sombra era… ${n}.`));
+  const seen = new Set(), out = []; L.forEach(t => { const k = vzNorm(t); if (!seen.has(k)){ seen.add(k); out.push(k); } }); return out; }
+async function vzPrepare(onp){ await vzDB(); const c = vzCfg(); const all = vzLines(); const todo = all.filter(p => !vzFresh(p)); VZ.stop = false; VZ.busy = true; let done = 0, fail = 0, err = '';
   const run = async () => { while (todo.length && !VZ.stop){ const p = todo.shift(); try { const b = await vzFetch(p, c); await vzPut(vzKey(p, c), b); } catch (e) { fail++; err = e.message || String(e); if (e.status === 401 || e.status === 402 || /quota|credit|limit/i.test(err)) VZ.stop = true; } done++; onp && onp(done, done + todo.length, fail, err); } };
   await Promise.all([run(), run(), run()]); VZ.busy = false; return {fail, err, total: all.length}; }
 async function vzSub(){ const c = vzCfg(); const r = await fetch('https://api.elevenlabs.io/v1/user/subscription', {headers: {'xi-api-key': c.key}}); if (!r.ok){ let t = ''; try { t = await r.text(); } catch {} throw new Error(/missing the permission/.test(t) ? 'la clave no tiene permiso para ver los créditos (no pasa nada)' : 'la clave no es válida'); } return r.json(); }
@@ -4273,10 +4294,11 @@ async function vzImport(file){ await vzDB(); const j = JSON.parse(await file.tex
 async function vzClear(){ await vzDB(); await new Promise(res => { const tx = VZ.db.transaction('a', 'readwrite'); tx.objectStore('a').clear(); tx.oncomplete = res; tx.onerror = res; }); VZ.keys.clear(); VZ.urls.clear(); }
 // ---------- la pantalla de la voz (en la tele) ----------
 function vozOverlay(){ const el = ovEl(); const c = vzCfg(); vzDB().then(() => draw());
-  const draw = (msg = '') => { const all = vzLines(); const have = all.filter(vzHas).length; const chars = all.filter(p => !vzHas(p)).reduce((a, p) => a + p.length, 0);
+  const draw = (msg = '') => { const all = vzLines(); const have = all.filter(vzFresh).length; const chars = all.filter(p => !vzFresh(p)).reduce((a, p) => a + p.length, 0);
     el.innerHTML = `<div class="co-in vozov"><h2>La voz del club</h2>${VZ.manInfo ? `<p class="vz-pub">Esta web ya trae ${VZ.manInfo.n} frases grabadas${VZ.manInfo.vname ? ' con la voz ' + esc(VZ.manInfo.vname) : ''}. Suenan en cualquier navegador sin hacer nada. Solo necesitas la clave si quieres generar frases nuevas.</p>` : ''}<p class="note">Con ElevenLabs, el narrador suena de verdad. Cada frase se genera una sola vez y se guarda en esta tele: después suena gratis y sin internet. La clave se guarda solo en este aparato, nunca en el archivo que abren los móviles.</p>
       <label class="vz-row"><span>Clave de ElevenLabs (API key)</span><input class="field" id="vzk" type="password" autocomplete="off" value="${esc(c.key)}" placeholder="sk_…"></label>
       <div class="vz-row"><span>Voz</span><div class="vz-v"><input class="field" id="vzv" value="${esc(c.voice)}" placeholder="Identificador de la voz (voice ID)"><button class="btn" data-vz="voices">Ver mis voces</button></div><small id="vzvn">${c.vname ? 'Elegida: ' + esc(c.vname) : 'Añade antes la voz a «Mis voces» en ElevenLabs para poder usarla aquí.'}</small><div id="vzlist"></div></div>
+      <label class="vz-row"><span>Modelo</span><select class="field" id="vzm"><option value="eleven_v4" ${c.model === 'eleven_v4' ? 'selected' : ''}>Eleven v4 · español de España, mejor acentuación (recomendado)</option><option value="eleven_multilingual_v2" ${c.model === 'eleven_multilingual_v2' ? 'selected' : ''}>Multilingual v2 · el anterior</option></select></label>
       <div class="vz-row two"><label><span>Estabilidad</span><input type="range" id="vzs" min="0" max="1" step=".05" value="${c.stab}"></label><label><span>Dramatismo</span><input type="range" id="vzy" min="0" max="1" step=".05" value="${c.style}"></label></div>
       <label class="vz-row"><span>Tus invitados, uno por línea (para preparar las frases con su nombre)</span><textarea class="field" id="vzg" rows="3" placeholder="Marta&#10;Luis&#10;Ana">${esc(((__E.S.club && __E.S.club.guests) || []).join('\n'))}</textarea><small>${vzNames().length} nombres en total, contando las respuestas del cuestionario. También aparecerán en el móvil, en «¿Quién eres?».</small></label>
       <label class="vz-ck"><input type="checkbox" id="vzon" ${c.on || (c.on == null && VZ.man.size) ? 'checked' : ''}> Usar esta voz en la tele</label>
@@ -4287,8 +4309,8 @@ function vozOverlay(){ const el = ovEl(); const c = vzCfg(); vzDB().then(() => d
       <div class="co-b small"><button class="lnk" data-vz="export">Descargar copia de las voces</button><label class="lnk">Cargar copia<input type="file" id="vzimp" accept=".json" hidden></label><button class="lnk" data-vz="clear">Borrar las voces guardadas</button><button class="btn" data-vz="close">Cerrar</button></div></div>`;
     if (c.key) vzSub().then(s => { const x = $('#vzsub'); if (x) x.textContent = ` · te quedan ${(s.character_limit - s.character_count).toLocaleString('es-ES')} créditos este mes`; }).catch(e => { const x = $('#vzsub'); if (x) x.textContent = ' · ' + e.message; });
     $('#vzimp').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const n = await vzImport(f); draw(`Cargadas ${n} frases.`); } catch { draw('Ese archivo no es una copia de las voces.'); } }; };
-  const read = () => { c.key = $('#vzk').value.trim(); const v = $('#vzv').value.trim(); if (v !== c.voice){ c.voice = v; c.vname = ''; } c.stab = +$('#vzs').value; c.style = +$('#vzy').value; c.on = $('#vzon').checked; c.live = $('#vzlive').checked; vzSave(); };
-  el.onchange = e => { if (e.target.id === 'vzg'){ const names = e.target.value.split(/[\n,]+/).map(x => x.trim()).filter(Boolean); __E.host('guests', {names}); try { localStorage.setItem('ccsn-guests', JSON.stringify(names)); } catch {} setTimeout(() => { const all = vzLines(); const have = all.filter(x => VZ.keys.has(vzKey(x))).length; const st = $('#vzst'); if (st) st.innerHTML = `<b>${have} de ${all.length}</b> frases preparadas`; const m = $('#vzmsg'); if (m) m.textContent = `Lista guardada: ${names.length} invitados.`; }, 50); return; } if (e.target.id !== 'vzimp') read(); };
+  const read = () => { c.key = $('#vzk').value.trim(); const v = $('#vzv').value.trim(); if (v !== c.voice){ c.voice = v; c.vname = ''; } c.stab = +$('#vzs').value; if ($('#vzm')) c.model = $('#vzm').value; c.style = +$('#vzy').value; c.on = $('#vzon').checked; c.live = $('#vzlive').checked; vzSave(); };
+  el.onchange = e => { if (e.target.id === 'vzg'){ const names = e.target.value.split(/[\n,]+/).map(x => x.trim()).filter(Boolean); __E.host('guests', {names}); try { localStorage.setItem('ccsn-guests', JSON.stringify(names)); } catch {} setTimeout(() => { const all = vzLines(); const have = all.filter(vzFresh).length; const st = $('#vzst'); if (st) st.innerHTML = `<b>${have} de ${all.length}</b> frases preparadas`; const m = $('#vzmsg'); if (m) m.textContent = `Lista guardada: ${names.length} invitados.`; }, 50); return; } if (e.target.id !== 'vzimp') read(); };
   el.onclick = async e => { const t = e.target.closest('[data-vz],[data-vzpick]'); if (!t) return; read(); const msg = m => { const x = $('#vzmsg'); if (x) x.textContent = m; };
     if (t.dataset.vzpick){ c.voice = t.dataset.vzpick; c.vname = t.dataset.vzn; c.on = true; vzSave(); return draw('Voz elegida. Pulsa «Probar la voz».'); }
     const k = t.dataset.vz;
