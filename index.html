@@ -4248,6 +4248,8 @@ function vzPlay(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; const
     const a = new Audio(urls[i++]); a.onloadedmetadata = () => { tot += (a.duration || 0) * 1000; if (opts && opts.onDur && i === urls.length && !told){ told = true; opts.onDur(tot + (urls.length - 1) * 140); } }; VZP.a = a; a.volume = Math.min(1, (typeof VOL === 'number' ? VOL : .8) + .2); a.onended = () => setTimeout(next, 140); a.onerror = () => next(); a.play().catch(() => next()); }; next(); }
 // sustituye a la voz del navegador cuando ElevenLabs está activo
 const sayWeb = say;
+// con el narrador activo, lo que no tiene grabación se queda en silencio (solo texto en pantalla)
+const vzQuiet = (text, onend, opts) => { if (vzCfg().mix) return sayWeb(text, onend, opts); if (onend) setTimeout(onend, estSpeak(text) / ((opts && opts.rate) || .95)); };
 say = function(text, onend, opts){
   if (!vzActive() || !voiceOn || !text) return sayWeb(text, onend, opts);
   const gen = ++VZP.gen; try { VZP.a && VZP.a.pause(); } catch {} try { speechSynthesis.cancel(); } catch {}
@@ -4255,8 +4257,8 @@ say = function(text, onend, opts){
   (async () => { await vzDB(); await VZ_MAN; let segs = vzSegs(text, vzFresh);
     if (!segs && c.live && c.key && navigator.onLine){ const full = vzNorm(text); if (await vzEnsure(full)) segs = [full]; if (gen !== VZP.gen) return; }
     if (!segs) segs = vzSegs(text, vzHas);
-    if (!segs) return sayWeb(text, onend, opts);
-    const urls = await Promise.all(segs.map(vzUrl)); if (gen !== VZP.gen) return; if (urls.some(u => !u)) return sayWeb(text, onend, opts);
+    if (!segs) return vzQuiet(text, onend, opts);
+    const urls = await Promise.all(segs.map(vzUrl)); if (gen !== VZP.gen) return; if (urls.some(u => !u)) return vzQuiet(text, onend, opts);
     vzPlay(urls, gen, onend, opts); })(); };
 // ---------- todas las frases de la noche ----------
 function vzNames(){ const S = window.__E && __E.S; const set = new Set(); if (S){ pidsAll(S).forEach(p => S.players[p] && !S.players[p].bot && set.add(S.players[p].name)); ((S.club && S.club.form) || []).forEach(f => f.name && set.add(String(f.name).trim().slice(0, 14))); ((S.club && S.club.guests) || []).forEach(n => set.add(n)); } return [...set].filter(Boolean); }
@@ -4302,6 +4304,7 @@ function vozOverlay(){ const el = ovEl(); const c = vzCfg(); vzDB().then(() => d
       <div class="vz-row two"><label><span>Estabilidad</span><input type="range" id="vzs" min="0" max="1" step=".05" value="${c.stab}"></label><label><span>Dramatismo</span><input type="range" id="vzy" min="0" max="1" step=".05" value="${c.style}"></label></div>
       <label class="vz-row"><span>Tus invitados, uno por línea (para preparar las frases con su nombre)</span><textarea class="field" id="vzg" rows="3" placeholder="Marta&#10;Luis&#10;Ana">${esc(((__E.S.club && __E.S.club.guests) || []).join('\n'))}</textarea><small>${vzNames().length} nombres en total, contando las respuestas del cuestionario. También aparecerán en el móvil, en «¿Quién eres?».</small></label>
       <label class="vz-ck"><input type="checkbox" id="vzon" ${c.on || (c.on == null && VZ.man.size) ? 'checked' : ''}> Usar esta voz en la tele</label>
+      <label class="vz-ck"><input type="checkbox" id="vzmix" ${c.mix ? 'checked' : ''}> Si una frase no está grabada, que la lea la voz del navegador (si no, se queda en silencio y solo se ve en la tele)</label>
       <label class="vz-ck"><input type="checkbox" id="vzlive" ${c.live ? 'checked' : ''}> Generar en el momento las frases que falten (gasta créditos durante la fiesta)</label>
       <div class="vz-st" id="vzst"><b>${have} de ${all.length}</b> frases preparadas${chars ? ` · faltan unos ${chars.toLocaleString('es-ES')} caracteres` : ' · todo listo'}<span id="vzsub"></span></div>
       <div class="vz-prog" id="vzprog"></div><p class="vz-msg" id="vzmsg">${esc(msg)}</p>
@@ -4309,7 +4312,7 @@ function vozOverlay(){ const el = ovEl(); const c = vzCfg(); vzDB().then(() => d
       <div class="co-b small"><button class="lnk" data-vz="export">Descargar copia de las voces</button><label class="lnk">Cargar copia<input type="file" id="vzimp" accept=".json" hidden></label><button class="lnk" data-vz="clear">Borrar las voces guardadas</button><button class="btn" data-vz="close">Cerrar</button></div></div>`;
     if (c.key) vzSub().then(s => { const x = $('#vzsub'); if (x) x.textContent = ` · te quedan ${(s.character_limit - s.character_count).toLocaleString('es-ES')} créditos este mes`; }).catch(e => { const x = $('#vzsub'); if (x) x.textContent = ' · ' + e.message; });
     $('#vzimp').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const n = await vzImport(f); draw(`Cargadas ${n} frases.`); } catch { draw('Ese archivo no es una copia de las voces.'); } }; };
-  const read = () => { c.key = $('#vzk').value.trim(); const v = $('#vzv').value.trim(); if (v !== c.voice){ c.voice = v; c.vname = ''; } c.stab = +$('#vzs').value; if ($('#vzm')) c.model = $('#vzm').value; c.style = +$('#vzy').value; c.on = $('#vzon').checked; c.live = $('#vzlive').checked; vzSave(); };
+  const read = () => { c.key = $('#vzk').value.trim(); const v = $('#vzv').value.trim(); if (v !== c.voice){ c.voice = v; c.vname = ''; } c.stab = +$('#vzs').value; if ($('#vzm')) c.model = $('#vzm').value; c.style = +$('#vzy').value; c.on = $('#vzon').checked; c.live = $('#vzlive').checked; c.mix = !!($('#vzmix') && $('#vzmix').checked); vzSave(); };
   el.onchange = e => { if (e.target.id === 'vzg'){ const names = e.target.value.split(/[\n,]+/).map(x => x.trim()).filter(Boolean); __E.host('guests', {names}); try { localStorage.setItem('ccsn-guests', JSON.stringify(names)); } catch {} setTimeout(() => { const all = vzLines(); const have = all.filter(vzFresh).length; const st = $('#vzst'); if (st) st.innerHTML = `<b>${have} de ${all.length}</b> frases preparadas`; const m = $('#vzmsg'); if (m) m.textContent = `Lista guardada: ${names.length} invitados.`; }, 50); return; } if (e.target.id !== 'vzimp') read(); };
   el.onclick = async e => { const t = e.target.closest('[data-vz],[data-vzpick]'); if (!t) return; read(); const msg = m => { const x = $('#vzmsg'); if (x) x.textContent = m; };
     if (t.dataset.vzpick){ c.voice = t.dataset.vzpick; c.vname = t.dataset.vzn; c.on = true; vzSave(); return draw('Voz elegida. Pulsa «Probar la voz».'); }
