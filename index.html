@@ -2751,7 +2751,7 @@ def('simon', {name: 'Simón Dice', cat: 'Atención', icon: '🗣️', desc: 'Obe
   pub(S, g){ return {st: g.st, t0: g.t0, seq: g.seq, ok: g.ok, done: g.done}; },
   me(S, g, pid){ return {taps: g.taps[pid] || {}}; },
   fast: true,
-  cmd(it){ return `${it.s ? 'Simón dice: ' : ''}toca el ${MEM_COLORS[it.c][0].toUpperCase()}`; },
+  cmd(it){ return `${it.s ? 'Simón dice: ' : ''}toca el ${MEM_COLORS[it.c][0].toUpperCase()}.`; },
   tv(P, gp, v){ if (gp.st === 'rev') return `<div class="gq"><div class="rx-res">${P.players.map(p => ({p, s: gp.ok[p.pid] || 0})).sort((a, b) => b.s - a.s).map(({p, s}, i) => `<div class="rx ${i === 0 ? 'first' : ''}">${avH(p, 'sm')}<b>${esc(p.name)}</b><em>${s} de ${gp.seq.length}</em></div>`).join('')}</div></div>`;
     const i = this.cur(gp, v), it = gp.seq[i]; if (it && TVS.simon !== i){ TVS.simon = i; say(this.cmd(it)); }
     return `<div class="gq"><div class="simon ${it ? (it.s ? 'yes' : 'no') : ''}">${it ? `${it.s ? '<small>Simón dice:</small>' : ''}toca el <b style="color:${MEM_COLORS[it.c][1]}">${MEM_COLORS[it.c][0].toUpperCase()}</b>` : 'Atentos…'}</div></div>`; },
@@ -3325,7 +3325,7 @@ function blockGamesDone(S){ S.g = null; S.gres = null; nextBlock(S); }
 function voteBox(S, o){ const v = vnowC(S); return Object.assign({st: 'talk', t0: v, t1: v + o.talk, votes: {}, voters: memberIds(S), self: false}, o); }
 function tribStart(S, B){ const I = S.club.inf; if (!I.pid){ return nextBlock(S); } S.phase = 'club'; S.club.v = voteBox(S, {k: 'trib', B, talk: 70000, voteMs: 30000, cands: memberIds(S), title: 'El Tribunal del club', q: '¿Quién es el infiltrado?'}); S.ends = S.club.v.t1; }
 function senalStart(S, B){ const cand = memberIds(S).filter(p => isOn(S, p)); if (cand.length < 3) return nextBlock(S); const top = cand.slice().sort((a, b) => clubScore(S, b) - clubScore(S, a)); let acc = Math.random() < .6 ? top[0] : pick(cand); if (S.club.nextAcc && cand.includes(S.club.nextAcc)) acc = S.club.nextAcc; S.club.nextAcc = null;
-  S.phase = 'club'; S.club.v = voteBox(S, {k: 'senal', B, acc, accTxt: String(pick(ACCUSATIONS)).replace(/\{n\}/g, S.players[acc].name), talk: 45000, voteMs: 22000, cands: ['abs', 'cond'], voters: memberIds(S).filter(p => p !== acc), title: 'El miembro señalado', q: '¿Absolver o condenar?'}); S.ends = S.club.v.t1; }
+  S.phase = 'club'; S.club.v = voteBox(S, {k: 'senal', B, acc, ...(() => { const raw = String(pick(ACCUSATIONS)); return {accTxt: raw.replace(/\{n\}/g, S.players[acc].name), accRaw: raw}; })(), talk: 45000, voteMs: 22000, cands: ['abs', 'cond'], voters: memberIds(S).filter(p => p !== acc), title: 'El miembro señalado', q: '¿Absolver o condenar?'}); S.ends = S.club.v.t1; }
 function purgaStart(S, B){ const C = S.club; const v = vnowC(S); const alive = memberIds(S).filter(p => !cm(S, p).fallen); const n = Math.max(1, Math.floor(alive.length / 5));
   const order = alive.slice().sort((a, b) => clubScore(S, a) - clubScore(S, b)); const out = [], saved = [];
   for (const p of order){ if (out.length >= n) break; const m = cm(S, p); if (m.shield){ m.shield = false; saved.push(p); continue; } out.push(p); }
@@ -3435,7 +3435,7 @@ function clubPub(S){ const C = S.club; if (!C) return null; const V = C.v; const
     else if (V.k === 'intro') pub.v = Object.assign(base, {si: V.si, sn: INTRO.length, sc: INTRO[V.si].v, h: INTRO[V.si].h, say: introSay(S, V.si)});
     else if (V.k === 'ops' || V.k === 'inter' || V.k === 'pres') pub.v = Object.assign(base, {n: blockName(V.B)});
     else if (V.k === 'purga') pub.v = Object.assign(base, {out: V.out, saved: V.saved});
-    else if (V.k === 'trib' || V.k === 'senal') pub.v = Object.assign(base, {acc: V.acc, accTxt: V.accTxt, cands: V.cands, voted: Object.keys(V.votes), voters: V.voters, tally: V.st === 'rev' ? V.tally : null, caught: V.st === 'rev' ? V.caught : null, inf: V.st === 'rev' ? V.inf : null, cond: V.st === 'rev' ? V.cond : null, clues: V.k === 'trib' ? C.inf.clues.slice(0, C.inf.pubN) : null});
+    else if (V.k === 'trib' || V.k === 'senal') pub.v = Object.assign(base, {acc: V.acc, accTxt: V.accTxt, accRaw: V.accRaw, cands: V.cands, voted: Object.keys(V.votes), voters: V.voters, tally: V.st === 'rev' ? V.tally : null, caught: V.st === 'rev' ? V.caught : null, inf: V.st === 'rev' ? V.inf : null, cond: V.st === 'rev' ? V.cond : null, clues: V.k === 'trib' ? C.inf.clues.slice(0, C.inf.pubN) : null});
     else if (V.k === 'cere') pub.v = Object.assign(base, {pres: V.st === 'prev' ? V.pres : null, pcaught: V.st === 'prev' ? V.pcaught : null, ptally: V.st === 'prev' ? V.ptally : null, pvoted: Object.keys(V.pvotes || {}), hasPres: !!V.pres,aw: V.awards[Math.min(V.ai, V.awards.length - 1)], ai: V.ai, an: V.awards.length, fin: V.fin, voted: Object.keys(V.votes), tally: V.st === 'crown' || V.st === 'end' ? tally(V) : null, win: V.win || null, scores: Object.fromEntries(V.fin.map(p => [p, clubScore(S, p)]))});
   }
   if (S.phase === 'final' && C.done) pub.final = ids.slice().sort((a, b) => cm(S, b).rank - cm(S, a).rank || clubScore(S, b) - clubScore(S, a)).map(p => ({pid: p, rank: cm(S, p).rank, prest: cm(S, p).prest, xp: cm(S, p).xp, fallen: cm(S, p).fallen}));
@@ -3908,6 +3908,7 @@ function clubAnnTick(E, P){ const el = $('#trov'); if (!el) return; const C = P.
   el.innerHTML = `<div class="trn k-${a.k}"><div class="trni">${N.ic}</div><h2>${esc(N.h)}</h2><p>${esc(N.p)}</p>${N.who ? `<div class="trwho" style="animation-delay:.6s">${avH(N.who, 'xl')}<b>${esc(N.who.name)}</b></div>` : ''}</div>`;
   el.classList.add('on'); try { SFX[N.snd](); } catch {} setTimeout(() => say(N.say, null, EPIC), 600); }
 // la voz del club en cada momento
+const accBare = raw => String(raw).replace(/^\{n\}\s*/, '');
 function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) return; const V = C.v;
   if (TVS.cMus !== V.k){ TVS.cMus = V.k; MUSIC.play(V.k === 'intro' || V.k === 'cere' ? 'noir' : ['trib', 'senal', 'purga'].includes(V.k) ? 'night' : 'lounge'); }
   const k = V.k + ':' + (V.st || '') + ':' + V.t0; if (TVS.cSaid === k) return; TVS.cSaid = k;
@@ -3915,10 +3916,10 @@ function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) r
   const nm = p => pOf(P, p).name;
   const L = {call: `Convocatoria. ${V.n}. Todos los miembros, a la tele.`, ops: `${V.n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`,
     'trib:talk': 'Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'trib:vote': 'Votad en secreto.', 'trib:rev': V.inf ? (V.caught ? `${nm(V.inf)} ha sido desenmascarado.` : `El infiltrado era ${nm(V.inf)}. Y se ha salido con la suya.`) : '',
-    'senal:talk': V.acc ? `El club señala a ${nm(V.acc)}. ${V.accTxt}. Tiene la palabra.` : '', 'senal:vote': '¿Absolver o condenar? Votad.', 'senal:rev': V.acc ? `${nm(V.acc)} queda ${V.cond ? 'condenado' : 'absuelto'}.` : '',
-    purga: V.out ? `Ha llegado la purga. ${V.out.map(nm).join(' y ')} ${V.out.length === 1 ? 'cae' : 'caen'}. La invitación no garantiza la permanencia.` : '',
+    'senal:talk': V.acc ? (V.accRaw && /^\{n\} /.test(V.accRaw) ? `El club señala a ${nm(V.acc)}. Se le acusa de esto: ${accBare(V.accRaw)} Tiene la palabra.` : `El club señala a ${nm(V.acc)}. ${V.accTxt} Tiene la palabra.`) : '', 'senal:vote': '¿Absolver o condenar? Votad.', 'senal:rev': V.acc ? `${nm(V.acc)} queda ${V.cond ? 'condenado' : 'absuelto'}.` : '',
+    purga: V.out ? `Ha llegado la purga. ${V.out.map(p => nm(p) + ' cae.').join(' ')} La invitación no garantiza la permanencia.` : '',
     'cere:awards': V.aw ? `${V.aw.t}. ${nm(V.aw.pid)}.` : '', 'cere:pvote': 'Queda un último secreto. Toda la noche, el Presidente ha movido los hilos desde dentro. ¿Quién es? Votad.', 'cere:prev': V.pres ? `El Presidente se revela. Durante toda la noche, el Presidente en la sombra era… ${nm(V.pres)}. ${V.pcaught ? 'El club le ha descubierto.' : 'Y ha engañado a todo el club.'}` : '',
-    'cere:fin': `Los aspirantes al Círculo Interno son: ${(V.fin || []).map(nm).join(', ')}.`, 'cere:vote': 'Que vote el club.', 'cere:crown': V.win ? (V.hasPres ? `Damas y caballeros. El Presidente abre la última puerta. ${nm(V.win)} entra en el Círculo Interno.` : `Damas y caballeros. ${nm(V.win)} entra en el Círculo Interno.`) : ''};
+    'cere:fin': `Los aspirantes al Círculo Interno son: ${(V.fin || []).map(p => nm(p) + '.').join(' ')}`, 'cere:vote': 'Que vote el club.', 'cere:crown': V.win ? (V.hasPres ? `Damas y caballeros. El Presidente abre la última puerta. ${nm(V.win)} entra en el Círculo Interno.` : `Damas y caballeros. ${nm(V.win)} entra en el Círculo Interno.`) : ''};
   const t = L[V.k + ':' + (V.st || '')] || L[V.k]; if (!t) return;
   if (V.k === 'call') SFX.bell(2); if (V.k === 'purga' || (V.k === 'trib' && V.st === 'rev')) SFX.boom(); if (V.st === 'crown'){ SFX.drum(12); setTimeout(() => SFX.gold(), 1100); setTimeout(() => SFX.applause(4), 1500); } if (V.k === 'cere' && V.st === 'awards'){ SFX.drum(6); setTimeout(() => SFX.fanfare(), 600); } if (V.st === 'pvote') SFX.heart(4); if (V.st === 'prev'){ SFX.drum(14); setTimeout(() => SFX.stinger(), 1300); }
   setTimeout(() => say(t, null, EPIC), V.st === 'crown' ? 1600 : V.st === 'prev' ? 1200 : 500); }
@@ -4275,11 +4276,13 @@ function vzLines(){ const L = []; const add = (...t) => t.forEach(x => x && L.pu
     'Algunos miembros acaban de recibir una oferta del Presidente. Una oferta… irrechazable.', 'Algunos miembros han recibido una invitación exclusiva. Tendrán que colaborar.',
     'Atención, miembros del club. Hay un infiltrado entre vosotros. Primera pista.', 'Nueva pista sobre el infiltrado.', 'El infiltrado está en esta sala.', 'Prueba final.', 'Siguiente prueba:', 'El Presidente dice:');
   RANKS.slice(1).forEach(R => add(`A partir de ahora es… ${R.n}.`));
+  add('Se le acusa de esto:'); ACCUSATIONS.forEach(a => /^\{n\} /.test(a) && add(accBare(a)));
+  add('Simón dice:'); MEM_COLORS.forEach(c => add(`toca el ${c[0].toUpperCase()}.`));
   vzClues().forEach(t => add(`El infiltrado ${t}.`));
   Object.values(GAMES).forEach(g => g && g.name && add(g.name.replace(/[¿?:]/g, '') + '.'));
   ['El más sociable', 'El más ambicioso', 'El banquero', 'El mejor competidor', 'El mejor estratega', 'El mejor infiltrado', 'El más activo'].forEach(t => add(t + '.'));
   names.forEach(n => add(`${n}.`, `${n} asciende.`, `${n} ha sido desenmascarado.`, `El infiltrado era ${n}. Y se ha salido con la suya.`, `El club señala a ${n}.`, `${n} queda condenado.`, `${n} queda absuelto.`,
-    `Ha llegado la purga. ${n} cae. La invitación no garantiza la permanencia.`, `${n} entra en el Círculo Interno.`, `El Presidente concede su favor a ${n}.`, `El Presidente se revela. Durante toda la noche, el Presidente en la sombra era… ${n}.`));
+    `Ha llegado la purga. ${n} cae. La invitación no garantiza la permanencia.`, `${n} cae.`, `${n} entra en el Círculo Interno.`, `El Presidente concede su favor a ${n}.`, `El Presidente se revela. Durante toda la noche, el Presidente en la sombra era… ${n}.`));
   const seen = new Set(), out = []; L.forEach(t => { const k = vzNorm(t); if (!seen.has(k)){ seen.add(k); out.push(k); } }); return out; }
 async function vzPrepare(onp){ await vzDB(); const c = vzCfg(); const all = vzLines(); const todo = all.filter(p => !vzFresh(p)); VZ.stop = false; VZ.busy = true; let done = 0, fail = 0, err = '';
   const run = async () => { while (todo.length && !VZ.stop){ const p = todo.shift(); try { const b = await vzFetch(p, c); await vzPut(vzKey(p, c), b); } catch (e) { fail++; err = e.message || String(e); if (e.status === 401 || e.status === 402 || /quota|credit|limit/i.test(err)) VZ.stop = true; } done++; onp && onp(done, done + todo.length, fail, err); } };
