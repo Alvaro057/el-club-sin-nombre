@@ -1207,6 +1207,31 @@ setInterval(() => { try { if (window.speechSynthesis && speechSynthesis.paused) 
 // tiempo aproximado que tarda la voz en decir una frase (para cuando no hay voz)
 function estSpeak(t){ const w = String(t || '').split(/\s+/).filter(Boolean).length; return Math.max(2600, 1300 + w * 430); }
 
+// =====================================================================
+// LA BANDA SONORA DEL CLUB · «The Glass Before The Fall»
+// Suena en bucle sin cortes en la tele durante toda la noche. Nunca se apaga:
+// donde antes paraba la música, ahora solo baja. Cuando habla el narrador, se aparta.
+// =====================================================================
+const BSO = {url: 'musica/banda-sonora.mp3', buf: null, src: null, g: null, duckG: null, want: false, loading: null, level: .55, ducked: false};
+// volumen de la música según el momento
+const BSO_LV = {lounge: .55, casino: .5, noir: .62, night: .5, low: .28};
+function bsoLoad(){ if (BSO.loading) return BSO.loading; BSO.loading = (async () => { try { const r = await fetch(BSO.url); if (!r.ok) throw new Error(r.status); const ab = await r.arrayBuffer(); BSO.buf = await new Promise((res, rej) => ac().decodeAudioData(ab, res, rej)); } catch (e) { console.warn('Banda sonora', e); BSO.buf = null; } })(); return BSO.loading; }
+async function bsoStart(){ if (!soundOn || BSO.src) return; await bsoLoad(); if (!BSO.buf || BSO.src) return; const c = ac();
+  BSO.g = c.createGain(); BSO.duckG = c.createGain(); BSO.g.gain.value = .0001; BSO.duckG.gain.value = BSO.ducked ? .38 : 1; BSO.g.connect(BSO.duckG); BSO.duckG.connect(out());
+  const s = c.createBufferSource(); s.buffer = BSO.buf; s.loop = true; s.connect(BSO.g); s.start(); BSO.src = s; BSO.g.gain.setTargetAtTime(BSO.level, c.currentTime, 1.2); }
+function bsoLevel(l){ BSO.level = l; if (BSO.g) BSO.g.gain.setTargetAtTime(Math.max(.0001, l), ac().currentTime, .8); }
+Object.assign(MUSIC, {
+  start(style){ this.play(style); },
+  play(style){ BSO.want = true; this.on = true; this.style = style || this.style; bsoLevel(BSO_LV[style] || BSO_LV.lounge); bsoStart(); },
+  set(l){ bsoLevel(Math.max(.15, (BSO_LV[this.style] || .55) * l)); },
+  // la música nunca se apaga del todo: solo baja
+  stop(){ BSO.want = true; this.on = true; bsoLevel(BSO_LV.low); bsoStart(); },
+  duck(on){ BSO.ducked = on; if (BSO.duckG) BSO.duckG.gain.setTargetAtTime(on ? .38 : 1, ac().currentTime, on ? .15 : .7); },
+});
+// los navegadores no dejan sonar nada hasta el primer toque: arrancamos en cuanto lo hay
+if (typeof document !== 'undefined' && document.addEventListener){ const kick = () => { if (document.body && document.body.classList.contains('v-tv')){ try { ac(); } catch {} MUSIC.play(MUSIC.style || 'lounge'); } };
+  ['click', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, kick, {passive: true})); }
+
 // ================= red =================
 // Cada «sala» es un canal independiente: la pública, una privada por jugador y la del director.
 // Así un jugador nunca recibe los datos privados de otro.
@@ -4245,7 +4270,7 @@ function vzSegs(text, ok = vzHas){ const full = vzNorm(text); if (ok(full)) retu
   while (i < parts.length){ let j = parts.length, hit = null; for (; j > i; j--){ const seg = parts.slice(i, j).join(' '); if (ok(seg)){ hit = seg; break; } } if (!hit) return null; out.push(hit); i = j; } return out; }
 // reproduce una lista de audios uno tras otro
 const VZP = {a: null, gen: 0};
-function vzPlay(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length) return onend && onend();
+function vzPlay(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; try { MUSIC.duck && MUSIC.duck(true); } catch {} const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length){ try { MUSIC.duck && MUSIC.duck(false); } catch {} return onend && onend(); }
     const a = new Audio(urls[i++]); a.onloadedmetadata = () => { tot += (a.duration || 0) * 1000; if (opts && opts.onDur && i === urls.length && !told){ told = true; opts.onDur(tot + (urls.length - 1) * 140); } }; VZP.a = a; a.volume = Math.min(1, (typeof VOL === 'number' ? VOL : .8) + .2); a.onended = () => setTimeout(next, 140); a.onerror = () => next(); a.play().catch(() => next()); }; next(); }
 // sustituye a la voz del navegador cuando ElevenLabs está activo
 const sayWeb = say;
