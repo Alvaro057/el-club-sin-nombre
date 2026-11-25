@@ -1092,6 +1092,8 @@ function morph(el, html){
 
 function parseHash(){ const h = location.hash.slice(1); const i = h.indexOf('?'); return {view: i < 0 ? h : h.slice(0, i), p: new URLSearchParams(i < 0 ? '' : h.slice(i + 1))}; }
 const baseURL = () => location.href.split('#')[0];
+// la sala de la fiesta tiene un código fijo para que el QR de la puerta se pueda imprimir antes
+const FIESTA_ROOM = 'CLUB12';
 
 // ================= QR =================
 function loadQR(){ return new Promise(res => { if (window.qrcode) return res(true); const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'; s.onload = () => res(true); s.onerror = () => res(false); document.head.appendChild(s); }); }
@@ -3184,7 +3186,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
   if (!C.on && !['quiz', 'quizdone', 'seen'].includes(a.a)) return false;
   const misOf = id => [activeMis(S, pid), m.side].find(x => x && x.id === +id && x.st === 'active');
   switch (a.a){
-    case 'quiz': { const Q = QK[a.k]; if (!Q) return false; if (a.skip){ m.q['_s_' + a.k] = 1; return true; } if (Q.text){ const v = String(a.v || '').trim().slice(0, 140); if (v) m.q[a.k] = v; } else if (Q.o[+a.v]) m.q[a.k] = +a.v; return true; }
+    case 'quiz': { const Q = QK[a.k]; if (!Q) return false; if (a.skip){ m.q['_s_' + a.k] = 1; return true; } if (a.other != null && !Q.text){ const v = String(a.other).trim().slice(0, 60); if (v) m.q['_o_' + a.k] = v; return true; } if (Q.text){ const v = String(a.v || '').trim().slice(0, 140); if (v) m.q[a.k] = v; } else if (Q.o[+a.v]) m.q[a.k] = +a.v; return true; }
     case 'quizdone': m.qDone = true; buildPath(S, pid); return true;
     case 'code': if (!/^\d{3}$/.test(String(a.c || ''))) { flash(S, pid, 'El código tiene 3 cifras', false); return true; } useCode(S, pid, a.c, a.mc); return true;
     case 'ans': { const x = misOf(a.mid); if (!x) return false;
@@ -3867,7 +3869,7 @@ function tvAdmision(P){ const C = P.club || {members: [], form: [], formN: 0}; c
   return `<div class="lobby adm">
     <div class="lob-l">${logoH('big')}<div class="rkick wait-k">La sala de espera</div><p class="tagline">Las puertas se abrirán pronto. Las altas esferas no se regalan: se conquistan.</p>
       <div class="join"><div class="qr" id="qr"></div><div class="jt"><span class="kick-l">Invitación privada</span><span>Escanea o entra en</span><b class="url">${esc(JOINURL.split('#')[0].replace(/^https?:\/\//, ''))}</b><span>y escribe el código</span><div class="code">${esc(P.room)}</div></div></div>
-      <div class="lob-tools"><button class="tool ${P.players.some(p => p.host) ? 'on' : 'hot'}" data-host="hostlink">👑 ${P.players.some(p => p.host) ? 'Anfitrión: ' + esc(P.players.find(p => p.host).name) : 'Enlace del anfitrión'}</button><button class="tool hot" data-host="quiz">📋 Cuestionario${C.formN ? ` · ${C.formN} respuestas` : ''}</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><button class="tool ${typeof vzCfg === 'function' && vzCfg().on ? 'on' : ''}" data-host="voz">🎤 La voz del club</button><button class="tool hot" data-host="print">🖨️ Carteles y tarjetas</button><button class="tool" data-host="editor">✏️ Personalizar pruebas</button>${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
+      <div class="lob-tools"><button class="tool ${P.players.some(p => p.host) ? 'on' : 'hot'}" data-host="hostlink">👑 ${P.players.some(p => p.host) ? 'Anfitrión: ' + esc(P.players.find(p => p.host).name) : 'Enlace del anfitrión'}</button><button class="tool hot" data-host="quiz">📋 Cuestionario${C.formN ? ` · ${C.formN} respuestas` : ''}</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><button class="tool ${typeof vzCfg === 'function' && vzCfg().on ? 'on' : ''}" data-host="voz">🎤 La voz del club</button><button class="tool hot" data-host="print">🖨️ Carteles y tarjetas</button><button class="tool" data-host="wipe">🧹 Vaciar la sala</button><button class="tool" data-host="editor">✏️ Personalizar pruebas</button>${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
     </div>
     <div class="lob-r"><div class="rkick">Miembros admitidos</div><div class="seats adm-seats ${many ? 'many' : ''}">${P.players.map(p => { const m = mem[p.pid]; return `<div class="seat ${p.on ? '' : 'off'}">${avH(p, 'xl')}<b>${esc(p.name)}</b>${m ? `<i class="crown">${m.q ? '✓ listo' : '✎ cuestionario'}</i>` : ''}${p.on ? '' : '<i class="offl">desconectado</i>'}<button class="kick" data-host="kick" data-pid="${p.pid}" title="Sacar de la sala">×</button></div>`; }).join('')}${P.players.length < 4 ? Array.from({length: 4 - P.players.length}, () => '<div class="seat empty"><span class="av xl"></span><b>…</b></div>').join('') : ''}</div>
       <div class="modes">${MODE_CARDS.map(m => `<div class="modec ${P.gm === m.gm ? 'on' : ''}" data-host="gm" data-gm="${m.gm}" role="button" tabindex="0"><span class="mic">${m.ic}</span><b>${m.t}</b><small>${m.s}</small></div>`).join('')}</div>
@@ -4026,11 +4028,11 @@ function nocheHead(me, P){ const c = me.club; const pct = c.next ? Math.min(100,
   const nx = c.rank >= 5 ? 'Has llegado a la cima del club' : c.fallen ? 'Caíste en la purga: ya no asciendes' : c.rank === 4 ? 'Siguiente: la votación final' : c.xp < c.next ? `Siguiente: ${xpLeft(c).toLocaleString('es-ES')} XP más` : !c.gateOk ? `Siguiente: la prueba, ${RANKS[c.rank].gate.toLowerCase()}` : 'A punto de ascender';
   return `<header class="phh noche2">${avH(me, 'md')}<div class="phh-n"><b>${esc(me.name)}</b><span class="rk-mini">${RANKS[c.rank].n}${c.fallen ? ' · caído' : ''}</span><div class="hxp"><i style="width:${pct}%"></i></div><span class="hxl">${P.phase === 'lobby' ? 'La noche aún no ha empezado' : nx}</span></div><div class="phh-s"><span class="fch"><b>${me.fichas}</b><small>fichas</small></span>${me.host && P.phase !== 'lobby' ? '<button class="menub" data-menu="1" aria-label="Menú del anfitrión">⋯</button>' : ''}</div></header>`; }
 // el cuestionario en el móvil, una pregunta cada vez
-function quizH(me){ const c = me.club; const q = c.q || {}; const list = QS.filter(Q => q[Q.k] == null && !q['_s_' + Q.k]);
+function quizH(me){ const c = me.club; const q = c.q || {}; const list = QS.filter(Q => q[Q.k] == null && !q['_s_' + Q.k] && !q['_o_' + Q.k]);
   if (!PH.quizGo) return `<div class="pc quizin"><div class="stampc">EXPEDIENTE</div><h2>Tu admisión</h2><p>Antes de cruzar la puerta, el club necesita conocerte. Son ${QS.length} preguntas rápidas; puedes saltarte las que quieras.</p><p class="muted">Algunas respuestas podrán aparecer durante la noche en pruebas y misiones. Nada más.</p><button class="btn gold wide huge" data-cq="go">Empezar</button><button class="lnk" data-cq="later">Ahora no</button></div>`;
   const Q = list[0]; if (!Q) return `<div class="pc quizin"><div class="stampc ok">ADMITIDO</div><h2>Expediente completo</h2><p>Bienvenido al club. Empiezas como <b>El Desconocido</b>.</p><button class="btn gold wide huge" data-cq="done">Abrir mi expediente</button></div>`;
   const i = QS.indexOf(Q) + 1; return `<div class="pc quizin"><div class="qprog"><i style="width:${Math.round((QS.length - list.length) / QS.length * 100)}%"></i></div><small class="muted">Pregunta ${i} de ${QS.length}</small><h2>${esc(Q.q)}</h2>
-    ${Q.text ? `<textarea id="cqtxt" class="field" rows="3" maxlength="140" placeholder="Escribe aquí"></textarea><button class="btn gold wide" data-cq="txt" data-k="${Q.k}">Siguiente</button>` : `<div class="qopts">${Q.o.map((o, j) => `<button class="qo" data-cq="opt" data-k="${Q.k}" data-v="${j}">${esc(o[0])}</button>`).join('')}</div>`}
+    ${Q.text ? `<textarea id="cqtxt" class="field" rows="3" maxlength="140" placeholder="Escribe aquí"></textarea><button class="btn gold wide" data-cq="txt" data-k="${Q.k}">Siguiente</button>` : `<div class="qopts">${Q.o.map((o, j) => `<button class="qo" data-cq="opt" data-k="${Q.k}" data-v="${j}">${esc(o[0])}</button>`).join('')}</div>${PH.qOther === Q.k ? `<div class="codein"><input class="field" id="cqother" maxlength="60" placeholder="Tu respuesta"><button class="btn gold" data-cq="othergo" data-k="${Q.k}">Siguiente</button></div>` : `<button class="qo qother" data-cq="other" data-k="${Q.k}">Otra respuesta…</button>`}`}
     <button class="lnk" data-cq="skip" data-k="${Q.k}">Saltar esta pregunta</button></div>`; }
 // el cuerpo del móvil en La Noche (null = lo de siempre: minijuegos)
 function nocheBody(P, me, v){ const c = me.club; const V = P.club && P.club.v;
@@ -4173,6 +4175,8 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
   if (d.cq){ const k = d.k;
     if (d.cq === 'go'){ PH.quizGo = true; return rr(); } if (d.cq === 'later'){ PH.quizLater = true; return rr(); } if (d.cq === 'resume'){ PH.quizLater = false; PH.quizGo = true; return rr(); }
     if (d.cq === 'opt') phSend({t: 'club', a: 'quiz', k, v: +d.v}); if (d.cq === 'skip') phSend({t: 'club', a: 'quiz', k, skip: 1});
+    if (d.cq === 'other'){ PH.qOther = k; return rr(); }
+    if (d.cq === 'othergo'){ const v = ($('#cqother').value || '').trim(); if (!v) return toast('Escribe tu respuesta'); PH.qOther = null; phSend({t: 'club', a: 'quiz', k, other: v}); return; }
     if (d.cq === 'txt'){ const v = ($('#cqtxt').value || '').trim(); phSend({t: 'club', a: 'quiz', k, v, skip: v ? 0 : 1}); }
     if (d.cq === 'done') phSend({t: 'club', a: 'quizdone'}); return; } }, true);
 
@@ -4185,15 +4189,21 @@ function waitRoomTick(P){ const ids = P.players.map(p => p.pid); if (!TVS.seenP)
   try { SFX.glass(); } catch {} clearTimeout(TVS.arrT); TVS.arrT = setTimeout(() => el.classList.remove('on'), 4200); }
 
 // ---- imprimibles: carteles de los espacios, tarjetas secretas y la hoja del anfitrión ----
-function printables(){ const w = window.open('', '_blank'); if (!w) return toast('Permite las ventanas emergentes para imprimir');
+// deja la sala como nueva (después de los ensayos), conservando invitados, cuestionario y enlace del anfitrión
+function salaWipe(btn){ if (btn && !btn.dataset.sure){ btn.dataset.sure = '1'; btn.textContent = 'Pulsa otra vez: se borran los jugadores y la partida'; setTimeout(() => { if (btn.isConnected){ btn.dataset.sure = ''; btn.textContent = '🧹 Vaciar la sala'; } }, 5000); return; }
+  const old = E.S; const S2 = newState(old.room, old.mode); S2.hostKey = old.hostKey; S2.gm = old.gm || 'noche'; S2.tele = old.tele; const C2 = clubInit(S2); if (old.club){ C2.form = old.club.form || []; C2.guests = old.club.guests || []; C2.cfg = old.club.cfg || C2.cfg; }
+  E.S = S2; E.rooms = {}; E.change(); toast('Sala vacía y lista para la fiesta'); }
+async function printables(){ const w = window.open('', '_blank'); if (!w) return toast('Permite las ventanas emergentes para imprimir');
+  const doorURL = linkFor('p', {mode: 'supa', room: FIESTA_ROOM, cfg: PRESET_SUPA}); let doorQR = ''; try { await loadQR(); doorQR = qrSvg(doorURL) || ''; } catch {}
+  const doorH = `<section class="sign door"><div class="dq">${doorQR || '<p>(Sin conexión no se pudo dibujar el QR)</p>'}</div><div class="sb"><div class="sk">El Club Sin Nombre</div><h1>Solo con invitación</h1><div class="rule"></div><p>Antes de cruzar la puerta, escanea este código con la cámara del móvil, elige tu nombre y responde a tu cuestionario de admisión.</p><p class="durl">${esc(doorURL.replace(/^https?:\/\//, ''))}</p></div></section>`;
   const seal = sealSVG(); const signs = [
-    ['🥂', 'El Gran Salón', 'Aquí se celebran las pruebas del club.<br>Cuando suene la campana, todos a la tele.', ''],
-    ['🍳', 'Las Cocinas', 'Algo se cuece aquí.<br>Mirad bien: el club esconde cosas.', ''],
+    ['🥂', 'El Salón', 'Aquí se celebran las pruebas del club.<br>Cuando suene la campana, todos a la tele.', ''],
+    ['🍳', 'La Cocina', 'Algo se cuece aquí.<br>Mirad bien: el club esconde cosas.', ''],
     ['🚪', 'La Trastienda', 'Asuntos que no pueden tratarse en público.<br>Entrad de uno en uno y sin que os vean.', `<div class="pass">Las contraseñas están dentro</div>`],
     ['⛔', 'Prohibido el paso', 'Zona privada.<br>Aquí no hay nada del club.', '', 'no']];
-  const signH = signs.map(([e, n, d, x, c]) => `<section class="sign ${c || ''}"><div class="sl">${seal}</div><div class="sb"><div class="sk">El Club Sin Nombre</div><h1>${n}</h1><div class="rule"></div><p>${d}</p>${x}</div></section>`).join('');
+  const signH = doorH + signs.map(([e, n, d, x, c]) => `<section class="sign ${c || ''}"><div class="sl">${seal}</div><div class="sb"><div class="sk">El Club Sin Nombre</div><h1>${n}</h1><div class="rule"></div><p>${d}</p>${x}</div></section>`).join('');
   const kinds = Object.fromEntries(Object.entries(CARD_KINDS).map(([k, v]) => [k, v]));
-  const cardH = CARDS.map(c => `<div class="card"><div class="cs">${seal}</div><small>Tarjeta secreta del club</small><b>${c.code}</b><p>Escribe este código en tu expediente:<br>«Más» → «Tarjeta secreta».<br>Solo vale una vez. Y quizá no sea buena idea contarlo…</p></div>`).join('');
+  const cardH = CARDS.map(c => `<div class="card"><div class="cs">${seal}</div><small>Tarjeta secreta del club</small><b>${c.code}</b><p>Escribe este código en tu expediente,<br>en la pestaña «Código».<br>Solo vale una vez. Y quizá no sea buena idea contarlo…</p></div>`).join('');
   const tips = {salon: HIDE_TIPS.salon.slice(), cocina: HIDE_TIPS.cocina.slice(), tras: HIDE_TIPS.tras.slice()};
   const strip = TRAS_CODES.map((c, i) => `<div class="strip"><small>La Trastienda · tira ${i + 1}</small><b>${c}</b><span>Un solo uso</span></div>`).join('');
   const bookH = `<section class="book"><div class="bk-h"><div class="bk-s">${seal}</div><div><h1>Libro de firmas de la Trastienda</h1><p>Arranca una tira solo cuando la necesites: para firmar una oferta del Presidente o si el club te encarga algo aquí. Escribe su código en tu expediente, en la pestaña «Código», y guárdatela. Cada código vale una sola vez: compartirlo no sirve de nada.</p></div></div><div class="strips">${strip}</div></section>`;
@@ -4213,7 +4223,8 @@ function printables(){ const w = window.open('', '_blank'); if (!w) return toast
     .host{width:210mm;box-sizing:border-box;padding:14mm;font-family:Arial,sans-serif;font-size:3.6mm}.host h1{font-family:Georgia,serif;font-size:7mm}.host table{width:100%;border-collapse:collapse}.host td,.host th{border:.2mm solid #bbb;padding:1.6mm 2mm;text-align:left}.pw{margin-top:6mm;font-size:5mm}
     .book{width:210mm;box-sizing:border-box;padding:12mm;page-break-after:always}.bk-h{display:flex;gap:6mm;align-items:center;margin-bottom:6mm}.bk-s svg{width:22mm;height:22mm;color:#8a6a2a}.bk-s svg text{fill:#8a6a2a!important}.book h1{font-size:8mm;margin:0;color:#173a2c}.book p{font-size:3.6mm;margin:2mm 0 0;font-style:italic}
     .strips{display:grid;grid-template-columns:repeat(4,1fr)}.strip{border:.3mm dashed #999;padding:3.2mm 2mm;text-align:center;background:#f4ecd9}.strip small{display:block;font-size:2.6mm;letter-spacing:.12em;text-transform:uppercase;color:#8a6a2a}.strip b{display:block;font-size:8mm;letter-spacing:.08em;color:#173a2c;margin:1mm 0}.strip span{font-size:2.6mm;font-style:italic;color:#555}
-    @media print{.bar{display:none}}</style></head><body><div class="bar"><b>Imprimibles del club</b><span>4 carteles · ${CARDS.length} tarjetas · libro de firmas de la Trastienda · hoja del anfitrión</span><button onclick="print()">Imprimir</button></div>
+    .door .dq{flex:none;width:80mm;height:80mm;background:#f4ead3;padding:6mm;border-radius:3mm}.door .dq svg{width:100%;height:100%}.door h1{white-space:normal!important}.door .durl{font-family:monospace;font-size:4.2mm;color:#c9a55c;margin-top:5mm;word-break:break-all}
+    @media print{.bar{display:none}}</style></head><body><div class="bar"><b>Imprimibles del club</b><span>Cartel de la puerta con QR · 4 carteles · ${CARDS.length} tarjetas · libro de firmas de la Trastienda · hoja del anfitrión</span><button onclick="print()">Imprimir</button></div>
     ${signH}<div class="cards">${cardH}</div>${bookH}${hostH}</body></html>`); w.document.close(); }
 
 // el enlace secreto del anfitrión: quien entra con él maneja la noche desde su móvil y juega como uno más
@@ -4443,8 +4454,9 @@ function landing(){
   $('#app').innerHTML = `<div class="land">${logoH('big')}<p class="tagline">Un club clandestino de juegos: la tele es la mesa y cada móvil, tu mano. Solo con invitación.</p>
     <div class="land-b"><div class="lb"><h3>Abrir en la tele</h3><p>Hazlo en el ordenador conectado a la tele.</p>
       <div class="seg"><label><input type="radio" name="mode" value="supa" checked><span>Partida normal<small>Cada uno con su móvil, en cualquier red</small></span></label><label><input type="radio" name="mode" value="local"><span>Modo ensayo<small>Todo en este ordenador, en pestañas</small></span></label></div>
-      <button class="btn gold huge wide" id="create">Abrir el club</button>${prev ? `<button class="lnk" id="resume">Volver a la sala ${esc(prev.room)}</button>` : ''}<button class="lnk" id="editp">✏️ Personalizar las pruebas</button></div>
+      <button class="btn gold huge wide" id="fiesta">Abrir la sala de la fiesta</button><small class="muted fiesta-n">Siempre la misma sala (${FIESTA_ROOM}): es la del QR de la puerta.</small><button class="btn wide" id="create">Abrir una sala nueva (para ensayar)</button>${prev ? `<button class="lnk" id="resume">Volver a la sala ${esc(prev.room)}</button>` : ''}<button class="lnk" id="editp">✏️ Personalizar las pruebas</button></div>
     <div class="lb"><h3>Unirme con el móvil</h3><p>Escanea el QR de la tele o escribe el código.</p><button class="btn huge wide" id="tojoin">Tengo un código</button></div></div></div>`;
+  $('#fiesta').onclick = () => { localStorage.setItem('ccsn-last', JSON.stringify({room: FIESTA_ROOM, mode: 'supa'})); location.hash = '#tv?r=' + FIESTA_ROOM; };
   $('#create').onclick = () => { const mode = $('input[name=mode]:checked').value; const room = newCode(); localStorage.setItem('ccsn-last', JSON.stringify({room, mode})); location.hash = '#tv?' + new URLSearchParams(Object.assign({r: room}, mode === 'local' ? {m: 'local'} : {})).toString(); };
   if (prev) $('#resume').onclick = () => { location.hash = '#tv?' + new URLSearchParams(Object.assign({r: prev.room}, prev.mode === 'local' ? {m: 'local'} : {})).toString(); };
   $('#tojoin').onclick = () => { location.hash = '#p'; };
@@ -4481,6 +4493,7 @@ function bindHost(){
     if (op === 'voz') return vozOverlay();
     if (op === 'panel') return hostPanel();
     if (op === 'print') return printables();
+    if (op === 'wipe') return salaWipe(t);
     if (op === 'hostlink') return hostLinkOverlay();
     if (op === 'start' && E.S.gm === 'noche' && pidsAll(E.S).length < 3) return toast('La Noche necesita al menos 3 miembros.');
     if (op === 'end' && !TVS.confirmEnd && E.S.phase !== 'final'){ TVS.confirmEnd = true; toast('Pulsa otra vez «Terminar» para acabar la partida'); setTimeout(() => TVS.confirmEnd = false, 3000); return; }
