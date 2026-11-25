@@ -924,6 +924,13 @@ button .ico,.gb .ico{color:inherit}
 .isc-chair{position:relative;display:grid;place-items:center}.isc-chair .ico .ic{width:22vh;height:22vh;stroke-width:1}.chair-light{position:absolute;width:40vh;height:40vh;background:radial-gradient(circle,#c9a45c33,transparent 65%);animation:breathe 3s infinite}
 .isc-candle .ico .ic{width:20vh;height:20vh;stroke-width:1;filter:drop-shadow(0 0 3vh #e6cd9255)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(2vh)}to{opacity:1;transform:none}}
+
+/* anuncios durante resultados y clasificaciones: tarjeta en la esquina, sin tapar la tabla */
+#trov.mini{inset:auto 2.5vw 3vh auto;background:none;place-items:end;pointer-events:none}
+#trov.mini .trn{max-width:30vw;text-align:left;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"who h" "who p";gap:.4vh 1.4vw;align-items:center;padding:2vh 2vw;border:1px solid var(--gold);border-radius:1.6vh;background:#0b0c0cf2;box-shadow:0 2vh 6vh #000c;animation:trmini .6s ease both}
+#trov.mini .trni{display:none}#trov.mini .trn h2{grid-area:h;font-size:3.6vh;margin:0;color:var(--gold2)}#trov.mini .trn p{grid-area:p;font-size:2.2vh;max-width:none;margin:0}
+#trov.mini .trwho{grid-area:who;margin:0;opacity:1;animation:none}#trov.mini .trwho b{display:none}#trov.mini .trwho .av.xl{width:9vh;height:9vh;font-size:4.4vh}
+@keyframes trmini{from{opacity:0;transform:translateY(3vh)}to{opacity:1;transform:none}}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -3927,13 +3934,16 @@ function tvIntroScene(P, V){ const C = P.club; const ps = P.players; let art = '
 // anuncios (ascensos, acontecimientos): solo entre pruebas, nunca en mitad de un juego
 function clubAnnTick(E, P){ const el = $('#trov'); if (!el) return; const C = P.club;
   if (TVS.annShow && Date.now() > TVS.annShow.until){ const S = E.S; if (S.club && S.club.ann.length && S.club.ann[0].id === TVS.annShow.id) S.club.ann.shift(); TVS.annShow = null; el.classList.remove('on'); E.change(); return; }
-  if (TVS.annShow || !C || !C.ann) return;
+  if (TVS.annShow && !['lobby', 'club', 'res', 'rank', 'final'].includes(P.phase)){ el.classList.remove('on'); return; }
+  if (TVS.annShow){ if (!el.classList.contains('on') && ['lobby', 'club', 'res', 'rank', 'final'].includes(P.phase)) el.classList.add('on'); return; }
+  if (!C || !C.ann) return;
   const ok = ['lobby', 'club', 'res', 'rank', 'final'].includes(P.phase); if (!ok || $('#tvstart')) return;
   const a = C.ann; let N;
   if (a.k === 'rank'){ const p = pOf(P, a.pid); const R = RANKS[a.r]; N = {ic: R.ic, h: R.n, p: `${p.name} asciende en el club.`, who: p, say: `${p.name} asciende. A partir de ahora es… ${R.n}.`, ms: 7000, snd: 'gold'}; }
   else N = {ic: a.ic, h: a.h, p: a.p, say: a.say || a.h, ms: a.ms || 10000, snd: 'stinger'};
+  const mini = ['res', 'rank'].includes(P.phase); el.classList.toggle('mini', mini);
   TVS.annShow = {id: a.id, until: Date.now() + N.ms};
-  if (P.phase === 'rank' && !E.S.pause) E.S.ends = Math.max(E.S.ends, vnow(E.S) + N.ms + 1000);
+  if (P.phase === 'rank' && !E.S.pause) E.S.ends = Math.max(E.S.ends, vnow(E.S) + Math.min(N.ms, 4000));
   el.innerHTML = `<div class="trn k-${a.k}"><div class="trni">${N.ic}</div><h2>${esc(N.h)}</h2><p>${esc(N.p)}</p>${N.who ? `<div class="trwho" style="animation-delay:.6s">${avH(N.who, 'xl')}<b>${esc(N.who.name)}</b></div>` : ''}</div>`;
   el.classList.add('on'); try { SFX[N.snd](); } catch {} if (a.k === 'rank') try { MUSIC.swell(N.ms); } catch {} setTimeout(() => say(N.say, null, a.k === 'rank' ? Object.assign({}, EPIC, {lightDuck: true}) : EPIC), 600); }
 // la voz del club en cada momento
