@@ -1214,7 +1214,7 @@ function estSpeak(t){ const w = String(t || '').split(/\s+/).filter(Boolean).len
 // =====================================================================
 const BSO = {url: 'musica/banda-sonora.mp3', buf: null, src: null, g: null, duckG: null, want: false, loading: null, level: .55, ducked: false};
 // volumen de la música según el momento
-const BSO_LV = {lounge: .55, casino: .5, noir: .62, night: .5, low: .28};
+const BSO_LV = {lounge: .55, casino: .5, noir: .62, night: .5, low: .16};
 function bsoLoad(){ if (BSO.loading) return BSO.loading; BSO.loading = (async () => { try { const r = await fetch(BSO.url); if (!r.ok) throw new Error(r.status); const ab = await r.arrayBuffer(); BSO.buf = await new Promise((res, rej) => ac().decodeAudioData(ab, res, rej)); } catch (e) { console.warn('Banda sonora', e); BSO.buf = null; } })(); return BSO.loading; }
 async function bsoStart(){ if (!soundOn || BSO.src) return; await bsoLoad(); if (!BSO.buf || BSO.src) return; const c = ac();
   BSO.g = c.createGain(); BSO.duckG = c.createGain(); BSO.g.gain.value = .0001; BSO.duckG.gain.value = BSO.ducked ? .38 : 1; BSO.g.connect(BSO.duckG); BSO.duckG.connect(out());
@@ -1226,7 +1226,9 @@ Object.assign(MUSIC, {
   set(l){ bsoLevel(Math.max(.15, (BSO_LV[this.style] || .55) * l)); },
   // la música nunca se apaga del todo: solo baja
   stop(){ BSO.want = true; this.on = true; bsoLevel(BSO_LV.low); bsoStart(); },
-  duck(on){ BSO.ducked = on; if (BSO.duckG) BSO.duckG.gain.setTargetAtTime(on ? .38 : 1, ac().currentTime, on ? .15 : .7); },
+  // los ascensos se celebran: la música sube un momento
+  swell(ms = 7000){ const back = BSO.level; bsoLevel(Math.min(.85, back + .3)); clearTimeout(BSO.swT); BSO.swT = setTimeout(() => bsoLevel(back), ms); },
+  duck(on, light){ BSO.ducked = on; if (BSO.duckG) BSO.duckG.gain.setTargetAtTime(on ? (light ? .7 : .38) : 1, ac().currentTime, on ? .15 : .7); },
 });
 // los navegadores no dejan sonar nada hasta el primer toque: arrancamos en cuanto lo hay
 if (typeof document !== 'undefined' && document.addEventListener){ const kick = () => { if (document.body && document.body.classList.contains('v-tv')){ try { ac(); } catch {} MUSIC.play(MUSIC.style || 'lounge'); } };
@@ -1821,7 +1823,7 @@ function hostCmd(S, op, a = {}){
       if (e === 'trib' && !S.club.inf.pid) return false; S.club.dir.blocks.splice(S.club.dir.bi + 1, 0, map[e]); nextBlock(S); return true; }
     case 'ncere': if (!S.club || !S.club.on || S.phase === 'final') return false; { const D = S.club.dir; const i = D.blocks.findIndex(b => b.k === 'cere'); D.bi = i - 1; S.g = null; S.inter = false; if (S.pause){ S.pacc += NOW() - S.pause.at; S.pause = null; } nextBlock(S); } return true;
     case 'presmode': if (S.phase !== 'lobby') return false; { const C = clubInit(S); C.presOff = a.mode !== 'pres'; C.noHost = a.mode === 'direct'; } return true;
-    case 'cfg': if (S.phase !== 'lobby') return false; { const C = clubInit(S); if (Array.isArray(a.xp) && a.xp.length === 6) C.cfg.xp = a.xp.map(x => Math.max(0, +x || 0)); ['games', 'ops', 'inter'].forEach(k => { if (a[k] != null) C.cfg[k] = Math.max(1, Math.min(90, +a[k] || C.cfg[k])); }); } return true;
+    case 'cfg': if (S.phase !== 'lobby') return false; { const C = clubInit(S); if (Array.isArray(a.xp) && a.xp.length === 6) C.cfg.xp = a.xp.map(x => Math.max(0, +x || 0)); ['games', 'ops', 'inter', 'brief'].forEach(k => { if (a[k] != null) C.cfg[k] = Math.max(1, Math.min(90, +a[k] || C.cfg[k])); }); } return true;
     case 'guests': { const C = clubInit(S); if (!Array.isArray(a.names)) return false; C.guests = [...new Set(a.names.map(n => String(n).trim().slice(0, 14)).filter(Boolean))].slice(0, 40); return true; }
     case 'form': { const C = clubInit(S); if (!Array.isArray(a.form)) return false; C.form = a.form.slice(0, 40); pidsAll(S).forEach(p => { const m = cm(S, p); const row = C.form.find(f => normTxt(f.name) === normTxt(S.players[p].name)); if (m && row && !m.qDone){ m.q = Object.assign({}, row.a); m.qDone = true; C.claimed[normTxt(row.name)] = p; buildPath(S, p); } }); return true; }
     case 'inter': if (S.club && S.club.on && S.phase === 'club' && S.club.v && S.club.v.k === 'inter'){ nextBlock(S); return true; } if (!S.inter){ S.inter = true; if (!S.pause && !['lobby', 'final'].includes(S.phase)){ S.pause = {at: NOW()}; S.interPaused = true; } } else { S.inter = false; if (S.interPaused && S.pause){ S.pacc += NOW() - S.pause.at; S.pause = null; } S.interPaused = false; } return true;
@@ -2955,7 +2957,7 @@ const RANKS = [
   {n: 'La Élite', ic: '💎', gate: 'La votación final'},
   {n: 'El Círculo Interno', ic: '👁️', gate: ''},
 ];
-const CLUB_CFG = {xp: [0, 400, 1200, 2300, 3700, 5200], games: 3, ops: 14, inter: 30};
+const CLUB_CFG = {xp: [0, 400, 1200, 2300, 3700, 5200], games: 3, ops: 14, inter: 30, brief: 3};
 const PLACE_XP = [160, 120, 95, 80, 70, 60, 50, 45, 40, 35];
 
 // ---------- el cuestionario ----------
@@ -3314,12 +3316,12 @@ const introSay = (S, i) => INTRO[i].say.replace('{n}', memberIds(S).length);
 const introMs = (S, i) => Math.round(estSpeak(introSay(S, i)) / EPIC_RATE) + (i === 0 ? 3500 : 2200);
 const EPIC_RATE = .86;
 const NIGHT = () => [
-  {k: 'intro', n: 'La escena de introducción'},
+  {k: 'intro', n: 'La escena de introducción'}, {k: 'brief', n: 'Vuestro expediente'},
   {k: 'conv', n: 'Primera convocatoria'}, {k: 'ops', n: 'Operaciones clandestinas', ev: 'offer'}, {k: 'conv', n: 'Segunda convocatoria', force: ['subasta']}, {k: 'pres'},
   {k: 'ops', n: 'Operaciones', infil: true, ev: 'invite'}, {k: 'conv', n: 'La caída de la bolsa', casino: true}, {k: 'trib'}, {k: 'inter'},
   {k: 'conv', n: 'Tercera convocatoria', infil: true}, {k: 'senal'}, {k: 'ops', n: 'Operaciones', ev: 'offer'}, {k: 'trib'}, {k: 'purga'}, {k: 'conv', n: 'Última convocatoria', last: true}, {k: 'cere'},
 ];
-const BLOCK_NAMES = {intro: 'La escena de introducción', conv: 'Convocatoria', ops: 'Operaciones', pres: 'Mensaje del Presidente', trib: 'El Tribunal', inter: 'Intermedio', senal: 'El miembro señalado', purga: 'La purga', cere: 'Ceremonia final'};
+const BLOCK_NAMES = {intro: 'La escena de introducción', brief: 'Vuestro expediente', conv: 'Convocatoria', ops: 'Operaciones', pres: 'Mensaje del Presidente', trib: 'El Tribunal', inter: 'Intermedio', senal: 'El miembro señalado', purga: 'La purga', cere: 'Ceremonia final'};
 const blockName = B => B ? (B.n || BLOCK_NAMES[B.k]) : '';
 function nocheStart(S){ const C = clubInit(S); C.on = true; C.dir = {bi: -1, blocks: NIGHT()}; pidsAll(S).forEach(p => { const m = clubMember(S, p); S.players[p].pts = 0; S.players[p].fichas = 8; S.players[p].wins = 0; S.players[p].stats = {}; m.side = null; m.sideAt = 0; m.inbox = []; if (m.qDone) buildPath(S, p); });
   S.hist = []; S.gres = null; S.award = null; S.prevRank = rankOrder(S); feed(S, 'Se abren las puertas del club', '🚪'); nextBlock(S); }
@@ -3330,6 +3332,7 @@ function nextBlock(S){ const C = S.club; const D = C.dir; D.bi++; const B = D.bl
     case 'intro': C.v = {k: 'intro', si: 0, t0: v, t1: v + introMs(S, 0), B}; S.phase = 'club'; S.ends = C.v.t1; return;
     case 'conv': { C.v = {k: 'call', t0: v, t1: v + 15000, B}; S.phase = 'club'; S.phAt = v; S.ends = v + 15000; return; }
     case 'ops': { if (D.blocks.slice(0, D.bi).some(b => b.k === 'ops')) unlock(S, 'fichas'); const min = C.cfg.ops; C.v = {k: 'ops', t0: v, t1: v + min * 60000, B, evAt: v + min * 30000}; S.phase = 'club'; S.phAt = v; S.ends = C.v.t1; return; }
+    case 'brief': C.v = {k: 'brief', t0: v, t1: v + (C.cfg.brief || 3) * 60000, B}; S.phase = 'club'; S.ends = C.v.t1; return;
     case 'inter': C.v = {k: 'inter', t0: v, t1: v + C.cfg.inter * 60000, B}; S.phase = 'club'; S.inter = true; S.ends = C.v.t1; return;
     case 'pres': eventPresident(S); C.v = {k: 'pres', t0: v, t1: v + 16000, B}; S.phase = 'club'; S.ends = C.v.t1; return;
     case 'trib': return tribStart(S, B);
@@ -3383,7 +3386,7 @@ function clubTick(S){ const C = S.club; if (!C || !C.on) return false; let ch = 
   switch (V.k){
     case 'call': if (v >= V.t1){ convStart(S, V.B); ch = true; } break;
     case 'ops': if (V.evAt && v >= V.evAt){ V.evAt = 0; if (V.B.ev === 'offer') eventOffer(S); if (V.B.ev === 'invite') eventInvite(S); infPublicClue(S); ch = true; } if (v >= V.t1){ nextBlock(S); ch = true; } break;
-    case 'inter': case 'pres': if (v >= V.t1){ nextBlock(S); ch = true; } break;
+    case 'inter': case 'pres': case 'brief': if (v >= V.t1){ nextBlock(S); ch = true; } break;
     case 'purga': if (v >= V.t1){ nextBlock(S); ch = true; } break;
     case 'trib': case 'senal': ch = voteTick(S, V, v) || ch; break;
     case 'cere': ch = cereTick(S, V, v) || ch; break;
@@ -3458,7 +3461,7 @@ function clubPub(S){ const C = S.club; if (!C) return null; const V = C.v; const
   if (V){ const base = {k: V.k, st: V.st, t0: V.t0, t1: V.t1, title: V.title, q: V.q};
     if (V.k === 'call') pub.v = Object.assign(base, {n: blockName(V.B)});
     else if (V.k === 'intro') pub.v = Object.assign(base, {si: V.si, sn: INTRO.length, sc: INTRO[V.si].v, h: INTRO[V.si].h, say: introSay(S, V.si)});
-    else if (V.k === 'ops' || V.k === 'inter' || V.k === 'pres') pub.v = Object.assign(base, {n: blockName(V.B)});
+    else if (V.k === 'ops' || V.k === 'inter' || V.k === 'pres' || V.k === 'brief') pub.v = Object.assign(base, {n: blockName(V.B)});
     else if (V.k === 'purga') pub.v = Object.assign(base, {out: V.out, saved: V.saved});
     else if (V.k === 'trib' || V.k === 'senal') pub.v = Object.assign(base, {acc: V.acc, accTxt: V.accTxt, accRaw: V.accRaw, cands: V.cands, voted: Object.keys(V.votes), voters: V.voters, tally: V.st === 'rev' ? V.tally : null, caught: V.st === 'rev' ? V.caught : null, inf: V.st === 'rev' ? V.inf : null, cond: V.st === 'rev' ? V.cond : null, clues: V.k === 'trib' ? C.inf.clues.slice(0, C.inf.pubN) : null});
     else if (V.k === 'cere') pub.v = Object.assign(base, {pres: V.st === 'prev' ? V.pres : null, pcaught: V.st === 'prev' ? V.pcaught : null, ptally: V.st === 'prev' ? V.ptally : null, pvoted: Object.keys(V.pvotes || {}), hasPres: !!V.pres,aw: V.awards[Math.min(V.ai, V.awards.length - 1)], ai: V.ai, an: V.awards.length, fin: V.fin, voted: Object.keys(V.votes), tally: V.st === 'crown' || V.st === 'end' ? tally(V) : null, win: V.win || null, scores: Object.fromEntries(V.fin.map(p => [p, clubScore(S, p)]))});
@@ -3872,6 +3875,7 @@ function orderBox(P){ const O = P.club && P.club.order; if (!O) return ''; retur
 function tvClub(P, v){ const C = P.club; const V = C && C.v; if (!V) return '';
   switch (V.k){
     case 'intro': return tvIntroScene(P, V);
+    case 'brief': return `<div class="ccall brief"><div class="bell">📱</div><div class="rkick">Antes de empezar</div><h1>Abrid vuestro expediente</h1><p>Mirad el móvil: el club os explica cómo funciona vuestro expediente. La primera convocatoria empieza en</p><div class="bigcd">${cdH(P, V.t1)}</div></div>`;
     case 'call': return `<div class="ccall"><div class="bell">🔔</div><div class="rkick">Convocatoria</div><h1>${esc(V.n)}</h1><p>Todos los miembros, a la tele. Los minijuegos empiezan en</p><div class="bigcd">${cdH(P, V.t1)}</div></div>`;
     case 'ops': case 'pres': case 'inter': return `<div class="chub"><div class="chub-h"><div><div class="rkick">${V.k === 'pres' ? 'Comunicado oficial' : 'Tiempo de operaciones'}</div><h1>${esc(V.n || '')}</h1><p>${V.k === 'pres' ? 'El Presidente ha hablado.' : 'Levantaos, buscaos, negociad. Vuestras misiones están en el expediente del móvil.'}</p></div><div class="chub-cd"><small>${C.next ? 'Después: ' + esc(C.next) : ''}</small>${cdH(P, V.t1)}</div></div>
       <div class="chub-b"><div class="chub-l">${orderBox(P)}${infBox(P)}${feedH(P)}</div>${pubRanking(P)}</div></div>`;
@@ -3931,7 +3935,7 @@ function clubAnnTick(E, P){ const el = $('#trov'); if (!el) return; const C = P.
   TVS.annShow = {id: a.id, until: Date.now() + N.ms};
   if (P.phase === 'rank' && !E.S.pause) E.S.ends = Math.max(E.S.ends, vnow(E.S) + N.ms + 1000);
   el.innerHTML = `<div class="trn k-${a.k}"><div class="trni">${N.ic}</div><h2>${esc(N.h)}</h2><p>${esc(N.p)}</p>${N.who ? `<div class="trwho" style="animation-delay:.6s">${avH(N.who, 'xl')}<b>${esc(N.who.name)}</b></div>` : ''}</div>`;
-  el.classList.add('on'); try { SFX[N.snd](); } catch {} setTimeout(() => say(N.say, null, EPIC), 600); }
+  el.classList.add('on'); try { SFX[N.snd](); } catch {} if (a.k === 'rank') try { MUSIC.swell(N.ms); } catch {} setTimeout(() => say(N.say, null, a.k === 'rank' ? Object.assign({}, EPIC, {lightDuck: true}) : EPIC), 600); }
 // la voz del club en cada momento
 const accBare = raw => String(raw).replace(/^\{n\}\s*/, '');
 function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) return; const V = C.v;
@@ -3939,7 +3943,7 @@ function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) r
   const k = V.k + ':' + (V.st || '') + ':' + V.t0; if (TVS.cSaid === k) return; TVS.cSaid = k;
   if (V.k === 'intro'){ const fx = {pres: () => SFX.heart(3), house: () => SFX.cards(), city: () => { SFX.bell(1); }, logo: () => SFX.stinger(), guests: () => SFX.glass(), ranks: () => SFX.reveal(), phone: () => SFX.tap(), code: () => SFX.coin(), tv: () => SFX.bell(2), danger: () => SFX.heart(3), purga: () => SFX.boom(), circle: () => { SFX.drum(10); setTimeout(() => SFX.gold(), 1000); }}; try { (fx[V.sc] || (() => {}))(); } catch {} setTimeout(() => say(V.say, null, Object.assign({}, EPIC, {onDur: ms => { try { const S = __E.S, W = S.club && S.club.v; if (W && W.k === 'intro' && W.si === V.si){ const end = vnow(S) + ms + 1600; if (end > W.t1){ W.t1 = end; S.ends = end; __E.change(); } } } catch {} }})), V.si === 0 ? 1800 : 700); return; }
   const nm = p => pOf(P, p).name;
-  const L = {call: `Convocatoria. ${V.n}. Todos los miembros, a la tele.`, ops: `${V.n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`,
+  const L = {brief: 'Abrid vuestro expediente. Tenéis unos minutos para leerlo antes de la primera convocatoria.', call: `Convocatoria. ${V.n}. Todos los miembros, a la tele.`, ops: `${V.n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`,
     'trib:talk': 'Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'trib:vote': 'Votad en secreto.', 'trib:rev': V.inf ? (V.caught ? `${nm(V.inf)} ha sido desenmascarado.` : `El infiltrado era ${nm(V.inf)}. Y se ha salido con la suya.`) : '',
     'senal:talk': V.acc ? (V.accRaw && /^\{n\} /.test(V.accRaw) ? `El club señala a ${nm(V.acc)}. Se le acusa de esto: ${accBare(V.accRaw)} Tiene la palabra.` : `El club señala a ${nm(V.acc)}. ${V.accTxt} Tiene la palabra.`) : '', 'senal:vote': '¿Absolver o condenar? Votad.', 'senal:rev': V.acc ? `${nm(V.acc)} queda ${V.cond ? 'condenado' : 'absuelto'}.` : '',
     purga: V.out ? `Ha llegado la purga. ${V.out.map(p => nm(p) + ' cae.').join(' ')} La invitación no garantiza la permanencia.` : '',
@@ -3977,10 +3981,10 @@ function formAutoLoad(){ const u = localStorage.getItem('ccsn-csv'); if (!u) ret
 function cfgOverlay(){ const el = ovEl(); const c = (E.S.club && E.S.club.cfg) || CLUB_CFG;
   el.innerHTML = `<div class="co-in cfgov"><h2>⚙️ Ajustes de la noche</h2><p class="note">Experiencia necesaria para cada rango (además de su prueba de ascenso).</p>
     <div class="cfg-r">${RANKS.map((R, i) => `<label>${R.ic} ${R.n}<input type="number" class="field" data-xp="${i}" value="${c.xp[i]}" ${i === 0 ? 'disabled' : ''}></label>`).join('')}</div>
-    <div class="cfg-r"><label>Minijuegos por convocatoria<input type="number" class="field" id="cg" value="${c.games}" min="1" max="6"></label><label>Minutos de operaciones<input type="number" class="field" id="co" value="${c.ops}" min="3" max="40"></label><label>Minutos de intermedio<input type="number" class="field" id="ci" value="${c.inter}" min="5" max="90"></label></div>
+    <div class="cfg-r"><label>Minijuegos por convocatoria<input type="number" class="field" id="cg" value="${c.games}" min="1" max="6"></label><label>Minutos de operaciones<input type="number" class="field" id="co" value="${c.ops}" min="3" max="40"></label><label>Minutos de intermedio<input type="number" class="field" id="ci" value="${c.inter}" min="5" max="90"></label><label>Minutos para leer el expediente<input type="number" class="field" id="cbf" value="${c.brief || 3}" min="1" max="10"></label></div>
     <p class="note">La noche dura unas 3 horas y media con estos valores. El anfitrión puede adelantar o alargar cualquier momento desde el panel.</p>
     <div class="co-b"><button class="btn" data-c="close">Cerrar</button><button class="btn gold" data-c="save">Guardar</button></div></div>`;
-  el.onclick = e => { const b = e.target.closest('[data-c]'); if (!b) return; if (b.dataset.c === 'save'){ E.host('cfg', {xp: $$('[data-xp]', el).map(i => +i.value), games: +$('#cg').value, ops: +$('#co').value, inter: +$('#ci').value}); toast('Ajustes guardados'); } el.remove(); }; }
+  el.onclick = e => { const b = e.target.closest('[data-c]'); if (!b) return; if (b.dataset.c === 'save'){ E.host('cfg', {xp: $$('[data-xp]', el).map(i => +i.value), games: +$('#cg').value, ops: +$('#co').value, inter: +$('#ci').value, brief: +$('#cbf').value}); toast('Ajustes guardados'); } el.remove(); }; }
 function hostPanel(){ const el = $('#hostov'); const S = E.S; const C = S.club;
   if (!C || !C.on){ toast('El panel funciona durante La Noche del Club'); return; }
   const P = pubView(S); const nm = p => esc(S.players[p].name);
@@ -4044,7 +4048,8 @@ function expH(P, me){ const c = me.club; let tab = PH.tab || 'path'; if (!['path
   if (tab === 'fichas' && !fOn) tab = 'path';
   const tabs = `<nav class="etabs2 t${fOn ? 4 : 3}">${[['path', 'Camino'], ['code', 'Código'], fOn ? ['fichas', 'Fichas'] : null, ['club', 'Club']].filter(Boolean).map(([k, t]) => `<button class="${tab === k ? 'on' : ''}" data-tab="${k}">${t}${k === 'path' && nIn ? '<em></em>' : ''}</button>`).join('')}</nav>`;
   if (PH.tut == null){ try { PH.tut = phStore().getItem('ccsn-tut') === '1' ? 9 : 0; } catch { PH.tut = 9; } }
-  if (PH.tut < 3 && c.qDone) return tutH(PH.tut);
+  const introDone = P.club && P.club.on && !(P.club.v && P.club.v.k === 'intro');
+  if (PH.tut < 3 && introDone) return tutH(PH.tut);
   const body = tab === 'code' ? codeH(P, me) : tab === 'fichas' ? fichasH(P, me) : tab === 'club' ? clubH(P, me, tOn) : pathH(P, me);
   const lobby = me.host && P.phase === 'lobby' ? `${modeSel(P)}<button class="btn gold wide" data-hop="start" ${P.players.length < 3 ? 'disabled' : ''}>Abrir la noche (${P.players.length} miembros)</button>${P.mode === 'local' ? '<button class="lnk" data-hop="bots" data-n="3">Añadir 3 miembros de prueba</button>' : ''}` : '';
   return `<div class="pc exp2">${body}${lobby}</div>${tabs}`; }
@@ -4270,7 +4275,7 @@ function vzSegs(text, ok = vzHas){ const full = vzNorm(text); if (ok(full)) retu
   while (i < parts.length){ let j = parts.length, hit = null; for (; j > i; j--){ const seg = parts.slice(i, j).join(' '); if (ok(seg)){ hit = seg; break; } } if (!hit) return null; out.push(hit); i = j; } return out; }
 // reproduce una lista de audios uno tras otro
 const VZP = {a: null, gen: 0};
-function vzPlay(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; try { MUSIC.duck && MUSIC.duck(true); } catch {} const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length){ try { MUSIC.duck && MUSIC.duck(false); } catch {} return onend && onend(); }
+function vzPlay(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; try { MUSIC.duck && MUSIC.duck(true, opts && opts.lightDuck); } catch {} const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length){ try { MUSIC.duck && MUSIC.duck(false); } catch {} return onend && onend(); }
     const a = new Audio(urls[i++]); a.onloadedmetadata = () => { tot += (a.duration || 0) * 1000; if (opts && opts.onDur && i === urls.length && !told){ told = true; opts.onDur(tot + (urls.length - 1) * 140); } }; VZP.a = a; a.volume = Math.min(1, (typeof VOL === 'number' ? VOL : .8) + .2); a.onended = () => setTimeout(next, 140); a.onerror = () => next(); a.play().catch(() => next()); }; next(); }
 // sustituye a la voz del navegador cuando ElevenLabs está activo
 const sayWeb = say;
@@ -4293,6 +4298,7 @@ function vzClues(){ const S = window.__E && __E.S; const out = new Set(); const 
 // todas las frases de la noche, en orden de importancia (si se acaban los créditos, lo primero ya está)
 function vzLines(){ const L = []; const add = (...t) => t.forEach(x => x && L.push(x)); const names = vzNames();
   INTRO.forEach(s => add(s.say));
+  add('Abrid vuestro expediente. Tenéis unos minutos para leerlo antes de la primera convocatoria.');
   NIGHT().forEach(B => { const n = blockName(B); if (B.k === 'conv') add(`Convocatoria. ${n}. Todos los miembros, a la tele.`); if (B.k === 'ops') add(`${n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`); });
   add('Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'Votad en secreto.', '¿Absolver o condenar? Votad.', 'Tiene la palabra.',
     'Queda un último secreto. Toda la noche, el Presidente ha movido los hilos desde dentro. ¿Quién es? Votad.', 'El club le ha descubierto.', 'Y ha engañado a todo el club.',
