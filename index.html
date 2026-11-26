@@ -1045,6 +1045,7 @@ button .ico,.gb .ico{color:inherit}
 .bk-list time{font-family:var(--disp);font-style:normal;font-size:2vh;color:#6b1a2c;min-width:5ch}.bk-list li.empty{opacity:.55;border:0}
 .bk-foot{position:absolute;left:4vw;right:4vw;bottom:4vh;text-align:center;font-style:italic;opacity:.5;font-size:2vh}
 .inf-steps{margin:6px 0 10px;padding-left:20px}.inf-steps li{margin:6px 0;line-height:1.35}.inf-steps li.ok{opacity:.6}
+.cas-mis{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;border:1px dashed rgba(201,164,92,.5);border-radius:10px;padding:8px 10px;margin:4px 0 10px;font-size:14px}.cas-mis b{width:100%;font-size:12px;color:var(--gold2);font-family:var(--body);font-weight:600}.cas-mis span{flex:1}.cas-mis em{font-style:normal;color:var(--gold2)}.cas-mis.ok{opacity:.7;border-style:solid}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -4787,7 +4788,7 @@ const CAS_SAY = 'El casino de la Trastienda está abierto. Quien quiera jugar, y
 const casSeated = S => S.cas ? Object.keys(S.cas.seats).filter(p => S.players[p]) : [];
 // el casino es un secreto hasta que termina la primera convocatoria de minijuegos
 function casOpenNow(S){ const C = S.club; return !!(C && C.on && S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k) && C.dir && C.dir.blocks.slice(0, C.dir.bi).some(b => b.k === 'conv')); }
-const CAS_FIRST = {ic: '🎰', h: 'El casino abre sus puertas', p: 'En la Trastienda hay un casino. Buscad el código en su pantalla y apostad vuestras fichas.', say: 'Una cosa más. En la Trastienda, el club ha abierto un casino. Desde ahora, las fichas se pueden multiplicar… o perder.'};
+const CAS_FIRST = {ic: '🎰', h: 'El casino abre sus puertas', p: 'En la Trastienda hay un casino. Cada uno tiene una misión allí: mirad vuestro expediente.', say: 'Una cosa más. En la Trastienda, el club ha abierto un casino. Cada uno de vosotros tiene una misión allí dentro. Las fichas se pueden multiplicar… o perder.'};
 function casRefund(S){ const X = S.cas; if (!X || !X.g) return; const g = X.g; if (g.k === 'blackjack' && ['play', 'bank'].includes(g.st)) Object.entries(g.bets).forEach(([p, b]) => addFichas(S, p, b)); if (g.k === 'ruleta' && g.st === 'spin') Object.entries(g.bets).forEach(([p, b]) => { if (b.ret) addFichas(S, p, b.ret); }); }
 function casTick(S){ const v = vnow(S);
   if (!casOpenNow(S)){ if (S.cas){ casRefund(S); S.cas = null; return true; } return false; }
@@ -4804,6 +4805,7 @@ function casTick(S){ const v = vnow(S);
       if (done){ const g = X.g; const big = casBig(S, g); if (big) X.hist.unshift(big); X.hist = X.hist.slice(0, 4);
         // tope de ganancias por apertura: quien gana demasiado se queda sin crédito hasta la siguiente
         X.net ||= {}; X.cut ||= {}; Object.entries(casNet(g)).forEach(([p, d]) => { const room = CAS_WIN_CAP - (X.net[p] || 0); if (d > 0 && d > room){ const back = d - Math.max(0, room); addFichas(S, p, -back); d -= back; typeof flash === 'function' && flash(S, p, `La banca solo paga hasta ${CAS_WIN_CAP} fichas por apertura: te quedas con ${Math.max(0, d)} de este premio.`, false); } X.net[p] = (X.net[p] || 0) + d; if (X.net[p] >= CAS_WIN_CAP && !X.cut[p]){ X.cut[p] = 1; delete X.seats[p]; typeof flash === 'function' && flash(S, p, `La banca te ha cortado el crédito: ya has ganado ${X.net[p]} fichas. Vuelve en la próxima apertura.`, false); } });
+        casMisHand(S, g);
         X.g = null; X.n++; X.nextAt = v + 3000; if (X.n >= CAS_HANDS){ X.n = 0; X.ti = (X.ti + 1) % CAS_TABLES.length; X.nextAt = v + 6000; X.changed = v; } }
     } finally { CAS_ON = null; } }
   let after = JSON.stringify(X); if (X.g && X.g.k === 'tragaperras') after += Math.floor(v / 700);
@@ -4885,13 +4887,13 @@ async function bootCasino(ctx, p){ CV.view = p.get('v') || ''; document.body.cla
 // ---- el móvil ----
 function casPhoneH(P, me, v){ const X = P.cas, M = me.cas; const def = GAMES[X.k];
   const key = X.k + ':' + X.hand + ':' + (X.gp ? 'g' : 'w'); if (key !== PH.caskey){ PH.caskey = key; const b = PH.gs && PH.gs.bet; PH.gs = {}; if (b) PH.gs.bet = b; }
-  const head = `<div class="cas-ph-h"><span>${X.icon} ${esc(X.name)}</span><b>${me.fichas}<i class="coin"></i></b><button class="lnk" data-cas="leave">Levantarse</button></div>`;
+  const head = `<div class="cas-ph-h"><span>${X.icon} ${esc(X.name)}</span><b>${me.fichas}<i class="coin"></i></b><button class="lnk" data-cas="leave">Levantarse</button></div>${casMisH(me)}`;
   let body;
   if (X.gp && M.gm){ const gp = X.gp; const timed = gp.t1 && ['q', 'bet'].includes(gp.st) && !def.fast; body = `${timed ? barH(gp.t0, gp.t1) : ''}${def.ph(P, gp, M.gm, me, v)}`; }
   else body = waitPh(X.icon, 'La próxima mano empieza enseguida. Mira la mesa en la tele');
   return `<div class="pc game g-${X.k} cas-ph">${head}${body}</div>`; }
-function casBannerH(P){ return `<div class="cas-ban"><b>🎰 Casino abierto en la Trastienda</b><div class="codein"><input class="field" id="cascode" autocapitalize="characters" autocomplete="off" placeholder="C0000"><button class="btn gold" data-cas="join">Entrar</button></div></div>`; }
-{ const _nb = nocheBody; nocheBody = function(P, me, v){ if (P.cas && me.cas){ if (me.cas.seated) return casPhoneH(P, me, v); const r = _nb(P, me, v); return r == null || me.club.vote || !me.club.qDone ? r : casBannerH(P) + r; } return _nb(P, me, v); }; }
+function casBannerH(P, me){ return `<div class="cas-ban"><b>🎰 Casino abierto en la Trastienda</b>${me ? casMisH(me) : ''}<div class="codein"><input class="field" id="cascode" autocapitalize="characters" autocomplete="off" placeholder="C0000"><button class="btn gold" data-cas="join">Entrar</button></div></div>`; }
+{ const _nb = nocheBody; nocheBody = function(P, me, v){ if (P.cas && me.cas){ if (me.cas.seated) return casPhoneH(P, me, v); const r = _nb(P, me, v); return r == null || me.club.vote || !me.club.qDone ? r : casBannerH(P, me) + r; } return _nb(P, me, v); }; }
 document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-cas]'); if (!t) return;
   if (t.dataset.cas === 'leave'){ phSend({t: 'cas', a: 'leave'}); return; }
   const inp = $('#cascode'); let c = (inp && inp.value || '').trim().toUpperCase().replace(/\s+/g, ''); if (/^\d{4}$/.test(c)) c = 'C' + c; if (!/^C\d{4}$/.test(c)) return toast('El código del casino es una C y cuatro cifras: míralo en la pantalla de la Trastienda'); phSend({t: 'cas', a: 'join', c}); inp.value = ''; });
@@ -4940,6 +4942,23 @@ const ENC_ANN = {k: 'msg', ic: '🚪', h: 'Movimiento en la Trastienda', p: 'Hac
     const free = pool.filter(p => !cm(S, p).side || cm(S, p).side.st !== 'active'); const busy = pool.filter(p => !free.includes(p) && !/^f/.test(cm(S, p).side.ty));
     free.concat(busy).slice(0, Math.min(4, Math.max(3, Math.floor(pool.length / 3)))).forEach(p => { const m = cm(S, p); m.side = mkMission(S, p, 'room'); m.sideAt = NOW(); flash(S, p, '📜 Nueva misión secundaria: visita la Trastienda'); }); }; }
 document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-gotras]'); if (!t) return; PH.tab = 'club'; PH.more = 'tras'; PH.lastHTML = ''; phRender(); });
+
+// ================= la misión del casino: todos tienen una =================
+const CAS_MIS = [
+  {k: 'hands3', t: 'Juega 3 manos en el casino', xp: 120, n: 3},
+  {k: 'win1', t: 'Gana una mano en el casino', xp: 150, n: 1},
+  {k: 'num', t: 'Apuesta a un número en la ruleta', xp: 130, n: 1},
+  {k: 'bj', t: 'Juega una mano de blackjack', xp: 120, n: 1},
+  {k: 'slot', t: 'Tira de la palanca de la tragaperras', xp: 110, n: 1},
+];
+function casMisAssign(S){ const C = S.club; let ch = false; memberIds(S).forEach(p => { const m = cm(S, p); if (!m || m.cmis) return; const d = pick(CAS_MIS); m.cmis = {k: d.k, t: d.t, xp: d.xp, n: d.n, got: 0, st: 'active'}; flash(S, p, '🎰 Tienes una misión en el casino: ' + d.t); ch = true; }); return ch; }
+function casMisHand(S, g){ const who = new Set(Object.keys(g.k === 'ruleta' ? g.bets : g.k === 'blackjack' ? g.bets : g.spins)); const net = casNet(g);
+  who.forEach(p => { const m = cm(S, p); const x = m && m.cmis; if (!x || x.st !== 'active') return; let inc = 0;
+    if (x.k === 'hands3') inc = 1; else if (x.k === 'win1') inc = (net[p] || 0) > 0 ? 1 : 0; else if (x.k === 'num') inc = g.k === 'ruleta' && g.bets[p] && g.bets[p].t === 'num' ? 1 : 0; else if (x.k === 'bj') inc = g.k === 'blackjack' ? 1 : 0; else if (x.k === 'slot') inc = g.k === 'tragaperras' ? 1 : 0;
+    if (!inc) return; x.got += inc; if (x.got >= x.n){ x.st = 'done'; m.st.miss++; giveXP(S, p, x.xp, 'Misión del casino'); flash(S, p, `🎰 Misión del casino cumplida: +${x.xp} XP`); } }); }
+{ const _ct = casTick; casTick = function(S){ let ch = _ct(S); if (S.cas && casMisAssign(S)) ch = true; return ch; }; }
+{ const _mv2 = meView; meView = function(S, pid){ const M = _mv2(S, pid); const m = S.club && cm(S, pid); if (M && !M.gone && m && m.cmis) M.cmis = m.cmis; return M; }; }
+const casMisH = me => { const x = me.cmis; if (!x) return ''; return x.st === 'done' ? `<div class="cas-mis ok">🎰 Misión del casino cumplida · +${x.xp} XP</div>` : `<div class="cas-mis"><b>Tu misión en el casino</b><span>${esc(x.t)}${x.n > 1 ? ` · ${x.got} de ${x.n}` : ''}</span><em>+${x.xp} XP</em></div>`; };
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
