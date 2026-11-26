@@ -931,6 +931,18 @@ button .ico,.gb .ico{color:inherit}
 #trov.mini .trni{display:none}#trov.mini .trn h2{grid-area:h;font-size:3.6vh;margin:0;color:var(--gold2)}#trov.mini .trn p{grid-area:p;font-size:2.2vh;max-width:none;margin:0}
 #trov.mini .trwho{grid-area:who;margin:0;opacity:1;animation:none}#trov.mini .trwho b{display:none}#trov.mini .trwho .av.xl{width:9vh;height:9vh;font-size:4.4vh}
 @keyframes trmini{from{opacity:0;transform:translateY(3vh)}to{opacity:1;transform:none}}
+
+/* fotos */
+.ftprev{display:flex;flex-direction:column;gap:12px;padding-top:14px}.ftprev img{width:100%;max-height:58vh;object-fit:contain;border-radius:12px;border:1px solid var(--line);background:#000}
+.albshow{position:relative;border:1px solid var(--line);border-radius:1.4vh;overflow:hidden;background:#050606;aspect-ratio:4/3;margin-bottom:2vh}.albshow.empty{display:none}
+.albh{position:absolute;top:1.2vh;left:1.4vw;z-index:3;font-family:var(--disp);font-size:2vh;color:var(--gold2);letter-spacing:.08em;text-shadow:0 1px 4px #000}
+.albf{position:absolute;inset:0}.albf figure{position:absolute;inset:0;margin:0;opacity:0;transition:opacity 1.2s ease}.albf figure.on{opacity:1}
+.albf img{width:100%;height:100%;object-fit:contain;background:#050606}.albf figcaption,.albgrid figcaption{position:absolute;left:0;right:0;bottom:0;padding:2vh 1.4vw 1.2vh;background:linear-gradient(transparent,#000c);display:flex;justify-content:space-between;gap:1vw;font-size:1.8vh}
+.albf figcaption b,.albgrid figcaption b{color:var(--gold2);font-family:var(--disp)}.albf figcaption span,.albgrid figcaption span{color:var(--cream)}
+
+.albov{max-width:none}.albgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(14vw,1fr));gap:1vw;max-height:62vh;overflow:auto}.albgrid figure{position:relative;margin:0;aspect-ratio:1;border-radius:1vh;overflow:hidden;border:1px solid var(--line)}.albgrid img{width:100%;height:100%;object-fit:cover}.albgrid figcaption{font-size:1.4vh}
+.inter-cols .albshow{aspect-ratio:auto;height:50vh}
+.nf-r .albshow{aspect-ratio:auto;height:32vh;margin-top:2vh}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -1833,6 +1845,7 @@ function hostCmd(S, op, a = {}){
     case 'ncere': if (!S.club || !S.club.on || S.phase === 'final') return false; { const D = S.club.dir; const i = D.blocks.findIndex(b => b.k === 'cere'); D.bi = i - 1; S.g = null; S.inter = false; if (S.pause){ S.pacc += NOW() - S.pause.at; S.pause = null; } nextBlock(S); } return true;
     case 'presmode': if (S.phase !== 'lobby') return false; { const C = clubInit(S); C.presOff = a.mode !== 'pres'; C.noHost = a.mode === 'direct'; } return true;
     case 'cfg': if (S.phase !== 'lobby') return false; { const C = clubInit(S); if (Array.isArray(a.xp) && a.xp.length === 6) C.cfg.xp = a.xp.map(x => Math.max(0, +x || 0)); ['games', 'ops', 'inter', 'brief'].forEach(k => { if (a[k] != null) C.cfg[k] = Math.max(1, Math.min(90, +a[k] || C.cfg[k])); }); } return true;
+    case 'fotook': return S.club ? clubFotoOk(S, a.pid, a.mid, a.mt) : false;
     case 'guests': { const C = clubInit(S); if (!Array.isArray(a.names)) return false; C.guests = [...new Set(a.names.map(n => String(n).trim().slice(0, 14)).filter(Boolean))].slice(0, 40); return true; }
     case 'form': { const C = clubInit(S); if (!Array.isArray(a.form)) return false; C.form = a.form.slice(0, 40); pidsAll(S).forEach(p => { const m = cm(S, p); const row = C.form.find(f => normTxt(f.name) === normTxt(S.players[p].name)); if (m && row && !m.qDone){ m.q = Object.assign({}, row.a); m.qDone = true; C.claimed[normTxt(row.name)] = p; buildPath(S, p); } }); return true; }
     case 'inter': if (S.club && S.club.on && S.phase === 'club' && S.club.v && S.club.v.k === 'inter'){ nextBlock(S); return true; } if (!S.inter){ S.inter = true; if (!S.pause && !['lobby', 'final'].includes(S.phase)){ S.pause = {at: NOW()}; S.interPaused = true; } } else { S.inter = false; if (S.interPaused && S.pause){ S.pacc += NOW() - S.pause.at; S.pause = null; } S.interPaused = false; } return true;
@@ -3065,7 +3078,7 @@ const activeMis = (S, pid) => { const m = cm(S, pid); return m && m.node >= 0 ? 
 
 // ---------- misiones ----------
 const MIS_INFO = {
-  mix: {cat: 'Romper el hielo', ic: '🤝', xp: 160}, duelwin: {cat: 'Riesgo', ic: '⚔️', xp: 220}, contact: {cat: 'Contactos', ic: '🤝', xp: 130}, contact_any: {cat: 'Contactos', ic: '🤝', xp: 100}, ask: {cat: 'Investigación', ic: '🔎', xp: 150}, findwho: {cat: 'Investigación', ic: '🔎', xp: 170},
+  mix: {cat: 'Romper el hielo', ic: '🤝', xp: 160}, fportada: {cat: 'Fotos', ic: '🎬', xp: 180}, fpeligro: {cat: 'Fotos', ic: '🎬', xp: 120}, fraro: {cat: 'Fotos', ic: '🎬', xp: 120}, fperju: {cat: 'Fotos', ic: '🎬', xp: 120}, ffuma: {cat: 'Fotos', ic: '🎬', xp: 120}, fcome: {cat: 'Fotos', ic: '🎬', xp: 110}, duelwin: {cat: 'Riesgo', ic: '⚔️', xp: 220}, contact: {cat: 'Contactos', ic: '🤝', xp: 130}, contact_any: {cat: 'Contactos', ic: '🤝', xp: 100}, ask: {cat: 'Investigación', ic: '🔎', xp: 150}, findwho: {cat: 'Investigación', ic: '🔎', xp: 170},
   pair: {cat: 'Contactos', ic: '👥', xp: 210}, anecdote: {cat: 'Investigación', ic: '📜', xp: 150}, fragment: {cat: 'Códigos', ic: '🧩', xp: 220}, duel: {cat: 'Riesgo', ic: '⚔️', xp: 160},
   trade: {cat: 'Mercado de favores', ic: '🤝', xp: 130}, alliance: {cat: 'Alianzas', ic: '🫱🏻‍🫲🏼', xp: 220}, influence: {cat: 'Influencia', ic: '🗳️', xp: 90}, risk: {cat: 'Riesgo', ic: '🎲', xp: 0},
   betpod: {cat: 'Riesgo', ic: '🪙', xp: 120}, podium: {cat: 'Habilidad', ic: '🏆', xp: 220}, win: {cat: 'Habilidad', ic: '🥇', xp: 260}, arma: {cat: 'Riesgo', ic: '🎭', xp: 190},
@@ -3082,6 +3095,12 @@ function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[t
   const answered = k => memberIds(S).filter(p => p !== pid && cm(S, p).q[k] != null);
   switch (ty){
     case 'contact': { const t = pickT(unmetOnline(S, pid)) || pickT(othersOnline(S, pid)); if (!t) return mkMission(S, pid, 'influence', gate); return Object.assign(base, {tg: t, need: 'code', t: `Contacto con ${nm(t)}`, d: `Busca a ${nm(t)}, preséntate como miembro del club y pídele su código de encuentro.`}); }
+    case 'fportada': return Object.assign(base, {need: 'photo', poster: 1, t: 'La portada de película', d: 'Hazte una foto con tres personas posando como en el cartel de una película. El club le pondrá el título: «Gente anormal: el misterio».'});
+    case 'fpeligro': return Object.assign(base, {need: 'photo', t: 'El más peligroso', d: 'Hazle una foto a la persona que parezca más peligrosa del club. Que no sospeche nada.'});
+    case 'fraro': return Object.assign(base, {need: 'photo', t: 'El objeto más raro', d: 'Encuentra el objeto más raro de la casa y hazle una foto.'});
+    case 'fperju': return Object.assign(base, {need: 'photo', t: 'El que acabará peor', d: 'Hazte una foto con la persona que crees que irá más perjudicada a lo largo de la noche.'});
+    case 'ffuma': return Object.assign(base, {need: 'photo', free: 1, t: 'Los fumadores', d: 'Hazte una foto con gente que esté fumando. Si no hay nadie, cambia de misión gratis.'});
+    case 'fcome': return Object.assign(base, {need: 'photo', t: 'El hambriento', d: 'Hazle una foto a alguien comiendo algo. Cuanto más pillado, mejor.'});
     case 'mix': return Object.assign(base, {need: 'code2', codes: [], n: 3, t: 'Rompe el hielo', d: 'Habla con tres personas con las que todavía no hayas hablado esta noche. Preséntate, pregúntales algo y registra sus códigos de encuentro.'});
     case 'duelwin': return Object.assign(base, {need: 'duel', t: 'Gana un duelo', d: 'Reta a alguien a un duelo cara a cara y gánalo. Se hace desde la pestaña «Fichas» → «Retar a un duelo».'});
     case 'contact_any': return Object.assign(base, {need: 'code', t: 'Una cara nueva', d: 'Habla con alguien con quien todavía no hayas hablado esta noche y registra su código de encuentro.'});
@@ -3111,8 +3130,11 @@ function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[t
     case 'final': return Object.assign(base, {need: 'final', t: 'Las altas esferas', d: 'Ya eres de la Élite. En la ceremonia final, el club elegirá quién entra en el Círculo Interno. Mientras tanto, sigue sumando.'});
   }
   return null; }
-const SIDE_POOL = ['contact_any', 'influence', 'ask', 'findwho', 'risk', 'betpod', 'anecdote', 'win', 'room', 'hunt', 'hunt'];
-const SIDE_LIM = {influence: 3, risk: 2, betpod: 3, contact_any: 6, win: 2, trade: 2, room: 1, hunt: 3};
+const SIDE_POOL = ['fportada', 'fpeligro', 'fraro', 'fperju', 'ffuma', 'fcome', 'fportada', 'fpeligro', 'fraro', 'fcome', 'contact_any', 'influence', 'ask', 'findwho', 'risk', 'betpod', 'anecdote', 'win', 'room', 'hunt', 'hunt'];
+const SIDE_LIM = {fportada: 1, fpeligro: 1, fraro: 1, fperju: 1, ffuma: 1, fcome: 1, influence: 3, risk: 2, betpod: 3, contact_any: 6, win: 2, trade: 2, room: 1, hunt: 3};
+// la tele confirma que la foto de una misión ha llegado entera al álbum
+function clubFotoOk(S, pid, mid, mt){ const m = cm(S, pid); if (!m) return false; const x = [activeMis(S, pid), m.side].find(y => y && y.id === +mid && y.st === 'active' && y.need === 'photo');
+  m.st.fotos = (m.st.fotos || 0) + 1; if (x){ feed(S, `${S.players[pid].name} ha añadido una foto al álbum`, '🎬'); misDone(S, pid, x); } else flash(S, pid, 'Foto guardada en el álbum del club'); return true; }
 function newSide(S, pid){ const m = cm(S, pid); const pool = shuffle(SIDE_POOL).filter(t => (m.lim[t] || 0) < (SIDE_LIM[t] || 4));
   for (const ty of pool){ const x = mkMission(S, pid, ty, false); if (x && x.ty === ty){ m.side = x; return; } } m.side = null; }
 
@@ -3221,7 +3243,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
       if (me.fichas < n){ flash(S, pid, 'No tienes tantas fichas', false); return true; } if ((m.lim.send || 0) >= 6){ flash(S, pid, 'Has llegado al máximo de envíos de esta noche', false); return true; }
       m.lim.send = (m.lim.send || 0) + 1; me.fichas -= n; meet(S, pid, t); const id = C.nid++; C.trades[id] = {a: pid, b: t, n, st: 'wait'}; pushInbox(S, t, {k: 'trade', t: `${me.name} te envía ${n} fichas`, d: 'Acéptalas si es lo que habíais acordado.', tid: id}); flash(S, pid, `Enviadas ${n} fichas a ${S.players[t].name}. Tiene que aceptarlas.`); return true; }
     case 'buy': { const it = MARKET.find(x => x.k === a.k); if (!it) return false; const can = it.can(S, pid); if (can !== true){ flash(S, pid, can, false); return true; } if (me.fichas < it.cost){ flash(S, pid, 'No tienes fichas suficientes', false); return true; } me.fichas -= it.cost; it.buy(S, pid); return true; }
-    case 'reroll': { const x = misOf(a.mid); if (!x) return false; const free = x.tg && !isOn(S, x.tg); if (!free){ if (me.fichas < 2){ flash(S, pid, 'Cambiar de misión cuesta 2 fichas', false); return true; } me.fichas -= 2; }
+    case 'reroll': { const x = misOf(a.mid); if (!x) return false; const free = (x.tg && !isOn(S, x.tg)) || x.free; if (!free){ if (me.fichas < 2){ flash(S, pid, 'Cambiar de misión cuesta 2 fichas', false); return true; } me.fichas -= 2; }
       if (m.side === x){ newSide(S, pid); return true; } const N = m.path[m.node]; N.mis = mkMission(S, pid, N.gate ? N.ty : pick(['contact', 'ask', 'findwho', 'contact_any', 'influence']), N.gate) || mkMission(S, pid, 'contact_any', N.gate); return true; }
     case 'card': { if (me.host){ flash(S, pid, 'Tú escondiste las tarjetas: el anfitrión no puede canjearlas. ¡Déjalas para los demás!', false); return true; } const code = String(a.c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); const K = CARDS.find(c => c.code.replace('-', '') === code); if (!K){ flash(S, pid, 'Ese código no corresponde a ninguna tarjeta del club', false); return true; }
       C.found ||= {}; if (C.found[K.code]){ flash(S, pid, C.found[K.code] === pid ? 'Ya canjeaste esta tarjeta' : 'Alguien se te adelantó: esta tarjeta ya se usó', false); return true; }
@@ -3550,7 +3572,7 @@ class Engine {
     setInterval(() => this.loop(), 100);
     this.publish(true);
   }
-  async attach(pid){ const p = this.S.players[pid]; if (!p || p.bot || (this.rooms[pid] && this.rooms[pid]._tok === p.tok)) return; const old = this.rooms[pid]; if (old) try { old.setKey('me', {gone: true, moved: true, ts: Date.now()}); } catch {} const r = this.hub.room(roomPlayer(this.ctx.room, p.tok)); r._tok = p.tok; this.rooms[pid] = r; await r.ready(); r.onActions(a => { if (a.tok !== p.tok) return; if (playerAct(this.S, pid, a)) this.change(); }); }
+  async attach(pid){ const p = this.S.players[pid]; if (!p || p.bot || (this.rooms[pid] && this.rooms[pid]._tok === p.tok)) return; const old = this.rooms[pid]; if (old) try { old.setKey('me', {gone: true, moved: true, ts: Date.now()}); } catch {} const r = this.hub.room(roomPlayer(this.ctx.room, p.tok)); r._tok = p.tok; this.rooms[pid] = r; await r.ready(); r.onActions(a => { if (a.tok === p.tok && a.t === 'foto' && typeof ftRecv === 'function') return ftRecv(this, pid, a); if (a.tok !== p.tok) return; if (playerAct(this.S, pid, a)) this.change(); }); }
   handlePub(a){
     if (a.t !== 'join' || !a.tok) return;
     const r = joinPlayer(this.S, a);
@@ -3869,7 +3891,7 @@ function tvAdmision(P){ const C = P.club || {members: [], form: [], formN: 0}; c
   return `<div class="lobby adm">
     <div class="lob-l">${logoH('big')}<div class="rkick wait-k">La sala de espera</div><p class="tagline">Las puertas se abrirán pronto. Las altas esferas no se regalan: se conquistan.</p>
       <div class="join"><div class="qr" id="qr"></div><div class="jt"><span class="kick-l">Invitación privada</span><span>Escanea o entra en</span><b class="url">${esc(JOINURL.split('#')[0].replace(/^https?:\/\//, ''))}</b><span>y escribe el código</span><div class="code">${esc(P.room)}</div></div></div>
-      <div class="lob-tools"><button class="tool ${P.players.some(p => p.host) ? 'on' : 'hot'}" data-host="hostlink">👑 ${P.players.some(p => p.host) ? 'Anfitrión: ' + esc(P.players.find(p => p.host).name) : 'Enlace del anfitrión'}</button><button class="tool hot" data-host="quiz">📋 Cuestionario${C.formN ? ` · ${C.formN} respuestas` : ''}</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><button class="tool ${typeof vzCfg === 'function' && vzCfg().on ? 'on' : ''}" data-host="voz">🎤 La voz del club</button><button class="tool hot" data-host="print">🖨️ Carteles y tarjetas</button><button class="tool" data-host="wipe">🧹 Vaciar la sala</button><button class="tool" data-host="editor">✏️ Personalizar pruebas</button>${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
+      <div class="lob-tools"><button class="tool ${P.players.some(p => p.host) ? 'on' : 'hot'}" data-host="hostlink">👑 ${P.players.some(p => p.host) ? 'Anfitrión: ' + esc(P.players.find(p => p.host).name) : 'Enlace del anfitrión'}</button><button class="tool hot" data-host="quiz">📋 Cuestionario${C.formN ? ` · ${C.formN} respuestas` : ''}</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><button class="tool ${typeof vzCfg === 'function' && vzCfg().on ? 'on' : ''}" data-host="voz">🎤 La voz del club</button><button class="tool hot" data-host="print">🖨️ Carteles y tarjetas</button><button class="tool" data-host="album">🎬 El álbum</button><button class="tool" data-host="wipe">🧹 Vaciar la sala</button><button class="tool" data-host="editor">✏️ Personalizar pruebas</button>${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
     </div>
     <div class="lob-r"><div class="rkick">Miembros admitidos</div><div class="seats adm-seats ${many ? 'many' : ''}">${P.players.map(p => { const m = mem[p.pid]; return `<div class="seat ${p.on ? '' : 'off'}">${avH(p, 'xl')}<b>${esc(p.name)}</b>${m ? `<i class="crown">${m.q ? '✓ listo' : '✎ cuestionario'}</i>` : ''}${p.on ? '' : '<i class="offl">desconectado</i>'}<button class="kick" data-host="kick" data-pid="${p.pid}" title="Sacar de la sala">×</button></div>`; }).join('')}${P.players.length < 4 ? Array.from({length: 4 - P.players.length}, () => '<div class="seat empty"><span class="av xl"></span><b>…</b></div>').join('') : ''}</div>
       <div class="modes">${MODE_CARDS.map(m => `<div class="modec ${P.gm === m.gm ? 'on' : ''}" data-host="gm" data-gm="${m.gm}" role="button" tabindex="0"><span class="mic">${m.ic}</span><b>${m.t}</b><small>${m.s}</small></div>`).join('')}</div>
@@ -3908,8 +3930,8 @@ function tvClub(P, v){ const C = P.club; const V = C && C.v; if (!V) return '';
   return ''; }
 function tvNocheFinal(P){ const F = P.club.final; const W = F.find(x => x.rank === 5) || F[0];
   return `<div class="nfinal"><div class="champ">${W ? `<div class="crownbig">👁️</div>${avH(pOf(P, W.pid), 'xxl')}<h1>${esc(pOf(P, W.pid).name)}</h1><p>${RANKS[W.rank].n}</p>` : ''}</div>
-    <div class="nf-r"><div class="ftab"><div class="ct-h"><span>La jerarquía final</span><small>La Noche del Club</small></div>${F.map((x, i) => { const p = pOf(P, x.pid); return `<div class="frow ${x.fallen ? 'fallen' : ''}"><span>${i + 1}</span>${avH(p, 'sm')}<b>${esc(p.name)}</b>${rankH(x.rank, 'sm')}<em class="fch">${x.xp.toLocaleString('es-ES')} XP</em></div>`; }).join('')}</div></div>
-    <div class="again"><button class="btn gold" data-host="lobby">Volver a la sala del club</button></div></div>`; }
+    <div class="nf-r"><div class="ftab"><div class="ct-h"><span>La jerarquía final</span><small>La Noche del Club</small></div>${F.map((x, i) => { const p = pOf(P, x.pid); return `<div class="frow ${x.fallen ? 'fallen' : ''}"><span>${i + 1}</span>${avH(p, 'sm')}<b>${esc(p.name)}</b>${rankH(x.rank, 'sm')}<em class="fch">${x.xp.toLocaleString('es-ES')} XP</em></div>`; }).join('')}</div>${albShowH()}</div>
+    <div class="again"><button class="btn gold" data-host="album">Ver el álbum</button><button class="btn gold" data-host="lobby">Volver a la sala del club</button></div></div>`; }
 
 // la escena de introducción: una diapositiva por momento, con narración
 function tvIntroScene(P, V){ const C = P.club; const ps = P.players; let art = '';
@@ -3968,7 +3990,7 @@ function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) r
 const INTER_LINES = ['El club se toma un respiro.', 'Que no falte nada en las copas.', 'Momento para la cena… y para las conspiraciones.', 'Las paredes del club oyen. Hablad bajo.', 'En cuanto el anfitrión lo diga, seguimos.'];
 function interH(P){ const line = INTER_LINES[Math.floor(Date.now() / 12000) % INTER_LINES.length]; const C = P.club;
   const right = C && C.on ? pubRanking(P, 10) : (() => { const cas = P.gm === 'casino'; const rows = P.players.slice().sort((a, b) => cas ? b.fichas - a.fichas : b.pts - a.pts).slice(0, 10); return `<div class="clubt"><div class="ct-h"><span>Así va la partida</span></div>${rows.map((p, i) => `<div class="ct-r ${i === 0 ? 'top' : ''}"><i>${i + 1}</i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${cas ? p.fichas : p.pts}</em></div>`).join('')}</div>`; })();
-  return `<div class="inter-in"><div class="inter-top">${logoH('big')}<div><h1>Intermedio</h1><p>${line}</p></div></div><div class="inter-cols">${C && C.on ? `<div>${infBox(P)}${feedH(P)}</div>` : ''}${right}</div><div class="inter-hint"><button class="btn gold" data-host="inter">Seguir con la noche</button><span>o desde el menú del móvil del anfitrión</span></div></div>`; }
+  return `<div class="inter-in"><div class="inter-top">${logoH('big')}<div><h1>Intermedio</h1><p>${line}</p></div></div><div class="inter-cols">${C && C.on ? `<div>${albShowH()}${infBox(P)}</div>` : ''}${right}</div><div class="inter-hint"><button class="btn gold" data-host="inter">Seguir con la noche</button><span>o desde el menú del móvil del anfitrión</span></div></div>`; }
 function interTick(P){ const el = $('#interov'); if (!el) return; el.classList.toggle('on', !!P.inter);
   if (P.inter){ const h = interH(P); if (h !== TVS.interH){ TVS.interH = h; el.innerHTML = h; } if (!TVS.interOn){ TVS.interOn = true; MUSIC.play('lounge'); say('Intermedio. El club se toma un respiro.', null, {rate: .9, pitch: .7}); } }
   else if (TVS.interOn){ TVS.interOn = false; TVS.interH = ''; TVS.lastPhase = null; } }
@@ -4037,6 +4059,7 @@ function quizH(me){ const c = me.club; const q = c.q || {}; const list = QS.filt
 // el cuerpo del móvil en La Noche (null = lo de siempre: minijuegos)
 function nocheBody(P, me, v){ const c = me.club; const V = P.club && P.club.v;
   const inGame = ['wheel', 'intro', 'rules', 'count', 'play', 'res', 'rank'].includes(P.phase);
+  if (!inGame && !c.vote){ const fh = typeof ftPhoneH === 'function' && ftPhoneH(); if (fh) return fh; }
   if (!c.qDone && !inGame && !PH.quizLater) return quizH(me);
   if (P.club.noHost && me.host) return directH(P, me);
   if (PH.desp && c.isPres) return despH(P, me);
@@ -4138,13 +4161,15 @@ function misCard(P, me, x, side){ if (!x) return ''; const c = me.club; const id
     case 'claim': ui = x.wait ? '<p class="muted">Esperando a que lo confirme…</p>' : cxB({a: 'claim', mid: id}, '🎭 ¡Hecho! Que lo confirme', 'btn gold wide'); break;
     case 'card': ui = `<button class="btn wide" data-tab="code">Escribir el código de una tarjeta</button>`; break;
     case 'duel': case 'trade': ui = `<button class="btn wide" data-tab="fichas">Ir a ${x.need === 'duel' ? 'Retar a un duelo' : 'Enviar fichas'}</button>`; break;
+    case 'photo': ui = `<button class="btn gold wide" data-ftgo="${id}" data-mt="${esc(x.t)}" data-poster="${x.poster ? 1 : 0}">Hacer la foto</button>`; break;
     case 'wait': ui = '<p class="muted">Se resuelve en el próximo minijuego.</p>'; break;
     case 'auto': ui = '<p class="muted">Se comprueba solo.</p>'; break;
   }
-  const reroll = x.tg && !x.tgOn ? cxB({a: 'reroll', mid: id}, `${esc(x.tgName)} no está conectado: cambiar de misión (gratis)`, 'lnk') : !['auto', 'final', 'wait'].includes(x.need) ? cxB({a: 'reroll', mid: id}, 'Cambiar de misión (2 fichas)', 'lnk') : '';
+  const reroll = x.tg && !x.tgOn ? cxB({a: 'reroll', mid: id}, `${esc(x.tgName)} no está conectado: cambiar de misión (gratis)`, 'lnk') : !['auto', 'final', 'wait'].includes(x.need) ? cxB({a: 'reroll', mid: id}, x.free ? 'Cambiar de misión (gratis)' : 'Cambiar de misión (2 fichas)', 'lnk') : '';
   return `<div class="mis ${side ? 'side' : ''} ${x.gate ? 'gate' : ''}"><div class="mis-h"><span class="mis-ic">${x.ic}</span><div><small>${side ? 'Misión secundaria · ' : x.gate ? 'Prueba de ascenso · ' : 'Misión principal · '}${esc(x.cat)}</small><b>${esc(x.t)}</b></div>${x.xp ? `<em>+${x.xp} XP</em>` : ''}</div><p>${esc(x.d)}</p>${ui}${reroll}</div>`; }
 // avisos: vibración y mensaje breve cuando el club responde
 function clubPhoneTick(P, me){ const c = me && me.club; if (!c) return;
+  if (FP && FP.sending && c.flash && c.flash.id !== PH.flashId && /foto|álbum|Misión|Misión cumplida|\+\d+ XP/i.test(c.flash.t)){ ftReset(); PH.lastHTML = ''; }
   if (c.flash && c.flash.id !== PH.flashId){ PH.flashId = c.flash.id; toast(c.flash.t); try { navigator.vibrate && navigator.vibrate(c.flash.ok ? [30, 40, 30] : [120]); } catch {} }
   const n = c.inbox.length; if (n > (PH.inboxN || 0)){ try { navigator.vibrate && navigator.vibrate([60, 80, 60]); } catch {} } PH.inboxN = n;
   if (c.vote && PH.voteBuzz !== c.vote.k + c.vote.q){ PH.voteBuzz = c.vote.k + c.vote.q; try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch {} }
@@ -4257,6 +4282,86 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
   if (k === 'bounty'){ a.txt = (v('pbt') || '').trim(); a.n = +v('pbn'); if (!a.txt) return toast('¿Qué hay que hacer para cobrarla?'); }
   if (k === 'pay') a.to = v('pbto'); if (k === 'favor') a.to = v('pfav'); if (k === 'offer'){ a.to = v('poffto'); a.i = +v('poffi'); } if (k === 'senal') a.to = v('psen'); if (k === 'infil') a.to = v('pinf');
   phSend(a); try { navigator.vibrate && navigator.vibrate(15); } catch {} }, true);
+
+// =====================================================================
+// LAS FOTOS DEL CLUB
+// El móvil hace la foto, el dueño decide si la manda o repite, y la tele la guarda
+// (IndexedDB) como recuerdo: pase de fotos en el Intermedio y en la ceremonia, y un ZIP
+// para descargar. Las fotos viajan en trozos por la conexión del juego y nunca entran
+// en el estado de la partida.
+// =====================================================================
+const FT = {db: null, ready: null, list: [], parts: {}, urls: new Map(), show: {i: 0, at: 0}};
+function ftDB(){ if (FT.ready) return FT.ready; FT.ready = new Promise(res => { try { const r = indexedDB.open('ccsn-fotos', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('f', {keyPath: 'id'}); r.onerror = () => res(null);
+  r.onsuccess = () => { FT.db = r.result; const q = FT.db.transaction('f').objectStore('f').getAll(); q.onsuccess = () => { FT.list = (q.result || []).sort((a, b) => a.at - b.at); res(FT.db); }; q.onerror = () => res(FT.db); }; } catch { res(null); } }); return FT.ready; }
+function ftPut(rec){ return new Promise(res => { if (!FT.db) return res(); const tx = FT.db.transaction('f', 'readwrite'); tx.objectStore('f').put(rec); tx.oncomplete = () => { FT.list = FT.list.filter(x => x.id !== rec.id).concat(rec).sort((a, b) => a.at - b.at); res(); }; tx.onerror = () => res(); }); }
+function ftUrl(rec){ if (!FT.urls.has(rec.id)) FT.urls.set(rec.id, URL.createObjectURL(rec.blob)); return FT.urls.get(rec.id); }
+const b64ToBlob = (b64, type = 'image/jpeg') => { const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u], {type}); };
+// la tele recibe los trozos de una foto
+async function ftRecv(E, pid, a){ await ftDB(); const k = a.fid; const P = FT.parts[k] ||= {n: a.n, got: {}, at: Date.now()}; P.got[a.i] = a.d;
+  if (Object.keys(P.got).length < P.n) return; delete FT.parts[k];
+  if (FT.list.some(x => x.id === k)) return E.host('fotook', {pid, mid: a.mid});
+  const b64 = Array.from({length: P.n}, (_, i) => P.got[i]).join(''); const S = E.S; const p = S.players[pid];
+  await ftPut({id: k, pid, name: p ? p.name : '?', mt: a.mt || 'Foto', room: S.room, at: Date.now(), blob: b64ToBlob(b64)});
+  E.host('fotook', {pid, mid: a.mid, mt: a.mt}); }
+// ---------- en el móvil: hacer, revisar y mandar ----------
+const FP = {img: null, mid: null, mt: '', poster: false, b64: '', sending: false};
+function ftPick(mid, mt, poster){ FP.mid = mid; FP.mt = mt; FP.poster = !!poster; let inp = $('#ftin'); if (!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'ftin'; inp.hidden = true; document.body.appendChild(inp); }
+  inp.value = ''; inp.setAttribute('capture', 'environment'); inp.onchange = () => { const f = inp.files && inp.files[0]; if (f) ftLoad(f); }; inp.click(); }
+function ftLoad(file){ const url = URL.createObjectURL(file); const im = new Image(); im.onload = async () => { URL.revokeObjectURL(url); try { await document.fonts.ready; } catch {}
+  const max = 1600, sc = Math.min(1, max / Math.max(im.width, im.height)); const w = Math.round(im.width * sc), h = Math.round(im.height * sc);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.drawImage(im, 0, 0, w, h); if (FP.poster) ftPoster(g, w, h);
+  FP.b64 = cv.toDataURL('image/jpeg', .82).split(',')[1]; FP.preview = cv.toDataURL('image/jpeg', .7); PH.lastHTML = ''; phRender(); }; im.onerror = () => toast('No se pudo abrir la foto. Prueba otra vez.'); im.src = url; }
+// la plantilla de cartel de estreno (propia del club, sin marcas de nadie)
+function ftPoster(g, w, h){ const u = Math.min(w, h) / 100;
+  let gr = g.createLinearGradient(0, h * .45, 0, h); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.55, 'rgba(0,0,0,.78)'); gr.addColorStop(1, 'rgba(0,0,0,.95)'); g.fillStyle = gr; g.fillRect(0, h * .45, w, h * .55);
+  gr = g.createLinearGradient(0, 0, 0, h * .2); gr.addColorStop(0, 'rgba(0,0,0,.75)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h * .2);
+  g.textAlign = 'center'; g.fillStyle = '#e6cd92'; g.font = `600 ${3.4 * u}px Jost, sans-serif`; g.save(); g.fillText('ESTRENO EXCLUSIVO ESTA NOCHE', w / 2, 7 * u); g.restore();
+  const fit = (txt, size, weight, fam) => { let s = size; g.font = `${weight} ${s}px ${fam}`; while (g.measureText(txt).width > w * .9 && s > 8){ s -= 2; g.font = `${weight} ${s}px ${fam}`; } return s; };
+  g.fillStyle = '#d8283a'; g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 2 * u; const s1 = fit('GENTE ANORMAL', 15 * u, 800, 'Cinzel, Georgia, serif'); g.fillText('GENTE ANORMAL', w / 2, h - 22 * u);
+  g.fillStyle = '#f6ead2'; fit('EL MISTERIO', 7.5 * u, 700, 'Cinzel, Georgia, serif'); g.fillText('EL MISTERIO', w / 2, h - 22 * u + s1 * .75);
+  g.shadowBlur = 0; g.fillStyle = 'rgba(246,234,210,.85)'; g.font = `500 ${2.8 * u}px Jost, sans-serif`; g.fillText('UNA PRODUCCIÓN DE EL CLUB SIN NOMBRE · 12 DE DICIEMBRE', w / 2, h - 5 * u); }
+function ftSend(){ if (!FP.b64 || FP.sending) return; FP.sending = true; const fid = 'f' + Date.now().toString(36) + uid(4); const C = 48000; const n = Math.ceil(FP.b64.length / C);
+  for (let i = 0; i < n; i++) setTimeout(() => phSend({t: 'foto', fid, i, n, mid: FP.mid, mt: FP.mt, d: FP.b64.slice(i * C, (i + 1) * C)}), i * 120);
+  FP.sentAt = Date.now(); FP.fid = fid; toast('Enviando la foto al club…'); setTimeout(() => { if (FP.sending && FP.fid === fid){ FP.sending = false; PH.lastHTML = ''; phRender(); toast('La foto no ha llegado. Pulsa «Enviar esta» otra vez.'); } }, 25000 + n * 150); PH.lastHTML = ''; phRender(); }
+function ftSaveLocal(){ if (!FP.b64) return; const a = document.createElement('a'); a.href = 'data:image/jpeg;base64,' + FP.b64; a.download = (FP.mt || 'foto-del-club').replace(/[^\wáéíóúñ -]/gi, '') + '.jpg'; a.click(); }
+function ftReset(){ FP.b64 = ''; FP.preview = ''; FP.sending = false; FP.mid = null; }
+// la vista previa ocupa la pantalla del móvil hasta que decide
+function ftPhoneH(){ if (!FP.preview) return null;
+  return `<div class="pc ftprev"><div class="rkick">${esc(FP.mt)}</div><img src="${FP.preview}" alt="Tu foto"><p class="muted center">${FP.sending ? 'Enviando al club… no cierres esta pantalla.' : '¿Mandas esta al álbum del club o haces otra?'}</p>
+    ${FP.sending ? '' : `<button class="btn gold wide huge" data-ft="send">Enviar esta</button><button class="btn wide" data-ft="again">Hacer otra</button><button class="lnk" data-ft="save">Guardar en mi móvil</button><button class="lnk" data-ft="cancel">Ahora no</button>`}</div>`; }
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { const t = e.target.closest('[data-ft],[data-ftgo]'); if (!t || !document.body.classList.contains('v-ph')) return; e.stopPropagation();
+  if (t.dataset.ftgo) return ftPick(+t.dataset.ftgo, t.dataset.mt, t.dataset.poster === '1');
+  const k = t.dataset.ft; if (k === 'send') return ftSend(); if (k === 'again') return ftPick(FP.mid, FP.mt, FP.poster); if (k === 'save') return ftSaveLocal(); if (k === 'cancel'){ ftReset(); PH.lastHTML = ''; phRender(); } }, true);
+// ---------- en la tele: pase de fotos y álbum ----------
+const albShowH = () => `<div class="albshow" id="albshow"><div class="albh">El álbum del club</div><div class="albf"></div></div>`;
+function ftShowTick(){ const el = $('#albshow'); if (!el) return; const L = FT.list; if (!L.length){ el.classList.add('empty'); return; } el.classList.remove('empty');
+  const fresh = !el.dataset.on; if (!fresh && Date.now() - FT.show.at < 6000) return; if (!fresh || !FT.show.i){ FT.show.at = Date.now(); FT.show.i++; } el.dataset.on = 1; const r = L[(FT.show.i - 1) % L.length]; const box = el.querySelector('.albf');
+  const fig = document.createElement('figure'); fig.innerHTML = `<img src="${ftUrl(r)}" alt=""><figcaption><b>${esc(r.mt)}</b><span>${esc(r.name)}</span></figcaption>`; if (fresh){ fig.style.transition = 'none'; fig.classList.add('on'); } box.appendChild(fig); if (!fresh) requestAnimationFrame(() => fig.classList.add('on'));
+  [...box.children].slice(0, -2).forEach(x => x.remove()); setTimeout(() => { const prev = box.children[box.children.length - 2]; if (prev) prev.classList.remove('on'); }, 50); }
+if (typeof setInterval !== 'undefined' && typeof document !== 'undefined'){ const iv = setInterval(() => { if (document.body && document.body.classList.contains('v-tv')) ftShowTick(); }, 1000); iv && iv.unref && iv.unref(); }
+// ZIP sin compresión (las JPG ya van comprimidas)
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+async function ftZip(){ await ftDB(); const enc = new TextEncoder(); const files = [], central = []; let off = 0;
+  for (const r of FT.list){ const d = new Date(r.at); const hh = String(d.getHours()).padStart(2, '0') + '-' + String(d.getMinutes()).padStart(2, '0');
+    const name = enc.encode(`${hh} · ${r.name} · ${r.mt}.jpg`.replace(/[\/\\:*?"<>|]/g, '')); const data = new Uint8Array(await r.blob.arrayBuffer()); const crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30)); h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    files.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name); off += 30 + name.length + data.length; }
+  const csize = central.reduce((a, x) => a + x.length, 0); const e = new DataView(new ArrayBuffer(22)); e.setUint32(0, 0x06054b50, true); e.setUint16(8, FT.list.length, true); e.setUint16(10, FT.list.length, true); e.setUint32(12, csize, true); e.setUint32(16, off, true);
+  const blob = new Blob([...files, ...central, new Uint8Array(e.buffer)], {type: 'application/zip'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'album-del-club-sin-nombre.zip'; a.click(); return FT.list.length; }
+async function ftClear(){ await ftDB(); await new Promise(res => { const tx = FT.db.transaction('f', 'readwrite'); tx.objectStore('f').clear(); tx.oncomplete = res; tx.onerror = res; }); FT.list = []; FT.urls.clear(); }
+function albumOverlay(){ const el = ovEl(); ftDB().then(() => draw()); const draw = (msg = '') => {
+    el.innerHTML = `<div class="co-in wide albov"><h2>El álbum del club</h2><p class="note">${FT.list.length ? `${FT.list.length} fotos guardadas en esta tele.` : 'Todavía no hay fotos. Llegarán con las misiones de foto.'} Se quedan aquí aunque recargues o vacíes la sala.</p>
+      <div class="albgrid">${FT.list.slice().reverse().map(r => `<figure><img src="${ftUrl(r)}" alt=""><figcaption><b>${esc(r.mt)}</b><span>${esc(r.name)}</span></figcaption></figure>`).join('')}</div><p class="vz-msg">${esc(msg)}</p>
+      <div class="co-b"><button class="btn gold" data-al="zip" ${FT.list.length ? '' : 'disabled'}>Descargar el álbum (ZIP)</button><button class="lnk" data-al="clear">Borrar el álbum</button><button class="btn" data-al="close">Cerrar</button></div></div>`; };
+  el.onclick = async e => { const t = e.target.closest('[data-al]'); if (!t) return; const k = t.dataset.al;
+    if (k === 'close') return el.remove(); if (k === 'zip'){ const n = await ftZip(); return draw(`Álbum descargado: ${n} fotos.`); }
+    if (k === 'clear'){ if (!t.dataset.sure){ t.dataset.sure = '1'; t.textContent = 'Pulsa otra vez: se borran todas las fotos para siempre'; return; } await ftClear(); return draw('Álbum borrado.'); } };
+  draw(); }
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('DOMContentLoaded', () => { if (typeof indexedDB !== 'undefined') ftDB(); });
 
 // =====================================================================
 // LA VOZ DEL CLUB · ElevenLabs
@@ -4494,6 +4599,7 @@ function bindHost(){
     if (op === 'panel') return hostPanel();
     if (op === 'print') return printables();
     if (op === 'wipe') return salaWipe(t);
+    if (op === 'album') return albumOverlay();
     if (op === 'hostlink') return hostLinkOverlay();
     if (op === 'start' && E.S.gm === 'noche' && pidsAll(E.S).length < 3) return toast('La Noche necesita al menos 3 miembros.');
     if (op === 'end' && !TVS.confirmEnd && E.S.phase !== 'final'){ TVS.confirmEnd = true; toast('Pulsa otra vez «Terminar» para acabar la partida'); setTimeout(() => TVS.confirmEnd = false, 3000); return; }
