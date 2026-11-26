@@ -1046,6 +1046,61 @@ button .ico,.gb .ico{color:inherit}
 .bk-foot{position:absolute;left:4vw;right:4vw;bottom:4vh;text-align:center;font-style:italic;opacity:.5;font-size:2vh}
 .inf-steps{margin:6px 0 10px;padding-left:20px}.inf-steps li{margin:6px 0;line-height:1.35}.inf-steps li.ok{opacity:.6}
 .cas-mis{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;border:1px dashed rgba(201,164,92,.5);border-radius:10px;padding:8px 10px;margin:4px 0 10px;font-size:14px}.cas-mis b{width:100%;font-size:12px;color:var(--gold2);font-family:var(--body);font-weight:600}.cas-mis span{flex:1}.cas-mis em{font-style:normal;color:var(--gold2)}.cas-mis.ok{opacity:.7;border-style:solid}
+
+/* ===== sensación de progreso ===== */
+#juice{position:fixed;inset:0;z-index:90;display:none;place-items:center;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,rgba(20,14,8,.55),rgba(0,0,0,.82))}
+#juice.on{display:grid;animation:juFade .25s ease-out}#juice.tap{pointer-events:auto}
+@keyframes juFade{from{opacity:0}}
+.ju-seal{text-align:center;color:var(--cream);padding:0 28px;max-width:360px}
+.ju-wax{width:132px;height:132px;margin:0 auto 14px;animation:juStamp .55s cubic-bezier(.2,1.6,.4,1) both;filter:drop-shadow(0 14px 22px rgba(0,0,0,.6))}
+@keyframes juStamp{0%{transform:scale(2.6) rotate(-25deg);opacity:0}60%{transform:scale(.92) rotate(4deg);opacity:1}100%{transform:none}}
+.ju-seal b{display:block;font-family:var(--disp);font-size:28px;color:var(--gold2);letter-spacing:.04em;animation:juUp .4s .25s both}
+.ju-seal span{display:block;font-family:var(--serif);font-style:italic;font-size:19px;margin:6px 0 12px;opacity:.9;animation:juUp .4s .35s both}
+.ju-seal em{display:inline-block;font-style:normal;font-family:var(--disp);font-size:34px;color:#f3e7c8;text-shadow:0 0 18px rgba(230,205,146,.7);animation:juPop .5s .45s cubic-bezier(.2,1.8,.4,1) both}
+.ju-seal.gate b{color:#f3e7c8}.ju-seal.gate .ju-wax{width:150px;height:150px}
+.ju-streak{display:block;margin-top:12px;font-style:normal;font-weight:600;color:#ffb35c;font-size:17px;animation:juPop .5s .7s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes juUp{from{opacity:0;transform:translateY(12px)}}
+@keyframes juPop{0%{opacity:0;transform:scale(.3)}100%{opacity:1;transform:none}}
+.ju-rank{position:relative;text-align:center;color:var(--cream);width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 42%,rgba(60,42,14,.9),rgba(4,4,4,.96) 65%)}
+.ju-rays{position:absolute;left:50%;top:40%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(rgba(230,205,146,.14) 0 6deg,transparent 6deg 18deg);animation:juSpin 14s linear infinite,juFade .8s both;mask:radial-gradient(circle,#000 10%,transparent 55%);-webkit-mask:radial-gradient(circle,#000 10%,transparent 55%)}
+@keyframes juSpin{to{transform:rotate(360deg)}}
+.ju-parts{position:absolute;left:50%;top:40%}.ju-parts i{position:absolute;width:7px;height:7px;border-radius:50%;background:#e6cd92;box-shadow:0 0 10px #e6cd92;animation:juBurst var(--t) .35s cubic-bezier(.1,.7,.3,1) both}
+@keyframes juBurst{0%{transform:rotate(var(--a)) translateX(0) scale(1.4);opacity:1}100%{transform:rotate(var(--a)) translateX(var(--d)) scale(.2);opacity:0}}
+.ju-ins{position:relative;font-size:96px;line-height:1;width:150px;height:150px;display:grid;place-items:center;border-radius:50%;border:2px solid var(--gold2);background:radial-gradient(circle,#3a2b12,#120d06);box-shadow:0 0 0 8px rgba(230,205,146,.12),0 0 60px rgba(230,205,146,.55);animation:juIns .9s cubic-bezier(.2,1.5,.4,1) both;color:var(--gold2)}
+.ju-ins svg{width:72px;height:72px}
+@keyframes juIns{0%{transform:scale(0) rotate(-90deg)}100%{transform:none}}
+.ju-rank small{position:relative;margin-top:26px;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);animation:juUp .5s .6s both}
+.ju-rank h1{position:relative;font-family:var(--disp);font-size:38px;margin:6px 0 10px;color:#f6ecd2;text-shadow:0 0 24px rgba(230,205,146,.6);animation:juPop .6s .75s cubic-bezier(.2,1.6,.4,1) both}
+.ju-rank p{position:relative;margin:4px 24px;font-size:16px;opacity:.85;animation:juUp .5s 1s both}.ju-rank .ju-new{color:var(--gold2);opacity:1}
+.ju-rank .btn{position:relative;margin-top:26px;min-width:160px;animation:juUp .5s 1.3s both}
+.ju-float{position:fixed;left:50%;top:92px;z-index:91;transform:translateX(-50%);font-family:var(--disp);font-size:26px;color:#f3e7c8;text-shadow:0 0 14px rgba(230,205,146,.8);pointer-events:none;animation:juFloat 1.5s cubic-bezier(.2,.8,.3,1) both}
+.ju-float.lose{color:#e0586b;text-shadow:none;left:auto;right:22px;top:46px;transform:none;font-size:20px}
+@keyframes juFloat{0%{opacity:0;transform:translate(-50%,30px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-50px) scale(.9)}}
+.ju-float.lose{animation:juLose 1.4s both}@keyframes juLose{0%{opacity:0}20%{opacity:1}100%{opacity:0;transform:translateY(16px)}}
+.ju-coins{position:fixed;inset:0;z-index:91;pointer-events:none}
+.ju-coins i{position:absolute;right:26px;top:30px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c4,#e6cd92 40%,#a9802f);box-shadow:0 0 8px rgba(230,205,146,.8);animation:juCoin 1s var(--dl) cubic-bezier(.5,0,.6,1) both}
+@keyframes juCoin{0%{transform:translate(calc(-50vw + var(--x)),45vh) scale(1.3);opacity:0}15%{opacity:1}100%{transform:none;opacity:.2}}
+.ju-coins b{position:absolute;right:18px;top:62px;font-family:var(--disp);font-size:22px;color:var(--gold2);animation:juPop .5s .8s both}
+.fch.pop b{display:inline-block;animation:juBeat .35s 3 ease-in-out;color:#f3e7c8}
+@keyframes juBeat{50%{transform:scale(1.35)}}
+.hxp.grow i{animation:juFill 1.2s cubic-bezier(.2,.8,.2,1) both;position:relative;overflow:hidden}
+.hxp.grow i::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:juShine 1.2s ease-out both}
+@keyframes juFill{from{width:var(--f)}}@keyframes juShine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.phh.near .hxp{box-shadow:0 0 0 1px rgba(230,205,146,.6),0 0 14px rgba(230,205,146,.55);animation:juNear 1.4s ease-in-out infinite}.phh.near .hxl{color:var(--gold2);font-weight:600}
+@keyframes juNear{50%{box-shadow:0 0 0 1px rgba(230,205,146,.2),0 0 4px rgba(230,205,146,.2)}}
+.ju-st{display:block;font-size:11px;color:#ffb35c;font-weight:600;margin:1px 0 2px}
+.pn2.justdone .pn2-c{animation:juNode .9s cubic-bezier(.2,1.6,.4,1) both;box-shadow:0 0 0 6px rgba(230,205,146,.25),0 0 22px rgba(230,205,146,.8)}
+.pn2.justnow .pn2-c{animation:juLight 1.6s .5s ease-out both}
+@keyframes juNode{0%{transform:scale(.4);background:transparent}100%{transform:none}}
+@keyframes juLight{0%{box-shadow:0 0 0 0 rgba(230,205,146,.9)}100%{box-shadow:0 0 0 18px rgba(230,205,146,0)}}
+/* tele: ranking vivo y ascensos */
+.crank .cr{position:relative}.crank .cr.up::after{content:'▲';position:absolute;right:-1.2vw;top:50%;transform:translateY(-50%);color:#5fc48c;font-size:1.6vh;animation:juBeat .6s 4}
+.crank .cr.up{background:linear-gradient(90deg,rgba(95,196,140,.14),transparent)}
+.trn.k-rank .trni{position:relative;animation:juIns .9s cubic-bezier(.2,1.5,.4,1) both;filter:drop-shadow(0 0 2.4vh rgba(230,205,146,.9))}
+.trn.k-rank .trni::before{content:'';position:absolute;left:50%;top:50%;width:40vh;height:40vh;margin:-20vh 0 0 -20vh;background:repeating-conic-gradient(rgba(230,205,146,.18) 0 6deg,transparent 6deg 18deg);border-radius:50%;mask:radial-gradient(circle,#000 15%,transparent 65%);-webkit-mask:radial-gradient(circle,#000 15%,transparent 65%);animation:juSpin 10s linear infinite;z-index:-1}
+#trov.mini .trn.k-rank .trni::before{width:16vh;height:16vh;margin:-8vh 0 0 -8vh}
+@media (prefers-reduced-motion:reduce){.ju-rays,.ju-parts,.trn.k-rank .trni::before{display:none}#juice *{animation-duration:.01s!important}}
+body:has(#juice.on) #toast{opacity:0!important}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -4612,7 +4667,8 @@ function pathH(P, me){ const c = me.club; const al = alertsH(P, me);
     const st = N.now ? 'now' : N.st === 'done' ? 'done' : N.st === 'skip' ? 'skip' : 'locked';
     const lbl = N.now ? esc(N.t) : st === 'done' ? esc(N.t) : N.gate ? 'Prueba: ' + esc(RANKS[N.r].gate) : st === 'skip' ? 'Saltada' : 'Misión de ' + esc(N.cat.toLowerCase());
     const isOpen = N.now || open === i;
-    out += `<div class="pn2 ${st} ${N.gate ? 'gate' : ''} ${isOpen ? 'open' : ''}"><button class="pn2-h" data-pn="${N.now ? i : open === i ? '-1' : i}"><span class="pn2-c">${st === 'done' ? '✓' : N.now ? '' : N.gate ? '' : ''}</span><span class="pn2-t">${N.now ? '<small>Ahora</small>' : ''}${lbl}</span>${N.xp && st !== 'done' ? `<em>+${N.xp}</em>` : ''}</button>${isOpen ? `<div class="pn2-b">${N.now && c.mis ? misCard(P, me, c.mis, false) : nodeInfo(c, N, i)}</div>` : ''}</div>`; });
+    const jd = typeof JU !== 'undefined' && JU.justDone && JU.justDone.until > Date.now() ? (JU.justDone.i === i ? ' justdone' : N.now ? ' justnow' : '') : '';
+    out += `<div class="pn2 ${st} ${N.gate ? 'gate' : ''} ${isOpen ? 'open' : ''}${jd}"><button class="pn2-h" data-pn="${N.now ? i : open === i ? '-1' : i}"><span class="pn2-c">${st === 'done' ? '✓' : N.now ? '' : N.gate ? '' : ''}</span><span class="pn2-t">${N.now ? '<small>Ahora</small>' : ''}${lbl}</span>${N.xp && st !== 'done' ? `<em>+${N.xp}</em>` : ''}</button>${isOpen ? `<div class="pn2-b">${N.now && c.mis ? misCard(P, me, c.mis, false) : nodeInfo(c, N, i)}</div>` : ''}</div>`; });
   const fin = (hidden > 0 && !PH.pathAll ? `<button class="pr-more" data-pall="1">${hidden === 1 ? 'Ver el último rango' : `Ver ${hidden} rangos más`} hasta el Círculo Interno</button>` : `<div class="pr ${c.rank >= 5 ? 'on here' : ''}"><b>${esc(RANKS[5].n)}</b><span>${c.rank >= 5 ? 'lo has logrado' : 'se decide en la ceremonia'}</span></div>${PH.pathAll ? '<button class="pr-more" data-pall="0">Ocultar los rangos lejanos</button>' : ''}`);
   const idle = cur < 0 ? `<div class="mis idle"><p>${c.rank >= 4 ? 'Has llegado a la Élite. Sigue sumando: la ceremonia decidirá.' : c.gateOk ? `Has hecho todas las misiones de este rango. Te faltan ${xpLeft(c).toLocaleString('es-ES')} XP para subir: juega minijuegos y haz encargos.` : 'Tu próxima misión llegará enseguida.'}</p></div>` : '';
   return `${al}<div class="pathhd"><b>Tu camino</b><span>${done} de ${total} misiones</span></div>${idle}<div class="path2">${out}${fin}</div>${sideH(P, me)}`; }
@@ -4968,6 +5024,69 @@ function casMisHand(S, g){ const who = new Set(Object.keys(g.k === 'ruleta' ? g.
     if (!(S.club.unl && S.club.unl.casino) && M.club){ const hide = o => o && o.ty === 'casino' ? Object.assign({}, o, {t: 'Una misión que aún no puede revelarse', d: 'El club te la desvelará pronto. Mientras tanto, sigue con lo demás.', need: 'secret'}) : o;
       M.club.mis = hide(M.club.mis); M.club.side = hide(M.club.side); if (M.club.path) M.club.path = M.club.path.map((N, i) => m.path[i] && m.path[i].ty === 'casino' && N.t ? Object.assign({}, N, {t: 'Una misión que aún no puede revelarse', ic: '🔒'}) : N); M.cmis = null; } } return M; }; }
 const casMisH = me => { const x = me.cmis; if (!x) return ''; return `<div class="cas-mis"><b>Tu misión del camino</b><span>${esc(x.t)}${x.n > 1 ? ` · ${x.got} de ${x.n}` : ''}</span><em>+${x.xp} XP</em></div>`; };
+
+// =====================================================================
+// SENSACIÓN DE PROGRESO («juice»): sellos de misión, barra que se llena,
+// ascensos épicos, rachas, fichas que caen y ranking vivo en la tele.
+// =====================================================================
+const STREAK_MS = 10 * 60000;
+const streakMult = n => n >= 3 ? 1.5 : n >= 2 ? 1.25 : 1;
+// ---- servidor (tele): rachas y último logro ----
+{ const _md = misDone; misDone = function(S, pid, mis, extra = ''){ if (!mis || mis.st === 'done') return _md(S, pid, mis, extra); const m = cm(S, pid); if (!m) return _md(S, pid, mis, extra);
+    const now = NOW(); const s = m.streak || {n: 0, at: 0}; const n = now - s.at < STREAK_MS ? s.n + 1 : 1; m.streak = {n, at: now}; const mult = streakMult(n); let ex = extra;
+    if (mult > 1 && mis.xpOverride == null && mis.xp){ mis.xpOverride = Math.round(mis.xp * mult); ex = (extra ? extra + ' · ' : '') + `🔥 Racha x${n}: +${Math.round((mult - 1) * 100)} %`; }
+    m.lastMis = {id: S.club.nid++, t: mis.t, xp: mis.xpOverride != null ? mis.xpOverride : mis.xp, gate: !!mis.gate, n, bonus: Math.round((mult - 1) * 100), at: now};
+    return _md(S, pid, mis, ex); }; }
+{ const _mv3 = meView; meView = function(S, pid){ const M = _mv3(S, pid); const m = S.club && S.club.m && cm(S, pid); if (M && !M.gone && m) M.juice = {streak: m.streak && NOW() - m.streak.at < STREAK_MS ? {n: m.streak.n, until: m.streak.at + STREAK_MS, next: Math.round((streakMult(m.streak.n + 1) - 1) * 100)} : null, last: m.lastMis || null}; return M; }; }
+
+// ---- móvil ----
+const JU = {prev: null, q: [], busy: false, xpA: null, justDone: null, fchA: 0};
+const juNow = () => Date.now() + (PH.off || 0);
+const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch {} };
+function juEl(){ let el = $('#juice'); if (!el){ el = document.createElement('div'); el.id = 'juice'; document.body.appendChild(el); } return el; }
+function juCheck(){ const M = PH.me, P = PH.pub; if (!M || !M.club || !P || P.gm !== 'noche' || !P.club || !P.club.on){ JU.prev = null; return; } const c = M.club;
+  const cur = {xp: c.xp, rank: c.rank, fichas: M.fichas, mis: M.juice && M.juice.last ? M.juice.last.id : 0, pct: juPct(c), done: (c.path || []).map(N => N.st === 'done')};
+  const pv = JU.prev; JU.prev = cur; if (!pv) return;
+  const misEv = cur.mis && cur.mis !== pv.mis;
+  if (cur.xp > pv.xp){ JU.xpA = {from: cur.rank > pv.rank ? 0 : pv.pct, to: cur.pct, at: Date.now()}; if (!misEv) juFloat(`+${(cur.xp - pv.xp).toLocaleString('es-ES')} XP`, 'xp'); }
+  if (misEv){ const i = cur.done.findIndex((d, k) => d && !pv.done[k]); if (i >= 0) JU.justDone = {i, until: Date.now() + 2200}; juQ({k: 'mis', x: M.juice.last}); }
+  if (cur.rank > pv.rank) juQ({k: 'rank', r: cur.rank});
+  if (cur.fichas > pv.fichas) juCoins(cur.fichas - pv.fichas); else if (cur.fichas < pv.fichas) juFloat(`−${pv.fichas - cur.fichas}`, 'lose'); }
+const juPct = c => c.next ? Math.min(100, Math.round((c.xp - c.cur) / Math.max(1, c.next - c.cur) * 100)) : 100;
+function juQ(ev){ JU.q.push(ev); if (ev.k === 'rank') JU.q = JU.q.filter(e => e.k === 'rank' || e === JU.q[0]); juNext(); }
+function juNext(){ if (JU.busy || !JU.q.length) return; const ev = JU.q.shift(); JU.busy = true; const el = juEl();
+  const done = ms => setTimeout(() => { el.classList.remove('on'); el.innerHTML = ''; JU.busy = false; setTimeout(juNext, 150); }, ms);
+  if (ev.k === 'mis'){ const x = ev.x;
+    el.innerHTML = `<div class="ju-seal ${x.gate ? 'gate' : ''}"><div class="ju-wax"><svg viewBox="0 0 100 100"><path d="M50 4l9 7 11-2 5 10 10 5-2 11 7 9-7 9 2 11-10 5-5 10-11-2-9 7-9-7-11 2-5-10-10-5 2-11-7-9 7-9-2-11 10-5 5-10 11 2z" fill="#8f1d2f"/><circle cx="50" cy="50" r="30" fill="none" stroke="#e6cd92" stroke-width="2.5" opacity=".7"/><path d="M36 51l10 10 20-22" fill="none" stroke="#f3e7c8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <b>${x.gate ? 'Prueba superada' : 'Misión cumplida'}</b><span>${esc(x.t)}</span><em>+${x.xp} XP</em>${x.bonus ? `<i class="ju-streak">🔥 Racha x${x.n} · +${x.bonus} %</i>` : ''}</div>`;
+    el.classList.add('on'); buzz([40, 60, 90]); try { SFX.coin(); setTimeout(() => SFX.coin(), 160); } catch {} done(x.bonus ? 2300 : 1900); return; }
+  if (ev.k === 'rank'){ const R = RANKS[ev.r]; const nextG = ev.r < 4 ? `Próxima prueba: ${RANKS[ev.r].gate.toLowerCase()}` : ev.r === 4 ? 'Ya puedes optar al Círculo Interno' : 'Has llegado a la cima';
+    const parts = Array.from({length: 26}, (_, i) => `<i style="--a:${Math.round(i * 360 / 26 + Math.random() * 10)}deg;--d:${(32 + Math.random() * 18).toFixed(0)}vmin;--t:${(.9 + Math.random() * .7).toFixed(2)}s"></i>`).join('');
+    el.innerHTML = `<div class="ju-rank"><div class="ju-rays"></div><div class="ju-parts">${parts}</div><div class="ju-ins">${R.ic}</div><small>Has ascendido</small><h1>${esc(R.n)}</h1><p>${esc(nextG)}</p><p class="ju-new">Nuevas misiones en tu camino</p><button class="btn gold" data-juok="1">Seguir</button></div>`;
+    el.classList.add('on', 'tap'); buzz([80, 60, 80, 60, 300]); try { SFX.gold(); } catch {}
+    const close = () => { el.classList.remove('tap'); done(0); }; el.onclick = e => { if (e.target.closest('[data-juok]') || e.target === el) { el.onclick = null; clearTimeout(JU.rt); close(); } }; JU.rt = setTimeout(() => { el.onclick = null; close(); }, 6000); return; }
+  done(0); }
+function juFloat(t, cls){ const f = document.createElement('div'); f.className = 'ju-float ' + cls; f.textContent = t; document.body.appendChild(f); setTimeout(() => f.remove(), 1600); }
+function juCoins(n){ JU.fchA = Date.now() + 1400; const box = document.createElement('div'); box.className = 'ju-coins';
+  box.innerHTML = Array.from({length: Math.min(10, 3 + n)}, (_, i) => `<i style="--x:${(Math.random() * 60 - 30).toFixed(0)}vw;--dl:${i * 70}ms"></i>`).join('') + `<b>+${n}</b>`;
+  document.body.appendChild(box); setTimeout(() => box.remove(), 1700); try { SFX.coin(); } catch {} buzz([20, 40, 20]); }
+// la cabecera: barra que se llena, aviso de «casi», racha y fichas que laten
+{ const _nh = nocheHead; nocheHead = function(me, P){ let h = _nh(me, P); const c = me.club; const J = me.juice || {};
+    const A = JU.xpA && Date.now() - JU.xpA.at < 1500 ? JU.xpA : null;
+    if (A) h = h.replace(/<div class="hxp"><i style="width:(\d+)%"><\/i><\/div>/, (m0, w) => `<div class="hxp grow"><i style="width:${w}%;--f:${A.from}%;animation-delay:-${Math.round((Date.now() - A.at) / 250) * 250}ms"></i></div>`);
+    const left = c.next ? c.next - c.xp : 0; const near = c.rank < 4 && !c.fallen && left > 0 && left <= 100 && P.phase !== 'lobby';
+    if (near) h = h.replace('<header class="phh noche2">', '<header class="phh noche2 near">').replace(/<span class="hxl">[^<]*<\/span>/, `<span class="hxl">¡A ${left} XP de ${esc(RANKS[c.rank + 1].n)}!</span>`);
+    if (J.streak && J.streak.until > juNow()){ const s = Math.max(0, Math.round((J.streak.until - juNow()) / 1000)); h = h.replace('<span class="rk-mini">', `<span class="ju-st">🔥 ${J.streak.n > 1 ? 'Racha x' + J.streak.n : 'Racha'} · ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')} para +${J.streak.next} %</span><span class="rk-mini">`); }
+    if (JU.fchA > Date.now()) h = h.replace('<span class="fch">', '<span class="fch pop">');
+    return h; }; }
+{ const _pr = phRender; phRender = function(){ try { juCheck(); } catch (e) { console.warn(e); } return _pr(); }; }
+
+// ---- tele: ranking vivo (las filas se intercambian con animación y una flecha verde) ----
+{ const _rk = pubRanking; pubRanking = function(P, n){ let h = _rk(P, n); const C = P.club; if (!C) return h; const ms = C.members.slice().sort((a, b) => b.rank - a.rank || (b.xp || 0) - (a.xp || 0)).slice(0, n || 12).map(m => m.pid);
+    const prev = TVS.rkOrd || []; TVS.rkUp ||= {}; if (prev.length) ms.forEach((p, i) => { const j = prev.indexOf(p); if (j > i) TVS.rkUp[p] = Date.now() + 6000; }); TVS.rkOrd = ms;
+    let k = -1; return h.replace(/<div class="cr ?(fallen)?">/g, (m0, f) => { k++; const p = ms[k]; const up = TVS.rkUp[p] > Date.now(); return `<div class="cr${f ? ' fallen' : ''}${up ? ' up' : ''}" data-pid="${p}">`; }); }; }
+{ const _rt = renderTV; renderTV = function(E){ const old = {}; $$('.cr[data-pid]').forEach(r => old[r.dataset.pid] = r.getBoundingClientRect().top); const before = TVS.lastHTML; _rt(E);
+    if (TVS.lastHTML !== before) $$('.cr[data-pid]').forEach(r => { const o = old[r.dataset.pid]; if (o == null) return; const dy = o - r.getBoundingClientRect().top; if (Math.abs(dy) > 2 && r.animate) r.animate([{transform: `translateY(${dy}px)`}, {transform: 'none'}], {duration: 750, easing: 'cubic-bezier(.2,.8,.2,1)'}); }); }; }
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
