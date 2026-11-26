@@ -947,6 +947,12 @@ button .ico,.gb .ico{color:inherit}
 .tg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(17vw,1fr));gap:1.6vh 1.4vw;max-height:66vh;overflow:auto}.tg-cat h3{font-family:var(--disp);color:var(--gold);font-size:1.8vh;margin:0 0 .8vh;letter-spacing:.06em}
 .tg-b{display:flex;align-items:center;gap:.7vw;width:100%;margin:0 0 .6vh;padding:1vh 1vw;background:#0e1110;border:1px solid var(--line);border-radius:1vh;color:var(--cream);font:inherit;font-size:1.7vh;text-align:left;cursor:pointer}.tg-b:hover{border-color:var(--gold);color:var(--gold2)}
 .tg-grid{display:block!important;columns:5;column-gap:1.4vw}.tg-cat{break-inside:avoid;margin-bottom:1.6vh}.tg-b{font-size:1.55vh;padding:.8vh .8vw}.tgov{width:92vw!important}.tgov .note{font-size:1.9vh}
+/* herramientas de la sala de espera: compactas, en una cuadrícula que cabe en la tele */
+.adm .lob-tools,.lob-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7vh .6vw;margin-top:1.6vh}
+.lob-tools .tool{display:flex;align-items:center;justify-content:flex-start;gap:.5vw;border-radius:.9vh;padding:.7vh .8vw;font-size:1.5vh;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;text-align:left}
+.lob-tools .tool .ico{flex:none}.lob-tools .tool .ico .ic{width:1.25em;height:1.25em}
+.tool.hot{border-color:#7a2335;color:var(--cream)}
+.lob-tools .tool.hot{flex-direction:row;align-items:center;gap:.5vw}.lob-tools .tool.hot span{font-family:inherit;font-size:inherit;font-style:normal;color:inherit}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
