@@ -3208,7 +3208,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
   if (!C.on && !['quiz', 'quizdone', 'seen'].includes(a.a)) return false;
   const misOf = id => [activeMis(S, pid), m.side].find(x => x && x.id === +id && x.st === 'active');
   switch (a.a){
-    case 'quiz': { const Q = QK[a.k]; if (!Q) return false; if (a.skip){ m.q['_s_' + a.k] = 1; return true; } if (a.other != null && !Q.text){ const v = String(a.other).trim().slice(0, 60); if (v) m.q['_o_' + a.k] = v; return true; } if (Q.text){ const v = String(a.v || '').trim().slice(0, 140); if (v) m.q[a.k] = v; } else if (Q.o[+a.v]) m.q[a.k] = +a.v; return true; }
+    case 'quiz': { const Q = QK[a.k]; if (!Q) return false; if (a.skip){ if (S.mode !== 'local') return false; m.q['_s_' + a.k] = 1; return true; } if (a.other != null && !Q.text){ const v = String(a.other).trim().slice(0, 60); if (v) m.q['_o_' + a.k] = v; return true; } if (Q.text){ const v = String(a.v || '').trim().slice(0, 140); if (v) m.q[a.k] = v; } else if (Q.o[+a.v]) m.q[a.k] = +a.v; return true; }
     case 'quizdone': m.qDone = true; buildPath(S, pid); return true;
     case 'code': if (!/^\d{3}$/.test(String(a.c || ''))) { flash(S, pid, 'El código tiene 3 cifras', false); return true; } useCode(S, pid, a.c, a.mc); return true;
     case 'ans': { const x = misOf(a.mid); if (!x) return false;
@@ -4050,12 +4050,12 @@ function nocheHead(me, P){ const c = me.club; const pct = c.next ? Math.min(100,
   const nx = c.rank >= 5 ? 'Has llegado a la cima del club' : c.fallen ? 'Caíste en la purga: ya no asciendes' : c.rank === 4 ? 'Siguiente: la votación final' : c.xp < c.next ? `Siguiente: ${xpLeft(c).toLocaleString('es-ES')} XP más` : !c.gateOk ? `Siguiente: la prueba, ${RANKS[c.rank].gate.toLowerCase()}` : 'A punto de ascender';
   return `<header class="phh noche2">${avH(me, 'md')}<div class="phh-n"><b>${esc(me.name)}</b><span class="rk-mini">${RANKS[c.rank].n}${c.fallen ? ' · caído' : ''}</span><div class="hxp"><i style="width:${pct}%"></i></div><span class="hxl">${P.phase === 'lobby' ? 'La noche aún no ha empezado' : nx}</span></div><div class="phh-s"><span class="fch"><b>${me.fichas}</b><small>fichas</small></span>${me.host && P.phase !== 'lobby' ? '<button class="menub" data-menu="1" aria-label="Menú del anfitrión">⋯</button>' : ''}</div></header>`; }
 // el cuestionario en el móvil, una pregunta cada vez
-function quizH(me){ const c = me.club; const q = c.q || {}; const list = QS.filter(Q => q[Q.k] == null && !q['_s_' + Q.k] && !q['_o_' + Q.k]);
-  if (!PH.quizGo) return `<div class="pc quizin"><div class="stampc">EXPEDIENTE</div><h2>Tu admisión</h2><p>Antes de cruzar la puerta, el club necesita conocerte. Son ${QS.length} preguntas rápidas; puedes saltarte las que quieras.</p><p class="muted">Algunas respuestas podrán aparecer durante la noche en pruebas y misiones. Nada más.</p><button class="btn gold wide huge" data-cq="go">Empezar</button><button class="lnk" data-cq="later">Ahora no</button></div>`;
+function quizH(me){ const c = me.club; const q = c.q || {}; const test = PH.ctx && PH.ctx.mode === 'local'; const list = QS.filter(Q => q[Q.k] == null && !q['_s_' + Q.k] && !q['_o_' + Q.k]);
+  if (!PH.quizGo) return `<div class="pc quizin"><div class="stampc">EXPEDIENTE</div><h2>Tu admisión</h2><p>Antes de cruzar la puerta, el club necesita conocerte. Son ${QS.length} preguntas rápidas. Hay que responderlas todas para entrar${test ? ' (en el modo de prueba puedes saltártelas)' : ''}.</p><p class="muted">Algunas respuestas podrán aparecer durante la noche en pruebas y misiones. Nada más.</p><button class="btn gold wide huge" data-cq="go">Empezar</button>${test ? '<button class="lnk" data-cq="later">Ahora no</button>' : ''}</div>`;
   const Q = list[0]; if (!Q) return `<div class="pc quizin"><div class="stampc ok">ADMITIDO</div><h2>Expediente completo</h2><p>Bienvenido al club. Empiezas como <b>El Desconocido</b>.</p><button class="btn gold wide huge" data-cq="done">Abrir mi expediente</button></div>`;
   const i = QS.indexOf(Q) + 1; return `<div class="pc quizin"><div class="qprog"><i style="width:${Math.round((QS.length - list.length) / QS.length * 100)}%"></i></div><small class="muted">Pregunta ${i} de ${QS.length}</small><h2>${esc(Q.q)}</h2>
     ${Q.text ? `<textarea id="cqtxt" class="field" rows="3" maxlength="140" placeholder="Escribe aquí"></textarea><button class="btn gold wide" data-cq="txt" data-k="${Q.k}">Siguiente</button>` : `<div class="qopts">${Q.o.map((o, j) => `<button class="qo" data-cq="opt" data-k="${Q.k}" data-v="${j}">${esc(o[0])}</button>`).join('')}</div>${PH.qOther === Q.k ? `<div class="codein"><input class="field" id="cqother" maxlength="60" placeholder="Tu respuesta"><button class="btn gold" data-cq="othergo" data-k="${Q.k}">Siguiente</button></div>` : `<button class="qo qother" data-cq="other" data-k="${Q.k}">Otra respuesta…</button>`}`}
-    <button class="lnk" data-cq="skip" data-k="${Q.k}">Saltar esta pregunta</button></div>`; }
+    ${test ? `<button class="lnk" data-cq="skip" data-k="${Q.k}">Saltar esta pregunta</button>` : ''}</div>`; }
 // el cuerpo del móvil en La Noche (null = lo de siempre: minijuegos)
 function nocheBody(P, me, v){ const c = me.club; const V = P.club && P.club.v;
   const inGame = ['wheel', 'intro', 'rules', 'count', 'play', 'res', 'rank'].includes(P.phase);
@@ -4198,11 +4198,11 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
   if (d.duel){ const c = ($('#dcode').value || '').trim(); if (!/^\d{3}$/.test(c)) return toast('Pide a tu rival su código de 3 cifras'); if (!PH.dbet) return toast('Elige la apuesta'); phSend({t: 'club', a: 'duel', c, n: PH.dbet, g: $('#dgame').value}); return; }
   if (d.send){ const c = ($('#scode').value || '').trim(); const n = +($('#sn').value || 0); if (!/^\d{3}$/.test(c)) return toast('Pide su código de 3 cifras'); if (!(n > 0)) return toast('¿Cuántas fichas?'); phSend({t: 'club', a: 'send', c, n}); return; }
   if (d.cq){ const k = d.k;
-    if (d.cq === 'go'){ PH.quizGo = true; return rr(); } if (d.cq === 'later'){ PH.quizLater = true; return rr(); } if (d.cq === 'resume'){ PH.quizLater = false; PH.quizGo = true; return rr(); }
+    if (d.cq === 'go'){ PH.quizGo = true; return rr(); } if (d.cq === 'later'){ if (!(PH.ctx && PH.ctx.mode === 'local')) return; PH.quizLater = true; return rr(); } if (d.cq === 'resume'){ PH.quizLater = false; PH.quizGo = true; return rr(); }
     if (d.cq === 'opt') phSend({t: 'club', a: 'quiz', k, v: +d.v}); if (d.cq === 'skip') phSend({t: 'club', a: 'quiz', k, skip: 1});
     if (d.cq === 'other'){ PH.qOther = k; return rr(); }
     if (d.cq === 'othergo'){ const v = ($('#cqother').value || '').trim(); if (!v) return toast('Escribe tu respuesta'); PH.qOther = null; phSend({t: 'club', a: 'quiz', k, other: v}); return; }
-    if (d.cq === 'txt'){ const v = ($('#cqtxt').value || '').trim(); phSend({t: 'club', a: 'quiz', k, v, skip: v ? 0 : 1}); }
+    if (d.cq === 'txt'){ const v = ($('#cqtxt').value || '').trim(); const test = PH.ctx && PH.ctx.mode === 'local'; if (!v && !test) return toast('Escribe tu respuesta para seguir'); phSend({t: 'club', a: 'quiz', k, v, skip: v ? 0 : 1}); }
     if (d.cq === 'done') phSend({t: 'club', a: 'quizdone'}); return; } }, true);
 
 // la sala de espera: cada llegada suena y se anuncia
