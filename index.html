@@ -1101,6 +1101,11 @@ button .ico,.gb .ico{color:inherit}
 #trov.mini .trn.k-rank .trni::before{width:16vh;height:16vh;margin:-8vh 0 0 -8vh}
 @media (prefers-reduced-motion:reduce){.ju-rays,.ju-parts,.trn.k-rank .trni::before{display:none}#juice *{animation-duration:.01s!important}}
 body:has(#juice.on) #toast{opacity:0!important}
+
+.av.hasph{background-size:cover!important;background-position:center!important;color:transparent!important;text-shadow:none!important;font-size:0!important}
+.pfin{text-align:center}.pfin h2{font-family:var(--disp);color:var(--gold2);margin:14px 0 6px}.pfin p{margin:8px 0 18px;opacity:.85}
+.pf-ring{display:grid;place-items:center;margin:18px auto 4px}.pf-prev{width:200px;height:200px;border-radius:50%;margin:18px auto 6px;background:center/cover;box-shadow:0 0 0 4px var(--gold2),0 0 40px rgba(230,205,146,.4);animation:juPop .5s cubic-bezier(.2,1.6,.4,1) both}
+.pfin .btn+.btn{margin-top:10px}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -2069,7 +2074,7 @@ const OPTL = ['A', 'B', 'C', 'D', 'E', 'F'];
 const OPTS_SH = ['circle', 'square', 'triangle', 'star', 'circle', 'square'];
 const pOf = (P, pid) => P.players.find(p => p.pid === pid) || {name: '—', av: 'zorro'};
 const monoL = n => { const m = String(n || '?').trim().match(/[A-Za-zÀ-ÿÑñ0-9]/); return m ? m[0].toUpperCase() : '?'; };
-const avH = (p, cls = '') => { const a = AV(p.av); return `<span class="av ${cls}" style="--c:${a[2]}" title="${a[1]}">${monoL(p.name)}</span>`; };
+const avH = (p, cls = '') => { const a = AV(p.av); const ph = p && p.pid && typeof window !== 'undefined' && window.AVP && window.AVP[p.pid] ? ` hasph avp-${p.pid}` : ''; return `<span class="av ${cls}${ph}" style="--c:${a[2]}" title="${a[1]}">${monoL(p.name)}</span>`; };
 const chipH = (p, extra = '', cls = '') => `<span class="pchip ${cls}">${avH(p)}<b>${esc(p.name)}</b>${extra}</span>`;
 const tmrH = (ends, cls = '') => `<span class="tmr ${cls}" data-ends="${ends}"></span>`;
 const barH = (from, ends) => `<div class="tbar"><i data-from="${from}" data-ends="${ends}"></i></div>`;
@@ -5087,6 +5092,40 @@ function juCoins(n){ JU.fchA = Date.now() + 1400; const box = document.createEle
     let k = -1; return h.replace(/<div class="cr ?(fallen)?">/g, (m0, f) => { k++; const p = ms[k]; const up = TVS.rkUp[p] > Date.now(); return `<div class="cr${f ? ' fallen' : ''}${up ? ' up' : ''}" data-pid="${p}">`; }); }; }
 { const _rt = renderTV; renderTV = function(E){ const old = {}; $$('.cr[data-pid]').forEach(r => old[r.dataset.pid] = r.getBoundingClientRect().top); const before = TVS.lastHTML; _rt(E);
     if (TVS.lastHTML !== before) $$('.cr[data-pid]').forEach(r => { const o = old[r.dataset.pid]; if (o == null) return; const dy = o - r.getBoundingClientRect().top; if (Math.abs(dy) > 2 && r.animate) r.animate([{transform: `translateY(${dy}px)`}, {transform: 'none'}], {duration: 750, easing: 'cubic-bezier(.2,.8,.2,1)'}); }); }; }
+
+// =====================================================================
+// FOTO DE PERFIL: cada miembro se hace un selfie al entrar. Sale en su avatar
+// en la tele, en los móviles y en las pantallas de la Trastienda.
+// =====================================================================
+var AVP = (typeof window !== 'undefined' && window.AVP) || {}; if (typeof window !== 'undefined') window.AVP = AVP;
+function avpApply(map){ Object.keys(AVP).forEach(k => delete AVP[k]); Object.assign(AVP, map || {}); if (typeof document === 'undefined' || !document.head) return;
+  let st = document.getElementById('avpstyle'); if (!st){ st = document.createElement('style'); st.id = 'avpstyle'; document.head.appendChild(st); }
+  st.textContent = Object.entries(AVP).map(([pid, u]) => `.avp-${pid}{background-image:url(${u})!important}`).join('\n'); }
+const PF_OK = s => typeof s === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(s) && s.length < 26000;
+// ---- tele ----
+{ const _pa2 = playerAct; playerAct = function(S, pid, a){ if (a && a.t === 'pfoto'){ const p = S.players[pid]; if (!p || !PF_OK(a.img)) return false; S.pf ||= {}; S.pf[pid] = a.img; S.pfRev = (S.pfRev || 0) + 1; p.seen = NOW(); if (typeof avpApply === 'function' && typeof document !== 'undefined') avpApply(S.pf); return true; } return _pa2(S, pid, a); }; }
+{ const _mv4 = meView; meView = function(S, pid){ const M = _mv4(S, pid); if (M && !M.gone) M.hasPf = !!(S.pf && S.pf[pid]); return M; }; }
+if (typeof Engine !== 'undefined'){ const _pub = Engine.prototype.publish; Engine.prototype.publish = function(force){ const r = _pub.call(this, force); const S = this.S;
+    if (this.pfSent !== (S.pfRev || 0) || force){ this.pfSent = S.pfRev || 0; try { this.pub.setKey('avs', {rev: this.pfSent, m: S.pf || {}}); } catch {} if (typeof document !== 'undefined') avpApply(S.pf); } return r; }; }
+// ---- móviles y pantallas: reciben las fotos ----
+function avpListen(ch){ if (!ch || ch._avp) return; ch._avp = true; ch.onKey('avs', v => { if (!v) return; avpApply(v.m); if (document.body.classList.contains('v-ph')){ PH.lastHTML = ''; try { phRender(); } catch {} } else { try { CV.html = ''; BK.html = ''; } catch {} } }); }
+if (typeof setInterval !== 'undefined' && typeof document !== 'undefined') setInterval(() => { try { if (PH.pubChan) avpListen(PH.pubChan); if (window.__HUB && PH.ctx && !document.body.classList.contains('v-tv') && !PH.pubChan){ const ch = window.__HUB.chans[roomPub(PH.ctx.room)]; if (ch) avpListen(ch); } } catch {} }, 700);
+// ---- móvil: el selfie obligatorio ----
+const PF = {img: '', busy: false};
+function pfPick(){ let inp = $('#pfin'); if (!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'pfin'; inp.style.display = 'none'; document.body.appendChild(inp); }
+  inp.value = ''; inp.setAttribute('capture', 'user'); inp.onchange = () => { const f = inp.files && inp.files[0]; if (f) pfLoad(f); }; inp.click(); }
+function pfLoad(file){ const url = URL.createObjectURL(file); const im = new Image(); im.onload = () => { URL.revokeObjectURL(url); const S = 128; const c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
+    const m = Math.min(im.width, im.height); g.drawImage(im, (im.width - m) / 2, (im.height - m) / 2.6, m, m, 0, 0, S, S); let q = .74, d = c.toDataURL('image/jpeg', q); while (d.length > 14000 && q > .3){ q -= .1; d = c.toDataURL('image/jpeg', q); }
+    PF.img = d; PH.lastHTML = ''; phRender(); }; im.onerror = () => { URL.revokeObjectURL(url); toast('No se pudo leer la foto. Prueba otra vez.'); }; im.src = url; }
+function pfH(me){ const test = PH.ctx && PH.ctx.mode === 'local';
+  if (PF.img) return `<div class="pc pfin"><div class="stampc">FOTO DE SOCIO</div><div class="pf-prev" style="background-image:url(${PF.img})"></div><p>¿Te gusta? Es la que verá todo el club en la tele.</p><button class="btn gold wide huge" data-pf="send" ${PF.busy ? 'disabled' : ''}>${PF.busy ? 'Enviando…' : 'Usar esta foto'}</button><button class="btn wide" data-pf="shot">Repetir</button></div>`;
+  return `<div class="pc pfin"><div class="stampc">FOTO DE SOCIO</div><div class="pf-ring">${avH(me, 'xxl')}</div><h2>Tu foto para el carné</h2><p>Hazte un selfie. Será tu cara en el club: en la tele, en las clasificaciones y en los móviles de los demás.</p><button class="btn gold wide huge" data-pf="shot">📸 Hacerme la foto</button>${test ? '<button class="lnk" data-pf="skip">Ahora no (modo de prueba)</button>' : ''}</div>`; }
+{ const _nb2 = nocheBody; nocheBody = function(P, me, v){ const c = me.club; const inGame = ['wheel', 'intro', 'rules', 'count', 'play', 'res', 'rank'].includes(P.phase);
+    if (c && c.qDone && !me.hasPf && !PH.pfSkip && !inGame && !c.vote && P.phase !== 'final') return pfH(me); return _nb2(P, me, v); }; }
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-pf]'); if (!t) return; const d = t.dataset.pf;
+  if (d === 'shot') return pfPick();
+  if (d === 'skip'){ PH.pfSkip = true; PH.lastHTML = ''; return phRender(); }
+  if (d === 'send' && PF.img && !PF.busy){ PF.busy = true; phSend({t: 'pfoto', img: PF.img}); PH.lastHTML = ''; phRender(); setTimeout(() => { PF.busy = false; if (PH.me && PH.me.hasPf) PF.img = ''; else toast('No ha llegado la foto. Pulsa otra vez «Usar esta foto».'); PH.lastHTML = ''; phRender(); }, 4000); } });
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
