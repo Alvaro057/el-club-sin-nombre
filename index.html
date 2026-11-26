@@ -3403,9 +3403,10 @@ def('blackjack', casinoMeta({name: 'Blackjack Exprés', icon: '🃏', desc: 'Tod
 // =====================================================================
 const SLOT = [['🍒', 30, 4], ['🍋', 25, 3], ['🔔', 18, 6], ['⭐', 14, 8], ['💎', 8, 12], ['7️⃣', 5, 20]];
 const slotRoll = () => { const tot = sum(SLOT.map(s => s[1])); const one = () => { let r = rnd(tot); for (const s of SLOT){ if (r < s[1]) return s[0]; r -= s[1]; } return SLOT[0][0]; }; return [one(), one(), one()]; };
-const slotPay = r => { if (r[0] === r[1] && r[1] === r[2]) return SLOT.find(s => s[0] === r[0])[2]; if (r.filter(x => x === '🍒').length === 2) return 2; if (r[0] === r[1] || r[1] === r[2] || r[0] === r[2]) return 1.5; return 0; };
+// devuelve de media un 89 % de lo apostado: la banca gana a la larga, como en un casino de verdad
+const slotPay = r => { if (r[0] === r[1] && r[1] === r[2]) return SLOT.find(s => s[0] === r[0])[2]; if (r.filter(x => x === '🍒').length === 2) return 2; if (r[0] === r[1] || r[1] === r[2] || r[0] === r[2]) return 1; return 0; };
 def('tragaperras', casinoMeta({name: 'La Tragaperras', icon: '🎰', desc: 'Elige la apuesta y tira de la palanca. Tres iguales, premio gordo.', ctl: 'Apostar y tirar',
-  rules: ['Elige cuántas fichas metes en la máquina.', 'Tira de la palanca desde el móvil.', 'Tres iguales: premio (¡tres sietes, ×20!). Dos iguales: algo recuperas.'], ri: ['🪙', '🕹️', '7️⃣'],
+  rules: ['Elige cuántas fichas metes en la máquina.', 'Tira de la palanca desde el móvil.', 'Tres iguales: premio (¡tres sietes, ×20!). Dos cerezas: ×2. Otras dos iguales: recuperas la apuesta.'], ri: ['🪙', '🕹️', '7️⃣'],
   init(S){ return {spins: {}, st: 'wait'}; },
   start(S, g, v){ g.st = 'q'; g.t0 = v; g.t1 = v + 30000; },
   step(S, g, v){ if (g.st === 'q' && (v >= g.t1 || (v - g.t0 > 3000 && allIn(S, g.spins) && Object.values(g.spins).every(x => v - x.at > 2500)))){ g.st = 'rev'; g.t0 = v; g.t1 = v + 7000; return false; } return g.st === 'rev' && v >= g.t1; },
@@ -3593,8 +3594,8 @@ function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[t
     case 'fragment': { const t = pickT(unmetOnline(S, pid)) || pickT(othersOnline(S, pid)); if (!t) return mkMission(S, pid, 'contact_any', gate); const f = pick(FRAGS);
       pushInbox(S, t, {k: 'frag', t: 'Guardas un fragmento', d: `Alguien vendrá a pedirte tu mitad de una contraseña. Es «…${f[1]}». Dásela solo a quien te diga su mitad.`, frag: f[1], from: pid});
       return Object.assign(base, {tg: t, word: f.join(''), half: f[0], need: 'text', t: 'La contraseña partida', d: `Tienes media contraseña: «${f[0]}…». La otra mitad la guarda ${nm(t)}. Encuéntrale y escribe la contraseña completa.`}); }
-    case 'duel': return Object.assign(base, {need: 'duel', t: 'Duelo personal', d: 'Reta a alguien a un duelo cara a cara (pulso chino, piedra-papel-tijera, aguantar la mirada…) y apostad fichas. Ve a «Más» → «Retar a un duelo».'});
-    case 'trade': return Object.assign(base, {need: 'trade', t: 'Cierra un trato', d: 'Negocia con alguien y envíale o recibe de él fichas a cambio de lo que acordéis (una pista, un favor, un voto…). Ve a «Más» → «Enviar fichas».'});
+    case 'duel': return Object.assign(base, {need: 'duel', t: 'Duelo personal', d: 'Reta a alguien a un duelo cara a cara (pulso chino, piedra-papel-tijera, aguantar la mirada…) y apostad fichas. Ve a «Fichas» → «Retar a un duelo».'});
+    case 'trade': return Object.assign(base, {need: 'trade', t: 'Cierra un trato', d: 'Negocia con alguien y envíale o recibe de él fichas a cambio de lo que acordéis (una pista, un favor, un voto…). Ve a «Fichas».'});
     case 'alliance': return Object.assign(base, {need: 'code', t: 'Sella una alianza', d: 'Convence a alguien para aliarse contigo. Registra su código: le llegará la propuesta. Mientras dure, cuando uno de los dos suba al podio, el otro también gana experiencia.'});
     case 'influence': return Object.assign(base, {need: 'who', cand: null, t: 'Voto de confianza', d: 'Concede tu voto de confianza a quien más respetes esta noche. Le darás 80 XP. No puede ser para ti.'});
     case 'risk': return Object.assign(base, {need: 'choice', o: ['Segura: +100 XP', 'Arriesgada: 50% de +260 XP… o nada'], t: 'Cara o cruz', d: 'El club te ofrece dos recompensas. Elige.'});
@@ -4499,7 +4500,7 @@ function formAutoLoad(){ const u = localStorage.getItem('ccsn-csv'); if (!u) ret
 function cfgOverlay(){ const el = ovEl(); const c = (E.S.club && E.S.club.cfg) || CLUB_CFG;
   el.innerHTML = `<div class="co-in cfgov"><h2>⚙️ Ajustes de la noche</h2><div class="trlinks"><b>Pantallas de la Trastienda</b><p class="note">Ábrelas en el ordenador de la Trastienda (no aquí, que lo ven los invitados). El casino abre también el libro de firmas en otra ventana.</p><a class="btn" target="_blank" href="${esc(linkFor('casino', E.ctx))}">🎰 Casino</a><a class="btn" target="_blank" href="${esc(linkFor('firmas', E.ctx))}">📖 Libro de firmas</a><code>${esc(linkFor('casino', E.ctx))}</code></div><p class="note">Experiencia necesaria para cada rango (además de su prueba de ascenso).</p>
     <div class="cfg-r">${RANKS.map((R, i) => `<label>${R.ic} ${R.n}<input type="number" class="field" data-xp="${i}" value="${c.xp[i]}" ${i === 0 ? 'disabled' : ''}></label>`).join('')}</div>
-    <div class="cfg-r"><label>Minijuegos por convocatoria<input type="number" class="field" id="cg" value="${c.games}" min="1" max="6"></label><label>Minutos de operaciones<input type="number" class="field" id="co" value="${c.ops}" min="3" max="40"></label><label>Minutos de intermedio<input type="number" class="field" id="ci" value="${c.inter}" min="5" max="90"></label><label>Minutos para leer el expediente<input type="number" class="field" id="cbf" value="${c.brief || 3}" min="1" max="10"></label></div>
+    <div class="cfg-r"><input type="hidden" id="cg" value="${c.games}"><label>Minutos de operaciones<input type="number" class="field" id="co" value="${c.ops}" min="3" max="40"></label><label>Minutos de intermedio<input type="number" class="field" id="ci" value="${c.inter}" min="5" max="90"></label><label>Minutos para leer el expediente<input type="number" class="field" id="cbf" value="${c.brief || 3}" min="1" max="10"></label></div>
     <p class="note">La noche dura unas 3 horas y media con estos valores. El anfitrión puede adelantar o alargar cualquier momento desde el panel.</p>
     <div class="co-b"><button class="btn" data-c="close">Cerrar</button><button class="btn gold" data-c="save">Guardar</button></div></div>`;
   el.onclick = e => { const b = e.target.closest('[data-c]'); if (!b) return; if (b.dataset.c === 'save'){ E.host('cfg', {xp: $$('[data-xp]', el).map(i => +i.value), games: +$('#cg').value, ops: +$('#co').value, inter: +$('#ci').value, brief: +$('#cbf').value}); toast('Ajustes guardados'); } el.remove(); }; }
@@ -4780,7 +4781,8 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
 // y juega a la mesa que hay puesta. La partida y el resultado se ven en la tele.
 const CAS_TABLES = ['ruleta', 'blackjack', 'tragaperras'];
 const CAS_CAP = 10; // apuesta máxima por mano en el casino del intermedio
-const CAS_HANDS = 3; // manos por mesa antes de cambiar
+const CAS_HANDS = 3;
+const CAS_WIN_CAP = 25; // lo máximo que se puede ganar en una misma apertura del casino // manos por mesa antes de cambiar
 const CAS_SAY = 'El casino de la Trastienda está abierto. Quien quiera jugar, ya sabe dónde encontrarlo.';
 const casSeated = S => S.cas ? Object.keys(S.cas.seats).filter(p => S.players[p]) : [];
 // el casino es un secreto hasta que termina la primera convocatoria de minijuegos
@@ -4800,6 +4802,8 @@ function casTick(S){ const v = vnow(S);
     try { if (def.bot) seats.forEach(p => { if (S.players[p].bot && Math.random() < .25) def.bot(S, X.g, p, v); });
       const done = def.step(S, X.g, v);
       if (done){ const g = X.g; const big = casBig(S, g); if (big) X.hist.unshift(big); X.hist = X.hist.slice(0, 4);
+        // tope de ganancias por apertura: quien gana demasiado se queda sin crédito hasta la siguiente
+        X.net ||= {}; X.cut ||= {}; Object.entries(casNet(g)).forEach(([p, d]) => { const room = CAS_WIN_CAP - (X.net[p] || 0); if (d > 0 && d > room){ const back = d - Math.max(0, room); addFichas(S, p, -back); d -= back; typeof flash === 'function' && flash(S, p, `La banca solo paga hasta ${CAS_WIN_CAP} fichas por apertura: te quedas con ${Math.max(0, d)} de este premio.`, false); } X.net[p] = (X.net[p] || 0) + d; if (X.net[p] >= CAS_WIN_CAP && !X.cut[p]){ X.cut[p] = 1; delete X.seats[p]; typeof flash === 'function' && flash(S, p, `La banca te ha cortado el crédito: ya has ganado ${X.net[p]} fichas. Vuelve en la próxima apertura.`, false); } });
         X.g = null; X.n++; X.nextAt = v + 3000; if (X.n >= CAS_HANDS){ X.n = 0; X.ti = (X.ti + 1) % CAS_TABLES.length; X.nextAt = v + 6000; X.changed = v; } }
     } finally { CAS_ON = null; } }
   let after = JSON.stringify(X); if (X.g && X.g.k === 'tragaperras') after += Math.floor(v / 700);
@@ -4811,9 +4815,14 @@ function casBig(S, g){ let best = null; const add = (p, w) => { if (w > 0 && (!b
   if (g.k === 'blackjack') Object.entries(g.res || {}).forEach(([p, r]) => add(p, r.ret - g.bets[p]));
   if (g.k === 'tragaperras') Object.entries(g.spins).forEach(([p, x]) => add(p, x.ret - x.amt));
   return best ? {name: S.players[best.p].name, w: best.w, t: GAMES[g.k].name} : null; }
+function casNet(g){ const o = {};
+  if (g.k === 'ruleta') Object.entries(g.bets).forEach(([p, b]) => o[p] = (b.ret || 0) - b.amt);
+  if (g.k === 'blackjack') Object.entries(g.res || {}).forEach(([p, r]) => o[p] = r.ret - g.bets[p]);
+  if (g.k === 'tragaperras') Object.entries(g.spins).forEach(([p, x]) => o[p] = x.ret - x.amt);
+  return o; }
 function casAct(S, pid, a){ const X = S.cas; if (!X) return false;
   if (a.t === 'cas'){
-    if (a.a === 'join'){ if (String(a.c || '').toUpperCase() !== X.code){ typeof flash === 'function' && flash(S, pid, 'Ese código no abre el casino. Mira el de la pantalla de la Trastienda', false); return true; } X.seats[pid] = 1; typeof flash === 'function' && flash(S, pid, 'Te sientas en el casino. ¡Suerte!'); return true; }
+    if (a.a === 'join'){ if (String(a.c || '').toUpperCase() !== X.code){ typeof flash === 'function' && flash(S, pid, 'Ese código no abre el casino. Mira el de la pantalla de la Trastienda', false); return true; } if (X.cut && X.cut[pid]){ flash(S, pid, 'La banca no te deja volver a sentarte hasta la próxima apertura del casino', false); return true; } X.seats[pid] = 1; typeof flash === 'function' && flash(S, pid, 'Te sientas en el casino. ¡Suerte!'); return true; }
     if (a.a === 'leave'){ if (X.g && X.g.k === 'blackjack' && X.g.hands[pid] && !X.g.stood[pid]) X.g.stood[pid] = 1; delete X.seats[pid]; return true; }
     return false; }
   if (a.t === 'g' && X.g && X.seats[pid]){ const def = GAMES[X.g.k]; return def.act(S, X.g, pid, a, vnow(S)) !== false; }
@@ -4841,7 +4850,7 @@ function casMesaH(P, X, seated){ const def = GAMES[X.k]; const P2 = Object.assig
   else table = `<div class="cas-wait"><div class="cas-ic">${X.icon}</div><h2>${esc(X.name)}</h2><p>${seated.length ? (X.hand === 1 && X.changed ? 'Cambio de mesa. ' : '') + 'La próxima mano empieza enseguida…' : 'La mesa está vacía. Escribe el código en tu expediente para sentarte.'}</p></div>`;
   return `<div class="cas-main"><div class="cas-mt"><span>${X.icon} ${esc(X.name)}</span><small>Mano ${X.hand} de ${X.of} · después: ${esc(X.next)}</small></div><div class="cas-table">${table}</div></div>`; }
 function casRichH(P, n = 8){ return P.players.filter(p => !p.bot || P.mode === 'local').slice().sort((a, b) => b.fichas - a.fichas).slice(0, n); }
-function casPanelH(P, X, seated, solo){ return `<aside class="cas-side ${solo ? 'solo' : ''}"><div class="cas-open">Casino abierto</div><p class="cas-how">Para jugar, escribe en «Código» de tu expediente</p><div class="cas-code">${esc(X.code)}</div><p class="cas-how">Apuesta máxima: ${CAS_CAP} fichas por mano</p>
+function casPanelH(P, X, seated, solo){ return `<aside class="cas-side ${solo ? 'solo' : ''}"><div class="cas-open">Casino abierto</div><p class="cas-how">Para jugar, escribe en «Código» de tu expediente</p><div class="cas-code">${esc(X.code)}</div><p class="cas-how">Apuesta máxima: ${CAS_CAP} fichas por mano · ganancia máxima: ${CAS_WIN_CAP} por apertura</p>
   <div class="cas-seats"><div class="ct-h"><span>En la mesa · ${seated.length}</span></div>${seated.length ? seated.slice().sort((a, b) => b.fichas - a.fichas).map(p => `<div class="ct-r"><i></i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${p.fichas}<i class="coin"></i></em></div>`).join('') : '<p class="note">Nadie todavía. ¿Quién se atreve?</p>'}</div>
   ${X.hist.length ? `<div class="cas-hist"><div class="ct-h"><span>Últimos premios</span></div>${X.hist.map(h => `<p><b>${esc(h.name)}</b> gana ${h.w} fichas <small>${esc(h.t)}</small></p>`).join('')}</div>` : ''}
   ${solo ? `<div class="cas-hist"><div class="ct-h"><span>Las fortunas del club</span></div>${casRichH(P).map((p, i) => `<div class="ct-r ${i === 0 ? 'top' : ''}"><i>${i + 1}</i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${p.fichas}<i class="coin"></i></em></div>`).join('')}</div>` : ''}</aside>`; }
