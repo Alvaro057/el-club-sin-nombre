@@ -3235,13 +3235,14 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
   const s = [0, 1, 2].map(i => ($('#dv' + i) || {}).value || ''); const r = document.querySelector('input[name=dvlie]:checked');
   if (s.some(x => !x.trim())) return toast('Escribe las tres frases'); if (!r) return toast('Marca cuál es la mentira'); phSend({t: 'g', a: 'dv', s, lie: +r.value}); }, true);
 
+GAMES.apuesta.init = function(S){ const g = {}; rInit(g, fresh(S, 'mayoria', MAJORITY, 4, m => m[0]).map(m => ({q: m[0], o: shuffle(m.slice(1)).slice(0, 2)})), 15000, 5000); return g; };
 // ---------- la noche: los minijuegos elegidos, en orden, mezclando apuestas ----------
 const NIGHT_PLAN = {
   'Primera convocatoria': ['emoji', 'quien', 'caballos'],
-  'Segunda convocatoria': ['subasta', 'mimica', 'corre'],
+  'Segunda convocatoria': ['apuesta', 'mimica', 'respuesta'],
   'La caída de la bolsa': ['@casino', 'mentiroso'],
   'Tercera convocatoria': ['tararea', 'caras', 'dosverdades'],
-  'Última convocatoria': ['respuesta', 'dibujo', 'caos'],
+  'Última convocatoria': ['patata', 'dibujo', 'caos'],
 };
 
 // ================= mesas de casino (modo Casino) =================
