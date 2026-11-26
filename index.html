@@ -3547,7 +3547,7 @@ function clubMember(S, pid, ans){ const C = clubInit(S); if (C.m[pid]) return C.
     st: {games: 0, pods: 0, wins: 0, miss: 0, met: {}, inv: 0, duelW: 0, duelL: 0, trades: 0, betW: 0, gaveInf: 0, tribOk: 0, fooled: 0, fichasWon: 0, rankFrom: 0}, fallen: false, shield: false, lim: {}, flash: null, hist: []};
   buildPath(S, pid); if (S.players[pid] && S.players[pid].bot && !ans){ QS.forEach(Q => { if (!Q.text) m.q[Q.k] = rnd(Q.o.length); }); m.q.anecdota = pick(['Me quedé encerrado en un ascensor con mi jefe', 'Perdí un zapato en una boda', 'Me confundieron con un famoso en el aeropuerto']); m.qDone = true; buildPath(S, pid); } return m; }
 // la ruta: tres misiones por rango y una prueba de ascenso
-const PATH_PLAN = [['mix', 'contact', 'G:fragment'], ['findwho', 'hunt', 'G:podium'], ['anecdote', 'arma', 'G:alliance'], ['pair', 'ask', 'G:duelwin'], ['ask', 'contact', 'G:final']];
+const PATH_PLAN = [['mix', 'contact', 'G:fragment'], ['findwho', 'casino', 'G:podium'], ['anecdote', 'arma', 'G:alliance'], ['pair', 'ask', 'G:duelwin'], ['ask', 'contact', 'G:final']];
 function buildPath(S, pid){ const m = cm(S, pid); m.path = []; PATH_PLAN.forEach((row, r) => row.forEach((ty, i) => { const g = ty.startsWith('G:'); m.path.push({r, ty: g ? ty.slice(2) : ty, gate: g, st: 'locked', mis: null}); })); m.node = -1; nextNode(S, pid); }
 function nextNode(S, pid){ const m = cm(S, pid); if (!m.qDone){ m.node = -1; return; } for (let i = 0; i < m.path.length; i++){ const N = m.path[i]; if (N.st === 'done' || N.st === 'skip') continue;
     if (N.r > m.rank) break;
@@ -3558,7 +3558,7 @@ const activeMis = (S, pid) => { const m = cm(S, pid); return m && m.node >= 0 ? 
 
 // ---------- misiones ----------
 const MIS_INFO = {
-  mix: {cat: 'Romper el hielo', ic: '🤝', xp: 160}, fportada: {cat: 'Fotos', ic: '🎬', xp: 180}, fpeligro: {cat: 'Fotos', ic: '🎬', xp: 120}, fraro: {cat: 'Fotos', ic: '🎬', xp: 120}, fperju: {cat: 'Fotos', ic: '🎬', xp: 120}, ffuma: {cat: 'Fotos', ic: '🎬', xp: 120}, fcome: {cat: 'Fotos', ic: '🎬', xp: 110}, duelwin: {cat: 'Riesgo', ic: '⚔️', xp: 220}, contact: {cat: 'Contactos', ic: '🤝', xp: 130}, contact_any: {cat: 'Contactos', ic: '🤝', xp: 100}, ask: {cat: 'Investigación', ic: '🔎', xp: 150}, findwho: {cat: 'Investigación', ic: '🔎', xp: 170},
+  mix: {cat: 'Romper el hielo', ic: '🤝', xp: 160}, casino: {cat: 'La Trastienda', ic: '🎰', xp: 140}, fportada: {cat: 'Fotos', ic: '🎬', xp: 180}, fpeligro: {cat: 'Fotos', ic: '🎬', xp: 120}, fraro: {cat: 'Fotos', ic: '🎬', xp: 120}, fperju: {cat: 'Fotos', ic: '🎬', xp: 120}, ffuma: {cat: 'Fotos', ic: '🎬', xp: 120}, fcome: {cat: 'Fotos', ic: '🎬', xp: 110}, duelwin: {cat: 'Riesgo', ic: '⚔️', xp: 220}, contact: {cat: 'Contactos', ic: '🤝', xp: 130}, contact_any: {cat: 'Contactos', ic: '🤝', xp: 100}, ask: {cat: 'Investigación', ic: '🔎', xp: 150}, findwho: {cat: 'Investigación', ic: '🔎', xp: 170},
   pair: {cat: 'Contactos', ic: '👥', xp: 210}, anecdote: {cat: 'Investigación', ic: '📜', xp: 150}, fragment: {cat: 'Códigos', ic: '🧩', xp: 220}, duel: {cat: 'Riesgo', ic: '⚔️', xp: 160},
   trade: {cat: 'Mercado de favores', ic: '🤝', xp: 130}, alliance: {cat: 'Alianzas', ic: '🫱🏻‍🫲🏼', xp: 220}, influence: {cat: 'Influencia', ic: '🗳️', xp: 90}, risk: {cat: 'Riesgo', ic: '🎲', xp: 0},
   betpod: {cat: 'Riesgo', ic: '🪙', xp: 120}, podium: {cat: 'Habilidad', ic: '🏆', xp: 220}, win: {cat: 'Habilidad', ic: '🥇', xp: 260}, arma: {cat: 'Riesgo', ic: '🎭', xp: 190},
@@ -3581,6 +3581,7 @@ function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[t
     case 'fperju': return Object.assign(base, {need: 'photo', t: 'El que acabará peor', d: 'Hazte una foto con la persona que crees que irá más perjudicada a lo largo de la noche.'});
     case 'ffuma': return Object.assign(base, {need: 'photo', free: 1, t: 'Los fumadores', d: 'Hazte una foto con gente que esté fumando. Si no hay nadie, cambia de misión gratis.'});
     case 'fcome': return Object.assign(base, {need: 'photo', t: 'El hambriento', d: 'Hazle una foto a alguien comiendo algo. Cuanto más pillado, mejor.'});
+    case 'casino': { const d = pick(CAS_MIS); return Object.assign(base, {need: 'casino', ck: d.k, n: d.n, got: 0, xp: d.xp, t: d.t, d: `${d.d} El casino está en la Trastienda: escribe el código de su pantalla para sentarte. Abre durante las Operaciones y el Intermedio.`}); }
     case 'mix': return Object.assign(base, {need: 'code2', codes: [], n: 3, t: 'Rompe el hielo', d: 'Habla con tres personas con las que todavía no hayas hablado esta noche. Preséntate, pregúntales algo y registra sus códigos de encuentro.'});
     case 'duelwin': return Object.assign(base, {need: 'duel', t: 'Gana un duelo', d: 'Reta a alguien a un duelo cara a cara y gánalo. Se hace desde la pestaña «Fichas» → «Retar a un duelo».'});
     case 'contact_any': return Object.assign(base, {need: 'code', t: 'Una cara nueva', d: 'Habla con alguien con quien todavía no hayas hablado esta noche y registra su código de encuentro.'});
@@ -4651,7 +4652,9 @@ function misCard(P, me, x, side){ if (!x) return ''; const c = me.club; const id
     case 'duel': case 'trade': ui = `<button class="btn wide" data-tab="fichas">Ir a ${x.need === 'duel' ? 'Retar a un duelo' : 'Enviar fichas'}</button>`; break;
     case 'photo': ui = `<button class="btn gold wide" data-ftgo="${id}" data-mt="${esc(x.t)}" data-poster="${x.poster ? 1 : 0}">Hacer la foto</button>`; break;
     case 'wait': ui = '<p class="muted">Se resuelve en el próximo minijuego.</p>'; break;
+    case 'secret': ui = ''; break;
     case 'auto': ui = '<p class="muted">Se comprueba solo.</p>'; break;
+    case 'casino': ui = `${x.n > 1 ? `<p>Llevas <b>${x.got} de ${x.n}</b></p>` : ''}<p class="muted">${P.cas ? '🎰 El casino está abierto ahora: escribe su código arriba.' : P.casUnl ? 'El casino está cerrado: vuelve a abrir en las próximas Operaciones o en el Intermedio.' : 'El casino todavía no ha abierto. Ya llegará…'}</p>`; break;
   }
   const reroll = x.tg && !x.tgOn ? cxB({a: 'reroll', mid: id}, `${esc(x.tgName)} no está conectado: cambiar de misión (gratis)`, 'lnk') : !['auto', 'final', 'wait'].includes(x.need) ? cxB({a: 'reroll', mid: id}, x.free ? 'Cambiar de misión (gratis)' : 'Cambiar de misión (2 fichas)', 'lnk') : '';
   return `<div class="mis ${side ? 'side' : ''} ${x.gate ? 'gate' : ''}"><div class="mis-h"><span class="mis-ic">${x.ic}</span><div><small>${side ? 'Misión secundaria · ' : x.gate ? 'Prueba de ascenso · ' : 'Misión principal · '}${esc(x.cat)}</small><b>${esc(x.t)}</b></div>${x.xp ? `<em>+${x.xp} XP</em>` : ''}</div><p>${esc(x.d)}</p>${ui}${reroll}</div>`; }
@@ -4788,7 +4791,7 @@ const CAS_SAY = 'El casino de la Trastienda está abierto. Quien quiera jugar, y
 const casSeated = S => S.cas ? Object.keys(S.cas.seats).filter(p => S.players[p]) : [];
 // el casino es un secreto hasta que termina la primera convocatoria de minijuegos
 function casOpenNow(S){ const C = S.club; return !!(C && C.on && S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k) && C.dir && C.dir.blocks.slice(0, C.dir.bi).some(b => b.k === 'conv')); }
-const CAS_FIRST = {ic: '🎰', h: 'El casino abre sus puertas', p: 'En la Trastienda hay un casino. Cada uno tiene una misión allí: mirad vuestro expediente.', say: 'Una cosa más. En la Trastienda, el club ha abierto un casino. Cada uno de vosotros tiene una misión allí dentro. Las fichas se pueden multiplicar… o perder.'};
+const CAS_FIRST = {ic: '🎰', h: 'El casino abre sus puertas', p: 'En la Trastienda hay un casino. Todos tenéis una misión allí en vuestro camino.', say: 'Una cosa más. En la Trastienda, el club ha abierto un casino. Todos tenéis una misión allí dentro. Las fichas se pueden multiplicar… o perder.'};
 function casRefund(S){ const X = S.cas; if (!X || !X.g) return; const g = X.g; if (g.k === 'blackjack' && ['play', 'bank'].includes(g.st)) Object.entries(g.bets).forEach(([p, b]) => addFichas(S, p, b)); if (g.k === 'ruleta' && g.st === 'spin') Object.entries(g.bets).forEach(([p, b]) => { if (b.ret) addFichas(S, p, b.ret); }); }
 function casTick(S){ const v = vnow(S);
   if (!casOpenNow(S)){ if (S.cas){ casRefund(S); S.cas = null; return true; } return false; }
@@ -4945,20 +4948,21 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
 
 // ================= la misión del casino: todos tienen una =================
 const CAS_MIS = [
-  {k: 'hands3', t: 'Juega 3 manos en el casino', xp: 120, n: 3},
-  {k: 'win1', t: 'Gana una mano en el casino', xp: 150, n: 1},
-  {k: 'num', t: 'Apuesta a un número en la ruleta', xp: 130, n: 1},
-  {k: 'bj', t: 'Juega una mano de blackjack', xp: 120, n: 1},
-  {k: 'slot', t: 'Tira de la palanca de la tragaperras', xp: 110, n: 1},
+  {k: 'hands3', t: 'Juega 3 manos en el casino', d: 'Siéntate a la mesa que haya y juega tres manos.', xp: 140, n: 3},
+  {k: 'win1', t: 'Gana una mano en el casino', d: 'Siéntate y gana al menos una mano. Puede costarte unas cuantas.', xp: 170, n: 1},
+  {k: 'num', t: 'A un solo número', d: 'Cuando toque la ruleta, apuesta a un número concreto.', xp: 150, n: 1},
+  {k: 'bj', t: 'Una mano de blackjack', d: 'Cuando toque el Blackjack Exprés, juega una mano.', xp: 140, n: 1},
+  {k: 'slot', t: 'Tira de la palanca', d: 'Cuando toque la tragaperras, juega una tirada.', xp: 130, n: 1},
 ];
-function casMisAssign(S){ const C = S.club; let ch = false; memberIds(S).forEach(p => { const m = cm(S, p); if (!m || m.cmis) return; const d = pick(CAS_MIS); m.cmis = {k: d.k, t: d.t, xp: d.xp, n: d.n, got: 0, st: 'active'}; flash(S, p, '🎰 Tienes una misión en el casino: ' + d.t); ch = true; }); return ch; }
 function casMisHand(S, g){ const who = new Set(Object.keys(g.k === 'ruleta' ? g.bets : g.k === 'blackjack' ? g.bets : g.spins)); const net = casNet(g);
-  who.forEach(p => { const m = cm(S, p); const x = m && m.cmis; if (!x || x.st !== 'active') return; let inc = 0;
+  who.forEach(p => { const m = cm(S, p); if (!m) return; const x = [activeMis(S, p), m.side].find(y => y && y.ty === 'casino' && y.st === 'active'); if (!x) return; x.k = x.ck; let inc = 0;
     if (x.k === 'hands3') inc = 1; else if (x.k === 'win1') inc = (net[p] || 0) > 0 ? 1 : 0; else if (x.k === 'num') inc = g.k === 'ruleta' && g.bets[p] && g.bets[p].t === 'num' ? 1 : 0; else if (x.k === 'bj') inc = g.k === 'blackjack' ? 1 : 0; else if (x.k === 'slot') inc = g.k === 'tragaperras' ? 1 : 0;
-    if (!inc) return; x.got += inc; if (x.got >= x.n){ x.st = 'done'; m.st.miss++; giveXP(S, p, x.xp, 'Misión del casino'); flash(S, p, `🎰 Misión del casino cumplida: +${x.xp} XP`); } }); }
-{ const _ct = casTick; casTick = function(S){ let ch = _ct(S); if (S.cas && casMisAssign(S)) ch = true; return ch; }; }
-{ const _mv2 = meView; meView = function(S, pid){ const M = _mv2(S, pid); const m = S.club && cm(S, pid); if (M && !M.gone && m && m.cmis) M.cmis = m.cmis; return M; }; }
-const casMisH = me => { const x = me.cmis; if (!x) return ''; return x.st === 'done' ? `<div class="cas-mis ok">🎰 Misión del casino cumplida · +${x.xp} XP</div>` : `<div class="cas-mis"><b>Tu misión en el casino</b><span>${esc(x.t)}${x.n > 1 ? ` · ${x.got} de ${x.n}` : ''}</span><em>+${x.xp} XP</em></div>`; };
+    if (!inc) return; x.got += inc; if (x.got >= x.n) misDone(S, p, x); else flash(S, p, `🎰 ${x.t}: llevas ${x.got} de ${x.n}`); }); }
+{ const _mv2 = meView; meView = function(S, pid){ const M = _mv2(S, pid); const m = S.club && S.club.m && cm(S, pid); if (M && !M.gone && m){ const x = [activeMis(S, pid), m.side].find(y => y && y.ty === 'casino' && y.st === 'active'); if (x) M.cmis = {t: x.t, xp: x.xp, n: x.n, got: x.got};
+    // mientras el casino sea secreto, su misión del camino no se desvela
+    if (!(S.club.unl && S.club.unl.casino) && M.club){ const hide = o => o && o.ty === 'casino' ? Object.assign({}, o, {t: 'Una misión que aún no puede revelarse', d: 'El club te la desvelará pronto. Mientras tanto, sigue con lo demás.', need: 'secret'}) : o;
+      M.club.mis = hide(M.club.mis); M.club.side = hide(M.club.side); if (M.club.path) M.club.path = M.club.path.map((N, i) => m.path[i] && m.path[i].ty === 'casino' && N.t ? Object.assign({}, N, {t: 'Una misión que aún no puede revelarse', ic: '🔒'}) : N); M.cmis = null; } } return M; }; }
+const casMisH = me => { const x = me.cmis; if (!x) return ''; return `<div class="cas-mis"><b>Tu misión del camino</b><span>${esc(x.t)}${x.n > 1 ? ` · ${x.got} de ${x.n}` : ''}</span><em>+${x.xp} XP</em></div>`; };
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
