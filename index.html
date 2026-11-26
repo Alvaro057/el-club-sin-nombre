@@ -3737,7 +3737,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
     case 'tras': { if (a.what === 'chivato' && (!C.inf.pid || (C.inf.tips || {})[pid] || !S.players[a.v] || a.v === pid)){ flash(S, pid, !C.inf.pid ? 'Ahora no hay ninguna operación en marcha' : 'Ya dejaste tu chivatazo en esta ronda', false); return true; }
       if (a.what === 'enc' && (C.inf.pid !== pid || C.inf.got)) return false; if (a.what === 'sign'){ const O = C.offers[a.oid]; if (!O || O.pid !== pid || O.st !== 'wait'){ flash(S, pid, 'Esa oferta ya no está disponible', false); return true; } }
       if (!trasUse(S, pid, a.p)) return true;
-      if (a.what === 'enc' && C.inf.pid === pid && !C.inf.got){ C.inf.got = true; giveXP(S, pid, 120, 'Encargo recogido en la Trastienda'); pushInbox(S, pid, {k: 'note', t: '🕵️ Encargo recogido', d: 'Nadie te ha visto… o eso crees. Ahora, a pasar desapercibido hasta el Tribunal.'}); annc(S, {k: 'msg', ic: '🚪', h: 'Movimiento en la Trastienda', p: 'Alguien acaba de recoger un encargo en la Trastienda. ¿Quién ha salido de allí hace un momento?', say: 'Alguien acaba de recoger un encargo en la Trastienda. ¿Quién ha salido de allí hace un momento?', ms: 9000}); return true; }
+      if (a.what === 'enc' && C.inf.pid === pid && !C.inf.got){ C.inf.got = true; giveXP(S, pid, 120, 'Encargo recogido en la Trastienda'); pushInbox(S, pid, {k: 'note', t: '🕵️ Encargo recogido', d: 'Nadie te ha visto… o eso crees. Ahora, a pasar desapercibido hasta el Tribunal.'}); C.encAnn = NOW() + (3 + Math.random() * 2) * 60000; return true; }
       if (a.what === 'chivato'){ C.inf.tips ||= {}; C.inf.tips[pid] = a.v; feed(S, 'Alguien ha dejado un chivatazo en el buzón de la Trastienda', '✉️'); flash(S, pid, 'Chivatazo depositado. Si aciertas, el club te lo pagará.'); return true; }
       if (a.what === 'sign'){ const O = C.offers[a.oid]; O.st = 'yes'; dropInbox(S, pid, (m.inbox.find(i => i.oid === +a.oid) || {}).id); offerApply(S, pid, O); return true; }
       flash(S, pid, '🚪 Has entrado en la Trastienda'); return true; }
@@ -4897,7 +4897,7 @@ function bookCode(room, t){ const m = Math.floor(t / BOOK_MIN); let h = 21661362
     else ok = _tu(S, pid, code);
     if (ok) bookLog(S, C.bookCtx); return ok; }; }
 function bookLog(S, a){ const C = S.club; C.book ||= []; const w = a && a.a === 'tras' ? a.what : 'room';
-  const t = w === 'sign' ? 'Alguien ha firmado un trato con el Presidente' : w === 'enc' ? 'Alguien ha recogido un encargo' : w === 'chivato' ? 'Alguien ha dejado un chivatazo en el buzón' : w === 'room' ? 'Alguien ha dejado su marca en el libro' : 'Alguien ha entrado en la Trastienda';
+  const t = w === 'sign' ? 'Alguien ha firmado un trato con el Presidente' : w === 'enc' ? 'Alguien ha entrado en la Trastienda' : w === 'chivato' ? 'Alguien ha dejado un chivatazo en el buzón' : w === 'room' ? 'Alguien ha dejado su marca en el libro' : 'Alguien ha entrado en la Trastienda';
   C.book.unshift({at: NOW(), t}); C.book = C.book.slice(0, 30); }
 { const _ca = clubAct; clubAct = function(S, pid, a){ if (S.club) S.club.bookCtx = a; try { return _ca(S, pid, a); } finally { if (S.club) S.club.bookCtx = null; } }; }
 
@@ -4915,6 +4915,19 @@ async function bootBook(ctx){ document.body.className = 'v-book';
   await connectHub(ctx); PH.ctx = ctx; const ch = HUB.room(roomPub(ctx.room)); await ch.ready();
   ch.onKey('pub', v => { if (!v) return; PH.pub = v; if (v.ts){ PH.offs.push(v.ts - Date.now()); if (PH.offs.length > 20) PH.offs.shift(); PH.off = Math.max(...PH.offs); } bookScreenRender(); });
   setInterval(bookScreenRender, 500); bookScreenRender(); }
+
+// ================= cubrir al infiltrado =================
+// 1) El aviso de «alguien ha recogido un encargo» llega a la tele con 3-5 minutos de retraso.
+// 2) Cuando entra un infiltrado, 3-4 miembros al azar reciben una misión normal que les manda a la Trastienda:
+//    así hay tráfico y cualquiera puede ser el infiltrado.
+const ENC_ANN = {k: 'msg', ic: '🚪', h: 'Movimiento en la Trastienda', p: 'Hace unos minutos, alguien recogió un encargo en la Trastienda. ¿Quién ha estado allí?', say: 'Hace unos minutos, alguien recogió un encargo en la Trastienda. ¿Quién ha estado allí?', ms: 9000};
+{ const _t2 = clubTick; clubTick = function(S){ let ch = _t2(S); const C = S.club;
+    if (C && C.encAnn && NOW() >= C.encAnn && S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k)){ C.encAnn = 0; annc(S, ENC_ANN); feed(S, 'Alguien recogió un encargo en la Trastienda', '🚪'); ch = true; }
+    return ch; }; }
+{ const _is = infStart; infStart = function(S){ const before = S.club.inf.pid; _is(S); const I = S.club.inf; if (!I.pid || I.pid === before) return;
+    const PR = presPid(S); const pool = shuffle(memberIds(S).filter(p => p !== I.pid && p !== PR && isOn(S, p) && !cm(S, p).fallen));
+    const free = pool.filter(p => !cm(S, p).side || cm(S, p).side.st !== 'active'); const busy = pool.filter(p => !free.includes(p) && !/^f/.test(cm(S, p).side.ty));
+    free.concat(busy).slice(0, Math.min(4, Math.max(3, Math.floor(pool.length / 3)))).forEach(p => { const m = cm(S, p); m.side = mkMission(S, p, 'room'); m.sideAt = NOW(); flash(S, p, '📜 Nueva misión secundaria: visita la Trastienda'); }); }; }
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
