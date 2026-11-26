@@ -1003,6 +1003,8 @@ button .ico,.gb .ico{color:inherit}
 .cas-ph-h{display:flex;align-items:center;gap:10px;padding:0 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(201,164,92,.3)}
 .cas-ph-h span{flex:1;font-family:var(--disp);color:var(--gold2);font-size:17px}.cas-ph-h b{display:flex;align-items:center;gap:5px}
 .cas-table .slots{width:100%;grid-template-columns:repeat(2,1fr)}.cas-table .slotp{font-size:2.2vh}.cas-table .slotp b{text-align:left}
+
+.enc.locked{text-align:center}.enc-lock{font-size:54px;margin:18px 0 6px;opacity:.85}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -3641,6 +3643,7 @@ function useCode(S, pid, digits, mcode){ let owners = mcode ? memberIds(S).filte
 
 // ---------- acciones de los móviles ----------
 function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = cm(S, pid); if (!m) return false; const me = S.players[pid];
+  if ((a.a === 'code' || a.a === 'card') && (!C.on || (C.v && C.v.k === 'intro'))){ flash(S, pid, 'Los códigos se activan cuando empiece la noche, después de la introducción', false); return true; }
   if (!C.on && !['quiz', 'quizdone', 'seen'].includes(a.a)) return false;
   const misOf = id => [activeMis(S, pid), m.side].find(x => x && x.id === +id && x.st === 'active');
   switch (a.a){
@@ -4565,7 +4568,8 @@ function pathH(P, me){ const c = me.club; const al = alertsH(P, me);
   const idle = cur < 0 ? `<div class="mis idle"><p>${c.rank >= 4 ? 'Has llegado a la Élite. Sigue sumando: la ceremonia decidirá.' : c.gateOk ? `Has hecho todas las misiones de este rango. Te faltan ${xpLeft(c).toLocaleString('es-ES')} XP para subir: juega minijuegos y haz encargos.` : 'Tu próxima misión llegará enseguida.'}</p></div>` : '';
   return `${al}<div class="pathhd"><b>Tu camino</b><span>${done} de ${total} misiones</span></div>${idle}<div class="path2">${out}${fin}</div>${sideH(P, me)}`; }
 function sideH(P, me){ const c = me.club; return `<div class="sidebox"><div class="sidebox-h"><b>Encargo suelto</b><span>No forma parte del camino: solo suma experiencia</span></div>${c.side ? misCard(P, me, c.side, true) : `<div class="mis side idle"><p>No tienes ningún encargo.</p>${cxB({a: 'side'}, 'Pedir un encargo', 'lnk')}</div>`}</div>`; }
-function codeH(P, me){ const c = me.club; const t = Date.now() + (PH.off || 0); const d = encNow(c.seed, t); const m0 = Math.floor(t / 60000) * 60000 - (P.vOff || 0);
+function codeH(P, me){ const c = me.club;
+  if (!(P.club && P.club.on && !(P.club.v && P.club.v.k === 'intro'))) return `<div class="enc locked"><small>Tu código de encuentro</small><div class="enc-lock">🔒</div><p class="big center">Todavía no</p><p class="muted center">Los códigos se activan cuando empiece la noche, justo después de la introducción. Hasta entonces, nada de intercambiarlos.</p></div><p class="muted center">Tu número de socio: <b>${c.code}</b>. Te sirve para recuperar el expediente en otro móvil.</p>`; const t = Date.now() + (PH.off || 0); const d = encNow(c.seed, t); const m0 = Math.floor(t / 60000) * 60000 - (P.vOff || 0);
   const url = linkFor('p', PH.ctx, {enc: c.code + '.' + d}); if (!PH.qrTried){ PH.qrTried = 1; typeof loadQR === 'function' && Promise.resolve(loadQR()).then(() => { PH.lastHTML = ''; }).catch(() => {}); } const qr = qrSvg(url);
   return `<div class="enc"><small>Tu código de encuentro</small><div class="encd">${d}</div><div class="encbar">${barH(m0, m0 + 60000)}</div><p class="muted">Cambia cada minuto. Dáselo solo a quien tengas delante.</p>${qr ? `<div class="encqr">${qr}</div>` : ''}</div>
     <div class="mis ucode"><b>Escribe un código</b><p class="muted">Vale para todo: el de una persona (3 cifras), una tarjeta escondida (PALABRA-00) o una tira de la Trastienda (T0000).</p><div class="codein"><input class="field" id="ucode" autocapitalize="characters" autocomplete="off" placeholder="000"><button class="btn gold" data-ucode="1">Enviar</button></div>${c.cards.length ? `<p class="muted">Tarjetas encontradas: ${c.cards.length}${c.sealed ? ` · ${c.sealed} sobre sellado` : ''}${c.dblVote ? ' · voto doble guardado' : ''}${c.shield ? ' · protegido' : ''}</p>` : ''}</div>
