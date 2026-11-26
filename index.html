@@ -943,6 +943,10 @@ button .ico,.gb .ico{color:inherit}
 .albov{max-width:none}.albgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(14vw,1fr));gap:1vw;max-height:62vh;overflow:auto}.albgrid figure{position:relative;margin:0;aspect-ratio:1;border-radius:1vh;overflow:hidden;border:1px solid var(--line)}.albgrid img{width:100%;height:100%;object-fit:cover}.albgrid figcaption{font-size:1.4vh}
 .inter-cols .albshow{aspect-ratio:auto;height:50vh}
 .nf-r .albshow{aspect-ratio:auto;height:32vh;margin-top:2vh}
+
+.tg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(17vw,1fr));gap:1.6vh 1.4vw;max-height:66vh;overflow:auto}.tg-cat h3{font-family:var(--disp);color:var(--gold);font-size:1.8vh;margin:0 0 .8vh;letter-spacing:.06em}
+.tg-b{display:flex;align-items:center;gap:.7vw;width:100%;margin:0 0 .6vh;padding:1vh 1vw;background:#0e1110;border:1px solid var(--line);border-radius:1vh;color:var(--cream);font:inherit;font-size:1.7vh;text-align:left;cursor:pointer}.tg-b:hover{border-color:var(--gold);color:var(--gold2)}
+.tg-grid{display:block!important;columns:5;column-gap:1.4vw}.tg-cat{break-inside:avoid;margin-bottom:1.6vh}.tg-b{font-size:1.55vh;padding:.8vh .8vw}.tgov{width:92vw!important}.tgov .note{font-size:1.9vh}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -1744,7 +1748,7 @@ function nextGame(S){
   const items = others.concat(shuffle(others)).slice(0, 21).concat(def.k); S.wheel = {items, at: items.length - 1, turns: 0};
   setPhase(S, 'wheel', DUR.wheel);
 }
-function finish(S){ if (S.gm === 'noche' && S.club && S.club.on) return blockGamesDone(S); S.g = null; S.gi = S.plan.length; S.award = clubAward(S); setPhase(S, 'final', 0); }
+function finish(S){ if (S.testOne){ S.testOne = false; S.g = null; S.plan = []; S.gi = -1; setPhase(S, 'lobby', 0); return; } if (S.gm === 'noche' && S.club && S.club.on) return blockGamesDone(S); S.g = null; S.gi = S.plan.length; S.award = clubAward(S); setPhase(S, 'final', 0); }
 const isFinalGame = S => S.gm !== 'lobos' && S.plan[S.gi] === 'caos';
 const CLUB_PTS = [10, 7, 5, 4, 3];
 // Puntos para la clasificación del club (todas las partidas de la noche)
@@ -1850,6 +1854,9 @@ function hostCmd(S, op, a = {}){
     case 'form': { const C = clubInit(S); if (!Array.isArray(a.form)) return false; C.form = a.form.slice(0, 40); pidsAll(S).forEach(p => { const m = cm(S, p); const row = C.form.find(f => normTxt(f.name) === normTxt(S.players[p].name)); if (m && row && !m.qDone){ m.q = Object.assign({}, row.a); m.qDone = true; C.claimed[normTxt(row.name)] = p; buildPath(S, p); } }); return true; }
     case 'inter': if (S.club && S.club.on && S.phase === 'club' && S.club.v && S.club.v.k === 'inter'){ nextBlock(S); return true; } if (!S.inter){ S.inter = true; if (!S.pause && !['lobby', 'final'].includes(S.phase)){ S.pause = {at: NOW()}; S.interPaused = true; } } else { S.inter = false; if (S.interPaused && S.pause){ S.pacc += NOW() - S.pause.at; S.pause = null; } S.interPaused = false; } return true;
     case 'kick': if (S.phase !== 'lobby' || !S.players[a.pid]) return false; S.order = S.order.filter(x => x !== a.pid); delete S.players[a.pid]; ensureHost(S); return true;
+    case 'testgame': { if (S.mode !== 'local' || S.phase !== 'lobby' || !GAMES[a.k]) return false; if (pidsAll(S).length < 3) addBots(S, 3 - pidsAll(S).length);
+      pidsAll(S).forEach(pid => { const p = S.players[pid]; p.pts = 0; p.fichas = Math.max(p.fichas || 0, GAMES[a.k].casino ? 10 : 5); p.dblUsed = false; p.stats = p.stats || {}; });
+      S.plan = [a.k]; S.gi = -1; S.hist = []; S.gres = null; S.award = null; S.prevRank = rankOrder(S); S.testOne = true; nextGame(S); return true; }
     case 'bots': if (S.phase !== 'lobby') return false; addBots(S, a.n || 1); return true;
   }
   return false;
@@ -3891,7 +3898,7 @@ function tvAdmision(P){ const C = P.club || {members: [], form: [], formN: 0}; c
   return `<div class="lobby adm">
     <div class="lob-l">${logoH('big')}<div class="rkick wait-k">La sala de espera</div><p class="tagline">Las puertas se abrirán pronto. Las altas esferas no se regalan: se conquistan.</p>
       <div class="join"><div class="qr" id="qr"></div><div class="jt"><span class="kick-l">Invitación privada</span><span>Escanea o entra en</span><b class="url">${esc(JOINURL.split('#')[0].replace(/^https?:\/\//, ''))}</b><span>y escribe el código</span><div class="code">${esc(P.room)}</div></div></div>
-      <div class="lob-tools"><button class="tool ${P.players.some(p => p.host) ? 'on' : 'hot'}" data-host="hostlink">👑 ${P.players.some(p => p.host) ? 'Anfitrión: ' + esc(P.players.find(p => p.host).name) : 'Enlace del anfitrión'}</button><button class="tool hot" data-host="quiz">📋 Cuestionario${C.formN ? ` · ${C.formN} respuestas` : ''}</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><button class="tool ${typeof vzCfg === 'function' && vzCfg().on ? 'on' : ''}" data-host="voz">🎤 La voz del club</button><button class="tool hot" data-host="print">🖨️ Carteles y tarjetas</button><button class="tool" data-host="album">🎬 El álbum</button><button class="tool" data-host="wipe">🧹 Vaciar la sala</button><button class="tool" data-host="editor">✏️ Personalizar pruebas</button>${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Móvil de ensayo</a>` : ''}<button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button></div>
+      <div class="lob-tools"><button class="tool ${P.players.some(p => p.host) ? 'on' : 'hot'}" data-host="hostlink">👑 ${P.players.some(p => p.host) ? 'Anfitrión: ' + esc(P.players.find(p => p.host).name) : 'Enlace del anfitrión'}</button><button class="tool hot" data-host="quiz">📋 Cuestionario${C.formN ? ` · ${C.formN} respuestas` : ''}</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><button class="tool ${typeof vzCfg === 'function' && vzCfg().on ? 'on' : ''}" data-host="voz">🎤 La voz del club</button><button class="tool hot" data-host="print">🖨️ Carteles y tarjetas</button><button class="tool" data-host="album">🎬 El álbum</button><button class="tool" data-host="wipe">🧹 Vaciar la sala</button><button class="tool" data-host="editor">✏️ Personalizar pruebas</button>${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Móvil de ensayo</a><button class="tool hot" data-host="testgames">🎲 Probar un minijuego</button>` : ''}<button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button></div>
     </div>
     <div class="lob-r"><div class="rkick">Miembros admitidos</div><div class="seats adm-seats ${many ? 'many' : ''}">${P.players.map(p => { const m = mem[p.pid]; return `<div class="seat ${p.on ? '' : 'off'}">${avH(p, 'xl')}<b>${esc(p.name)}</b>${m ? `<i class="crown">${m.q ? '✓ listo' : '✎ cuestionario'}</i>` : ''}${p.on ? '' : '<i class="offl">desconectado</i>'}<button class="kick" data-host="kick" data-pid="${p.pid}" title="Sacar de la sala">×</button></div>`; }).join('')}${P.players.length < 4 ? Array.from({length: 4 - P.players.length}, () => '<div class="seat empty"><span class="av xl"></span><b>…</b></div>').join('') : ''}</div>
       <div class="modes">${MODE_CARDS.map(m => `<div class="modec ${P.gm === m.gm ? 'on' : ''}" data-host="gm" data-gm="${m.gm}" role="button" tabindex="0"><span class="mic">${m.ic}</span><b>${m.t}</b><small>${m.s}</small></div>`).join('')}</div>
@@ -4214,6 +4221,11 @@ function waitRoomTick(P){ const ids = P.players.map(p => p.pid); if (!TVS.seenP)
   try { SFX.glass(); } catch {} clearTimeout(TVS.arrT); TVS.arrT = setTimeout(() => el.classList.remove('on'), 4200); }
 
 // ---- imprimibles: carteles de los espacios, tarjetas secretas y la hoja del anfitrión ----
+// modo de prueba: elegir un minijuego concreto y jugarlo ya
+function testGamesOverlay(){ const el = ovEl(); const cats = {}; Object.values(GAMES).filter(g => g.name).forEach(g => (cats[g.casino ? 'Casino' : g.cat || 'Otros'] ||= []).push(g));
+  el.innerHTML = `<div class="co-in wide tgov"><h2>Probar un minijuego</h2><p class="note">Solo en el modo de prueba. Elige uno y empieza al momento con los jugadores que haya (si sois menos de 3, se añaden de prueba). Al terminar, vuelves a la sala de espera.</p>
+    <div class="tg-grid">${Object.entries(cats).map(([c, gs]) => `<div class="tg-cat"><h3>${esc(c)}</h3>${gs.map(g => `<button class="tg-b" data-tg="${g.k}"><span>${g.icon || ''}</span>${esc(g.name)}</button>`).join('')}</div>`).join('')}</div><div class="co-b"><button class="btn" data-tg="">Cerrar</button></div></div>`;
+  el.onclick = e => { const t = e.target.closest('[data-tg]'); if (!t) return; el.remove(); if (t.dataset.tg) E.host('testgame', {k: t.dataset.tg}); }; }
 // deja la sala como nueva (después de los ensayos), conservando invitados, cuestionario y enlace del anfitrión
 function salaWipe(btn){ if (btn && !btn.dataset.sure){ btn.dataset.sure = '1'; btn.textContent = 'Pulsa otra vez: se borran los jugadores y la partida'; setTimeout(() => { if (btn.isConnected){ btn.dataset.sure = ''; btn.textContent = '🧹 Vaciar la sala'; } }, 5000); return; }
   const old = E.S; const S2 = newState(old.room, old.mode); S2.hostKey = old.hostKey; S2.gm = old.gm || 'noche'; S2.tele = old.tele; const C2 = clubInit(S2); if (old.club){ C2.form = old.club.form || []; C2.guests = old.club.guests || []; C2.cfg = old.club.cfg || C2.cfg; }
@@ -4600,6 +4612,7 @@ function bindHost(){
     if (op === 'print') return printables();
     if (op === 'wipe') return salaWipe(t);
     if (op === 'album') return albumOverlay();
+    if (op === 'testgames') return testGamesOverlay();
     if (op === 'hostlink') return hostLinkOverlay();
     if (op === 'start' && E.S.gm === 'noche' && pidsAll(E.S).length < 3) return toast('La Noche necesita al menos 3 miembros.');
     if (op === 'end' && !TVS.confirmEnd && E.S.phase !== 'final'){ TVS.confirmEnd = true; toast('Pulsa otra vez «Terminar» para acabar la partida'); setTimeout(() => TVS.confirmEnd = false, 3000); return; }
