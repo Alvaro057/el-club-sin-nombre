@@ -1026,6 +1026,24 @@ button .ico,.gb .ico{color:inherit}
 @keyframes casblink{50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){#casbadge i{animation:none}}
 .cas-ban{padding:10px 12px}.cas-ban b{display:block;font-size:15px;margin-bottom:8px}.cas-ban .codein .field{height:42px;font-size:16px}.cas-ban .codein .btn{min-height:42px;padding:0 16px}
+
+.cas-dark{height:100vh;display:grid;place-items:center;opacity:.18}
+.trlinks{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:0 0 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}.trlinks b{width:100%}.trlinks .note{width:100%;margin:0 0 4px}.trlinks code{width:100%;font-size:12px;opacity:.6;word-break:break-all}
+.v-book{overflow:hidden;cursor:none;background:radial-gradient(ellipse at 50% 30%,#0f2347,#05080f 70%);height:100vh}.v-book #app,#bookroot{height:100vh}
+.book{height:100vh;box-sizing:border-box;padding:5vh 5vw;display:grid;grid-template-columns:1fr 1fr;gap:0;filter:drop-shadow(0 30px 60px rgba(0,0,0,.7))}
+.bk-page{background:linear-gradient(90deg,#e9dcbc,#f3e9d0 40%,#efe2c3);color:#2a1d12;padding:6vh 4vw;position:relative;font-family:var(--serif);overflow:hidden}
+.bk-page.l{border-radius:14px 0 0 14px;box-shadow:inset -40px 0 50px -30px rgba(80,50,20,.45);text-align:center;display:flex;flex-direction:column;justify-content:center}
+.bk-page.r{border-radius:0 14px 14px 0;background:linear-gradient(270deg,#e9dcbc,#f3e9d0 40%,#efe2c3);box-shadow:inset 40px 0 50px -30px rgba(80,50,20,.45)}
+.bk-page h1{font-family:var(--disp);font-size:5.6vh;margin:0;color:#4a2a12;letter-spacing:.03em}
+.bk-page h2{font-family:var(--disp);font-size:3.6vh;margin:0 0 3vh;color:#4a2a12;border-bottom:1px solid rgba(74,42,18,.3);padding-bottom:1.6vh}
+.bk-sub{font-style:italic;font-size:2.6vh;margin:1vh 0 6vh;opacity:.75}
+.bk-how{font-size:2.4vh;margin:0 0 2vh}
+.bk-code{font-family:var(--disp);font-size:16vh;line-height:1;color:#6b1a2c;letter-spacing:.06em}
+.bk-bar{height:.8vh;background:rgba(74,42,18,.18);border-radius:99px;margin:3vh 18% 3vh;overflow:hidden}.bk-bar i{display:block;height:100%;background:#6b1a2c;transform-origin:left;transition:transform .5s linear}
+.bk-note{font-size:2.1vh;opacity:.7;max-width:40ch;margin:0 auto}
+.bk-list{list-style:none;margin:0;padding:0}.bk-list li{display:flex;gap:2vw;align-items:baseline;padding:1.2vh 0;border-bottom:1px dashed rgba(74,42,18,.25);font-size:2.6vh;font-style:italic}
+.bk-list time{font-family:var(--disp);font-style:normal;font-size:2vh;color:#6b1a2c;min-width:5ch}.bk-list li.empty{opacity:.55;border:0}
+.bk-foot{position:absolute;left:4vw;right:4vw;bottom:4vh;text-align:center;font-style:italic;opacity:.5;font-size:2vh}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -3492,8 +3510,8 @@ const SPACES = {salon: 'El Gran Salón', cocina: 'Las Cocinas', tras: 'La Trasti
 const TRAS_CODES = (() => { let a = 1212; const r = () => { a = (a * 1103515245 + 12345) % 2147483648; return a / 2147483648; }; const out = new Set(); while (out.size < 48) out.add('T' + (1000 + Math.floor(r() * 9000))); return [...out]; })();
 const trasNorm = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 // usa una tira: devuelve true si era válida y nadie la había usado
-function trasUse(S, pid, code){ const C = S.club; const k = trasNorm(code); if (!TRAS_CODES.includes(k)){ flash(S, pid, 'Ese código no es de la Trastienda. Las tiras están dentro de la habitación.', false); return false; }
-  C.trasUsed ||= {}; if (C.trasUsed[k]){ flash(S, pid, 'Esa tira ya se ha usado. Arranca otra.', false); return false; } C.trasUsed[k] = pid; cm(S, pid).trasAt = NOW(); return true; }
+function trasUse(S, pid, code){ const C = S.club; const k = trasNorm(code); if (!TRAS_CODES.includes(k)){ flash(S, pid, 'Ese código no es de la Trastienda. Está en el libro de firmas, dentro de la habitación.', false); return false; }
+  C.trasUsed ||= {}; if (C.trasUsed[k]){ flash(S, pid, 'Esa tira ya se ha usado. Usa el código del libro de firmas.', false); return false; } C.trasUsed[k] = pid; cm(S, pid).trasAt = NOW(); return true; }
 const CARD_KINDS = {pista: ['🔍', 'Pista sobre el infiltrado'], fichas: ['🪙', 'Botín de fichas'], escudo: ['🛡️', 'Protección ante la purga'], voto: ['⚖️', 'Voto doble en el Tribunal'], sello: ['📜', 'Sello del Presidente'], trampa: ['💀', 'Trampa']};
 // las tarjetas son siempre las mismas: se pueden imprimir días antes en cualquier ordenador
 const CARDS = (() => { let a = 20261212; const r = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
@@ -3583,7 +3601,7 @@ function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[t
     case 'podium': return Object.assign(base, {need: 'auto', t: 'Al podio', d: 'Queda entre los tres primeros de un minijuego.'});
     case 'win': return Object.assign(base, {need: 'auto', t: 'Primero de la clase', d: 'Gana un minijuego.'});
     case 'arma': { const t = pickT(othersOnline(S, pid)); if (!t) return mkMission(S, pid, 'contact_any', gate); const w = pick(ARMAS); return Object.assign(base, {tg: t, arma: w, need: 'claim', t: 'Operación encubierta', d: `Consigue que ${nm(t)} ${w[0]}, sin que sospeche. Cuando lo consigas, pulsa «¡Hecho!»: tendrá que confirmarlo.`}); }
-    case 'room': return Object.assign(base, {need: 'text', t: 'Visita la Trastienda', d: 'Entra en la Trastienda sin que nadie te vea, arranca una tira del libro de firmas y escribe aquí su código.'});
+    case 'room': return Object.assign(base, {need: 'text', t: 'Visita la Trastienda', d: 'Entra en la Trastienda sin que nadie te vea, busca el libro de firmas y escribe aquí su código.'});
     case 'hunt': { const w = pick(Object.keys(SPACES)); return Object.assign(base, {need: 'card', where: w, t: 'Algo se esconde', d: `Encuentra una tarjeta secreta escondida en ${SPACES[w]} y escribe su código en «Más» → «Tarjeta secreta».`}); }
     case 'votes': return Object.assign(base, {need: 'auto', t: 'Ganarse el respeto', d: 'Llega a 3 de prestigio. Solo te lo pueden dar los demás: votos de confianza, alianzas, votaciones…'});
     case 'final': return Object.assign(base, {need: 'final', t: 'Las altas esferas', d: 'Ya eres de la Élite. En la ceremonia final, el club elegirá quién entra en el Círculo Interno. Mientras tanto, sigue sumando.'});
@@ -3774,7 +3792,7 @@ function infStart(S){ unlock(S, 'tras'); const I = S.club.inf; const PR = presPi
   if (pool.length < 3) return; const scored = pool.map(p => [p, Object.keys(cm(S, p).q).filter(k => !k.startsWith('_')).length]); const best = scored.filter(x => x[1] >= 3); let pid = pick(best.length ? best : scored)[0]; if (I.next && I.next !== PR && cm(S, I.next) && !I.past.includes(I.next)) pid = I.next; I.next = null;
   I.round++; I.pid = pid; I.past.push(pid); I.priv = {}; I.pubN = 1; I.clues = infClues(S, pid); I.goal = {n: 3, met: []}; I.t0 = NOW();
   I.got = false; I.tips = {};
-  pushInbox(S, pid, {k: 'note', t: '🕵️ Eres el infiltrado', d: 'Nadie lo sabe. Primero, ve a la Trastienda sin que te vean, arranca una tira del libro de firmas y recoge tu encargo (en «Más» → «La Trastienda»). Después, pasa desapercibido hasta el Tribunal. Si no te descubren, te llevas una gran recompensa.'});
+  pushInbox(S, pid, {k: 'note', t: '🕵️ Eres el infiltrado', d: 'Nadie lo sabe. Primero, ve a la Trastienda sin que te vean, escribe el código del libro de firmas y recoge tu encargo (en «Más» → «La Trastienda»). Después, pasa desapercibido hasta el Tribunal. Si no te descubren, te llevas una gran recompensa.'});
   memberIds(S).forEach(p => { const H = cm(S, p); if (p !== pid && H.sealed){ for (let k = 0; k < H.sealed; k++){ const c = nextClue(S, p); if (c != null){ (H.clues ||= []).push(c); } } H.sealed = 0; pushInbox(S, p, {k: 'note', t: '🔍 Se abre tu sobre sellado', d: (H.clues || []).slice(-2).map(c => 'El infiltrado ' + c + '.').join(' ')}); } });
   annc(S, {k: 'msg', ic: '🕵️', h: `Operación especial · Ronda ${I.round}`, p: `Hay un infiltrado entre vosotros. Las pistas irán llegando. Primera pista: el infiltrado ${I.clues[0] || 'está en esta sala'}.`, say: `Atención, miembros del club. Hay un infiltrado entre vosotros. Primera pista. El infiltrado ${I.clues[0] || 'está en esta sala'}.`, ms: 15000}); }
 function infClues(S, pid){ const m = cm(S, pid); const all = memberIds(S); const out = [];
@@ -4101,7 +4119,7 @@ function tvLobby(P){
   return `<div class="lobby">
     <div class="lob-l">${logoH('big')}<p class="tagline">Se te ha concedido la entrada. Esta noche, aquí se juega.</p>
       <div class="join"><div class="qr" id="qr"></div><div class="jt"><span class="kick-l">Invitación privada</span><span>Escanea o entra en</span><b class="url">${esc(JOINURL.split('#')[0].replace(/^https?:\/\//, ''))}</b><span>y escribe el código</span><div class="code">${esc(P.room)}</div></div></div>
-      <div class="lob-tools"><button class="tool" data-host="editor">✏️ Personalizar pruebas</button><button class="tool" data-host="club">🏆 Clasificación del club</button>${P.gm === 'noche' ? '<button class="tool hot" data-host="quiz">📋 Cuestionario</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><a class="tool" href="' + esc(linkFor('casino', (window.__E && __E.ctx) || {room: P.room, mode: P.mode})) + '" target="_blank">🎰 Pantalla del casino</a>' : '<button class="tool" data-host="inter">🍸 Intermedio</button>'}${P.gm === 'lobos' ? '' : `<button class="tool ${P.tele ? 'on' : ''}" data-host="tele" title="Quita los juegos de mirar solo el móvil y espacia los de escribir">📺 Más tele, menos móvil: <b>${P.tele ? 'Sí' : 'No'}</b></button>`}${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Abrir un móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
+      <div class="lob-tools"><button class="tool" data-host="editor">✏️ Personalizar pruebas</button><button class="tool" data-host="club">🏆 Clasificación del club</button>${P.gm === 'noche' ? '<button class="tool hot" data-host="quiz">📋 Cuestionario</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button>' : '<button class="tool" data-host="inter">🍸 Intermedio</button>'}${P.gm === 'lobos' ? '' : `<button class="tool ${P.tele ? 'on' : ''}" data-host="tele" title="Quita los juegos de mirar solo el móvil y espacia los de escribir">📺 Más tele, menos móvil: <b>${P.tele ? 'Sí' : 'No'}</b></button>`}${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Abrir un móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
     </div>
     <div class="lob-r"><div class="seats ${many ? 'many' : ''}">${P.players.map(p => `<div class="seat ${p.on ? '' : 'off'}">${avH(p, 'xl')}<b>${esc(p.name)}</b>${p.host ? '<i class="crown">anfitrión</i>' : ''}${p.on ? '' : '<i class="offl">desconectado</i>'}<button class="kick" data-host="kick" data-pid="${p.pid}" title="Sacar de la sala">×</button></div>`).join('')}${P.players.length < 4 ? Array.from({length: 4 - P.players.length}, () => '<div class="seat empty"><span class="av xl"></span><b>…</b></div>').join('') : ''}</div>
       <div class="rkick">¿A qué se juega esta noche?</div>
@@ -4478,7 +4496,7 @@ function quizOverlay(){ const el = ovEl(); const C = E.S.club || {form: []}; con
 async function formFetch(u){ if (!u) return null; try { const r = await fetch(u + (u.includes('?') ? '&' : '?') + 't=' + Date.now(), {cache: 'no-store'}); if (!r.ok) return null; const f = formFromCSV(await r.text()); if (!f.length) return null; E.host('form', {form: f}); return f.length; } catch { return null; } }
 function formAutoLoad(){ const u = localStorage.getItem('ccsn-csv'); if (!u) return; formFetch(u); setInterval(() => { if (E.S.phase === 'lobby' || E.S.phase === 'club') formFetch(u); }, 5 * 60000); }
 function cfgOverlay(){ const el = ovEl(); const c = (E.S.club && E.S.club.cfg) || CLUB_CFG;
-  el.innerHTML = `<div class="co-in cfgov"><h2>⚙️ Ajustes de la noche</h2><p class="note">Experiencia necesaria para cada rango (además de su prueba de ascenso).</p>
+  el.innerHTML = `<div class="co-in cfgov"><h2>⚙️ Ajustes de la noche</h2><div class="trlinks"><b>Pantallas de la Trastienda</b><p class="note">Ábrelas en el ordenador de la Trastienda (no aquí, que lo ven los invitados). El casino abre también el libro de firmas en otra ventana.</p><a class="btn" target="_blank" href="${esc(linkFor('casino', E.ctx))}">🎰 Casino</a><a class="btn" target="_blank" href="${esc(linkFor('firmas', E.ctx))}">📖 Libro de firmas</a><code>${esc(linkFor('casino', E.ctx))}</code></div><p class="note">Experiencia necesaria para cada rango (además de su prueba de ascenso).</p>
     <div class="cfg-r">${RANKS.map((R, i) => `<label>${R.ic} ${R.n}<input type="number" class="field" data-xp="${i}" value="${c.xp[i]}" ${i === 0 ? 'disabled' : ''}></label>`).join('')}</div>
     <div class="cfg-r"><label>Minijuegos por convocatoria<input type="number" class="field" id="cg" value="${c.games}" min="1" max="6"></label><label>Minutos de operaciones<input type="number" class="field" id="co" value="${c.ops}" min="3" max="40"></label><label>Minutos de intermedio<input type="number" class="field" id="ci" value="${c.inter}" min="5" max="90"></label><label>Minutos para leer el expediente<input type="number" class="field" id="cbf" value="${c.brief || 3}" min="1" max="10"></label></div>
     <p class="note">La noche dura unas 3 horas y media con estos valores. El anfitrión puede adelantar o alargar cualquier momento desde el panel.</p>
@@ -4593,7 +4611,7 @@ function codeH(P, me){ const c = me.club;
   if (!(P.club && P.club.on && !(P.club.v && P.club.v.k === 'intro'))) return `<div class="enc locked"><small>Tu código de encuentro</small><div class="enc-lock">🔒</div><p class="big center">Todavía no</p><p class="muted center">Los códigos se activan cuando empiece la noche, justo después de la introducción. Hasta entonces, nada de intercambiarlos.</p></div><p class="muted center">Tu número de socio: <b>${c.code}</b>. Te sirve para recuperar el expediente en otro móvil.</p>`; const t = Date.now() + (PH.off || 0); const d = encNow(c.seed, t); const m0 = Math.floor(t / 60000) * 60000 - (P.vOff || 0);
   const url = linkFor('p', PH.ctx, {enc: c.code + '.' + d}); if (!PH.qrTried){ PH.qrTried = 1; typeof loadQR === 'function' && Promise.resolve(loadQR()).then(() => { PH.lastHTML = ''; }).catch(() => {}); } const qr = qrSvg(url);
   return `<div class="enc"><small>Tu código de encuentro</small><div class="encd">${d}</div><div class="encbar">${barH(m0, m0 + 60000)}</div><p class="muted">Cambia cada minuto. Dáselo solo a quien tengas delante.</p>${qr ? `<div class="encqr">${qr}</div>` : ''}</div>
-    <div class="mis ucode"><b>Escribe un código</b><p class="muted">Vale para todo: el de una persona (3 cifras), una tarjeta escondida (PALABRA-00) o una tira de la Trastienda (T0000).</p><div class="codein"><input class="field" id="ucode" autocapitalize="characters" autocomplete="off" placeholder="000"><button class="btn gold" data-ucode="1">Enviar</button></div>${c.cards.length ? `<p class="muted">Tarjetas encontradas: ${c.cards.length}${c.sealed ? ` · ${c.sealed} sobre sellado` : ''}${c.dblVote ? ' · voto doble guardado' : ''}${c.shield ? ' · protegido' : ''}</p>` : ''}</div>
+    <div class="mis ucode"><b>Escribe un código</b><p class="muted">Vale para todo: el de una persona (3 cifras), una tarjeta escondida (PALABRA-00) o el del libro de firmas de la Trastienda (T0000).</p><div class="codein"><input class="field" id="ucode" autocapitalize="characters" autocomplete="off" placeholder="000"><button class="btn gold" data-ucode="1">Enviar</button></div>${c.cards.length ? `<p class="muted">Tarjetas encontradas: ${c.cards.length}${c.sealed ? ` · ${c.sealed} sobre sellado` : ''}${c.dblVote ? ' · voto doble guardado' : ''}${c.shield ? ' · protegido' : ''}</p>` : ''}</div>
     <p class="muted center">Tu número de socio: <b>${c.code}</b>. Te sirve para recuperar el expediente en otro móvil.</p>`; }
 function fichasH(P, me){ const c = me.club;
   const mk = c.market.map(x => `<div class="mk ${x.ok ? '' : 'off'}"><div><b>${esc(x.n)}</b><small>${esc(x.ok ? x.d : x.why)}</small></div>${cxB({a: 'buy', k: x.k}, x.cost + ' fichas', 'btn' + (x.ok ? ' gold' : ''))}</div>`).join('');
@@ -4602,16 +4620,16 @@ function fichasH(P, me){ const c = me.club;
   return `<div class="fhead"><b>${me.fichas}</b><span>fichas</span></div>${secH('market', 'Mercado negro', mk)}${secH('duel', 'Retar a un duelo', duel)}`; }
 const secH = (k, t, h) => { const on = PH.more === k; return `<div class="acc ${on ? 'open' : ''}"><button class="acc-h" data-more="${on ? '' : k}">${t}<span>${on ? '−' : '+'}</span></button>${on ? `<div class="acc-b">${h}</div>` : ''}</div>`; };
 function clubH(P, me, tOn = true){ const c = me.club;
-  const tras = `<p class="muted">Dentro de la Trastienda hay un libro de firmas con tiras. Arranca una, escribe su código y elige qué haces. Cada tira vale una sola vez.</p><input class="field code3" id="trasp" autocapitalize="characters" placeholder="T0000" value="${esc(PH.trasPre || '')}">
+  const tras = `<p class="muted">Dentro de la Trastienda hay un libro de firmas con un código que cambia cada minuto. Escríbelo aquí y elige qué haces.</p><input class="field code3" id="trasp" autocapitalize="characters" placeholder="T0000" value="${esc(PH.trasPre || '')}">
     ${c.isInf && !c.infGot ? '<button class="btn gold wide" data-tras="enc">Recoger mi encargo</button>' : ''}
-    ${!c.isInf ? '<p class="muted">Si te llega una oferta del Presidente, se firma con una de estas tiras: escríbela en la oferta, en tu camino.</p>' : ''}`;
+    ${!c.isInf ? '<p class="muted">Si te llega una oferta del Presidente, se firma con el código del libro: escríbelo en la oferta, en tu camino.</p>' : ''}`;
   const achs = Object.entries(ACH).map(([k, [n, d]]) => `<div class="ach ${c.ach.includes(k) ? 'on' : ''}"><span>${c.ach.includes(k) ? '✓' : '·'}</span><div><b>${esc(n)}</b><small>${esc(d)}</small></div></div>`).join('');
   const st = c.st; const stats = `<div class="stats">${[['Minijuegos', st.games], ['Podios', st.pods], ['Victorias', st.wins], ['Misiones', st.miss], ['Contactos', st.met], ['Investigaciones', st.inv], ['Duelos ganados', st.duelW], ['Tratos', st.trades]].map(([a, b]) => `<div><b>${b}</b><small>${a}</small></div>`).join('')}</div>`;
   const hist = `<div class="hist">${c.hist.map(h => `<div><span>${esc(h.t)}</span><em>${h.xp ? (h.xp > 0 ? '+' : '') + h.xp + ' XP' : h.pr ? '+' + h.pr + ' ★' : ''}</em></div>`).join('') || '<p class="muted">Aún no hay movimientos.</p>'}</div>`;
   return `${tOn ? secH('tras', 'La Trastienda', tras) : ''}${secH('hist', 'Historial', hist)}${secH('stats', 'Estadísticas', stats)}`; }
 function moreH(P, me){ return clubH(P, me); }
 function inboxH(it){ const yn = (y, n) => `<div class="row2">${cxB({a: 'inbox', id: it.id, yes: 1}, y, 'btn gold')}${cxB({a: 'inbox', id: it.id, yes: 0}, n, 'btn')}</div>`;
-  if (it.k === 'offer') return `<div class="inb k-offer"><b>${esc(it.t)}</b><p>${esc(it.d)}</p><div class="codein"><input class="field" id="sg${it.oid}" placeholder="Código de una tira (T0000)" autocapitalize="characters"><button class="btn gold" data-sign="${it.oid}">Firmar</button></div>${cxB({a: 'inbox', id: it.id, yes: 0}, 'Rechazar la oferta', 'lnk')}</div>`;
+  if (it.k === 'offer') return `<div class="inb k-offer"><b>${esc(it.t)}</b><p>${esc(it.d)}</p><div class="codein"><input class="field" id="sg${it.oid}" placeholder="Código del libro (T0000)" autocapitalize="characters"><button class="btn gold" data-sign="${it.oid}">Firmar</button></div>${cxB({a: 'inbox', id: it.id, yes: 0}, 'Rechazar la oferta', 'lnk')}</div>`;
   const act = it.k === 'arma' ? yn('Sí, me ha pillado', 'No es verdad') : it.k === 'alli' ? yn('Aceptar la alianza', 'Rechazar') : it.k === 'duel' ? yn('Acepto el duelo', 'No acepto') : it.k === 'duelres' ? yn('He ganado', 'He perdido') : it.k === 'trade' ? yn('Aceptar las fichas', 'Rechazar') : it.k === 'offer' ? yn('Acepto el trato', 'Lo rechazo') : `<div class="row2">${cxB({a: 'inbox', id: it.id}, 'Entendido', 'btn')}</div>`;
   return `<div class="inb k-${it.k}"><b>${esc(it.t)}</b><p>${esc(it.d)}</p>${act}</div>`; }
 function misCard(P, me, x, side){ if (!x) return ''; const c = me.club; const id = x.id; let ui = '';
@@ -4651,7 +4669,7 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
   if (d.ucode){ const inp = $('#ucode'); const v = (inp && inp.value || '').trim().toUpperCase().replace(/\s+/g, ''); if (!v) return toast('Escribe un código');
     if (/^\d{3}$/.test(v)){ phSend({t: 'club', a: 'code', c: v}); inp.value = ''; return; }
     if (/^C\d{4}$/.test(v)){ phSend({t: 'cas', a: 'join', c: v}); inp.value = ''; return; }
-    if (/^T\d{4}$/.test(v)){ PH.tab = 'club'; PH.more = 'tras'; PH.trasPre = v; inp.value = ''; toast('Es una tira de la Trastienda: elige qué haces con ella'); return rr(); }
+    if (/^T\d{4}$/.test(v)){ PH.tab = 'club'; PH.more = 'tras'; PH.trasPre = v; inp.value = ''; toast('Es el código del libro de firmas: elige qué haces con él'); return rr(); }
     if (/^[A-ZÁÉÍÓÚÑ]+-?\d{2}$/.test(v)){ phSend({t: 'club', a: 'card', c: v.replace(/^([A-ZÁÉÍÓÚÑ]+)-?(\d{2})$/, '$1-$2')}); inp.value = ''; return; }
     return toast('No reconozco ese código. Revisa que esté bien escrito'); }
   if (d.more != null){ PH.more = d.more; return rr(); }
@@ -4660,8 +4678,8 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
   if (d.dbet){ PH.dbet = +d.dbet; return rr(); }
   if (d.more2){ PH.more = d.more2; }
   if (d.card){ const v = ($('#cardc').value || '').trim(); if (!v) return toast('Escribe el código de la tarjeta'); phSend({t: 'club', a: 'card', c: v}); $('#cardc').value = ''; return; }
-  if (d.tras){ PH.trasPre = ''; const p = ($('#trasp').value || '').trim(); if (!p) return toast('Arranca una tira en la Trastienda y escribe su código'); $('#trasp').value = ''; phSend({t: 'club', a: 'tras', p, what: d.tras, v: d.tras === 'chivato' ? $('#tipv').value : undefined}); return; }
-  if (d.sign){ const p = ($('#sg' + d.sign).value || '').trim(); if (!p) return toast('Arranca una tira en la Trastienda y escribe su código'); phSend({t: 'club', a: 'tras', p, what: 'sign', oid: +d.sign}); return; }
+  if (d.tras){ PH.trasPre = ''; const p = ($('#trasp').value || '').trim(); if (!p) return toast('Escribe el código del libro de firmas de la Trastienda'); $('#trasp').value = ''; phSend({t: 'club', a: 'tras', p, what: d.tras, v: d.tras === 'chivato' ? $('#tipv').value : undefined}); return; }
+  if (d.sign){ const p = ($('#sg' + d.sign).value || '').trim(); if (!p) return toast('Escribe el código del libro de firmas de la Trastienda'); phSend({t: 'club', a: 'tras', p, what: 'sign', oid: +d.sign}); return; }
   if (d.duel){ const c = ($('#dcode').value || '').trim(); if (!/^\d{3}$/.test(c)) return toast('Pide a tu rival su código de 3 cifras'); if (!PH.dbet) return toast('Elige la apuesta'); phSend({t: 'club', a: 'duel', c, n: PH.dbet, g: $('#dgame').value}); return; }
   if (d.send){ const c = ($('#scode').value || '').trim(); const n = +($('#sn').value || 0); if (!/^\d{3}$/.test(c)) return toast('Pide su código de 3 cifras'); if (!(n > 0)) return toast('¿Cuántas fichas?'); phSend({t: 'club', a: 'send', c, n}); return; }
   if (d.cq){ const k = d.k;
@@ -4763,11 +4781,14 @@ const CAS_CAP = 10; // apuesta máxima por mano en el casino del intermedio
 const CAS_HANDS = 3; // manos por mesa antes de cambiar
 const CAS_SAY = 'El casino de la Trastienda está abierto. Quien quiera jugar, ya sabe dónde encontrarlo.';
 const casSeated = S => S.cas ? Object.keys(S.cas.seats).filter(p => S.players[p]) : [];
-function casOpenNow(S){ const C = S.club; return !!(C && C.on && S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k)); }
+// el casino es un secreto hasta que termina la primera convocatoria de minijuegos
+function casOpenNow(S){ const C = S.club; return !!(C && C.on && S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k) && C.dir && C.dir.blocks.slice(0, C.dir.bi).some(b => b.k === 'conv')); }
+const CAS_FIRST = {ic: '🎰', h: 'El casino abre sus puertas', p: 'En la Trastienda hay un casino. Buscad el código en su pantalla y apostad vuestras fichas.', say: 'Una cosa más. En la Trastienda, el club ha abierto un casino. Desde ahora, las fichas se pueden multiplicar… o perder.'};
 function casRefund(S){ const X = S.cas; if (!X || !X.g) return; const g = X.g; if (g.k === 'blackjack' && ['play', 'bank'].includes(g.st)) Object.entries(g.bets).forEach(([p, b]) => addFichas(S, p, b)); if (g.k === 'ruleta' && g.st === 'spin') Object.entries(g.bets).forEach(([p, b]) => { if (b.ret) addFichas(S, p, b.ret); }); }
 function casTick(S){ const v = vnow(S);
   if (!casOpenNow(S)){ if (S.cas){ casRefund(S); S.cas = null; return true; } return false; }
-  if (!S.cas) { S.cas = {code: 'C' + (1000 + rnd(9000)), seats: {}, ti: 0, n: 0, g: null, nextAt: v + 4000, hist: []}; return true; }
+  if (!S.cas){ const C = S.club; C.unl ||= {}; const first = !C.unl.casino; if (first){ C.unl.casino = true; annc(S, Object.assign({k: 'unl'}, CAS_FIRST)); memberIds(S).forEach(p => flash(S, p, '🎰 Se abre el casino en la Trastienda')); }
+    S.cas = {code: 'C' + (1000 + rnd(9000)), seats: {}, ti: 0, n: 0, g: null, nextAt: v + 4000, hist: [], first}; return true; }
   const X = S.cas;
   // los jugadores de prueba se sientan solos de vez en cuando
   pidsAll(S).forEach(p => { if (S.players[p].bot && !X.seats[p] && Math.random() < .004) X.seats[p] = 1; });
@@ -4800,13 +4821,13 @@ function casAct(S, pid, a){ const X = S.cas; if (!X) return false;
 { const _tick = clubTick; clubTick = function(S){ const a = _tick(S); const b = S.gm === 'noche' ? casTick(S) : false; return a || b; }; }
 { const _pa = playerAct; playerAct = function(S, pid, a){ if (S.cas && S.players[pid] && (a.t === 'cas' || (a.t === 'g' && S.phase !== 'play'))){ S.players[pid].seen = NOW(); return casAct(S, pid, a); } return _pa(S, pid, a); }; }
 { const _pv = pubView; pubView = function(S){ const P = _pv(S); const X = S.cas; if (X){ const v = vnow(S); const k = X.g ? X.g.k : CAS_TABLES[X.ti]; const def = GAMES[k];
-    P.cas = {code: X.code, k, name: def.name, icon: def.icon, next: GAMES[CAS_TABLES[(X.ti + 1) % CAS_TABLES.length]].name, hand: X.n + 1, of: CAS_HANDS, seats: casSeated(S), gp: X.g ? def.pub(S, X.g, v) : null, nextAt: X.nextAt, changed: X.changed || 0, hist: X.hist}; } return P; }; }
+    P.cas = {first: !!X.first, code: X.code, k, name: def.name, icon: def.icon, next: GAMES[CAS_TABLES[(X.ti + 1) % CAS_TABLES.length]].name, hand: X.n + 1, of: CAS_HANDS, seats: casSeated(S), gp: X.g ? def.pub(S, X.g, v) : null, nextAt: X.nextAt, changed: X.changed || 0, hist: X.hist}; } P.casUnl = !!(S.club && S.club.unl && S.club.unl.casino); P.book = S.club && S.club.book ? S.club.book.slice(0, 9) : []; return P; }; }
 { const _mv = meView; meView = function(S, pid){ const M = _mv(S, pid); const X = S.cas; if (X && M && !M.gone){ const seated = !!X.seats[pid]; const def = X.g ? GAMES[X.g.k] : null; M.cas = {seated, gm: seated && def && def.me ? def.me(S, X.g, pid, vnow(S)) : null}; } return M; }; }
 
 // ---- la tele principal: solo un aviso; el casino se ve en la pantalla de la Trastienda ----
 { const _it = interTick; interTick = function(P){ _it(P); let b = $('#casbadge'); if (!b && document.body){ b = document.createElement('div'); b.id = 'casbadge'; document.body.appendChild(b); }
     if (b){ const on = !!P.cas; b.classList.toggle('on', on); if (on) b.innerHTML = `<i></i><span>El casino está abierto en la Trastienda</span>`; }
-    if (P.cas && !TVS.casOn){ TVS.casOn = true; setTimeout(() => say(CAS_SAY, null, {rate: .92, pitch: .75}), 6000); } if (!P.cas) TVS.casOn = false; }; }
+    if (P.cas && !TVS.casOn){ TVS.casOn = true; if (!P.cas.first) setTimeout(() => say(CAS_SAY, null, {rate: .92, pitch: .75}), 6000); } if (!P.cas) TVS.casOn = false; }; }
 
 // ---- la pantalla del casino (otro ordenador, en la Trastienda) ----
 // #casino?r=SALA            mesa y marcador juntos (una pantalla)
@@ -4828,6 +4849,7 @@ function casClosedH(P){ const inGame = ['wheel', 'intro', 'rules', 'count', 'pla
     ${P.players.length ? `<div class="cas-rich"><div class="ct-h"><span>Las fortunas del club</span></div>${casRichH(P, 6).map((p, i) => `<div class="ct-r ${i === 0 ? 'top' : ''}"><i>${i + 1}</i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${p.fichas}<i class="coin"></i></em></div>`).join('')}</div>` : ''}</div>`; }
 function casScreenRender(){ const P = PH.pub; const root = $('#casroot'); if (!root) return;
   let html; if (!P) html = `<div class="cas-closed"><h1>Buscando la partida…</h1><p>La tele principal tiene que estar encendida.</p></div>`;
+  else if (!P.cas && !P.casUnl) html = `<div class="cas-dark">${logoH('big')}</div>`;
   else if (!P.cas) html = casClosedH(P);
   else { const X = P.cas; const seated = P.players.filter(p => X.seats.includes(p.pid));
     html = CV.view === 'mesa' ? `<div class="cas-in one">${casMesaH(P, X, seated)}</div>` : CV.view === 'panel' ? `<div class="cas-in one">${casPanelH(P, X, seated, true)}</div>` : `<div class="cas-in">${casMesaH(P, X, seated)}${casPanelH(P, X, seated)}</div>`; }
@@ -4836,14 +4858,14 @@ function casScreenRender(){ const P = PH.pub; const root = $('#casroot'); if (!r
   if (CV.view !== 'panel' && CV.snd){ const sk = P && P.cas && P.cas.gp ? P.cas.k + P.cas.hand + P.cas.gp.st : (P && P.cas ? 'open' : 'closed'); if (sk !== CV.st){ const prev = CV.st; CV.st = sk;
     try { if (P && P.cas && P.cas.gp){ const st = P.cas.gp.st; if (st === 'rev'){ SFX.reveal(); setTimeout(() => SFX.chips(), 500); } else if (st === 'play' || st === 'spin'){ SFX.cards(); } else if (st === 'bet' || st === 'q') SFX.coin(); } else if (sk === 'open' && prev === 'closed') SFX.bell(2); } catch {} } }
   // la música baja cuando está cerrado
-  if (CV.snd && typeof bsoLevel === 'function'){ const lv = P && P.cas ? .7 : .35; if (CV.lv !== lv){ CV.lv = lv; bsoLevel(lv); } } }
+  if (CV.snd && P && P.casUnl){ if (!BSO.src){ BSO.level = .7; bsoStart(); } const lv = P.cas ? .7 : .35; if (CV.lv !== lv){ CV.lv = lv; bsoLevel(lv); } } }
 async function bootCasino(ctx, p){ CV.view = p.get('v') || ''; document.body.className = 'v-cas';
   BSO.url = 'musica/casino.mp3';
-  const other = CV.view === 'mesa' ? linkFor('casino', ctx, {v: 'panel'}) : '';
+  if (CV.view === 'mesa') CV.view = ''; const other = CV.view ? '' : linkFor('firmas', ctx);
   $('#app').innerHTML = `<div id="casroot"></div><div id="casstart"><div>${logoH('big')}<h2>El casino de la Trastienda</h2><button class="btn gold huge" id="casgo">Abrir el casino</button>
-    <p>Activa la música y pone la pantalla completa.</p>${CV.view === '' ? `<p class="cas-two">¿Tienes dos pantallas? <a href="${esc(linkFor('casino', ctx, {v: 'mesa'}))}">Usa este enlace</a> en la primera: abrirá la mesa aquí y el marcador en una ventana nueva para la segunda.</p>` : ''}</div></div>`;
-  $('#casgo').onclick = () => { CV.snd = CV.view !== 'panel'; try { ac(); } catch {} if (CV.snd){ BSO.level = .7; bsoStart(); } $('#casstart').remove();
-    if (other){ const w = window.open(other, 'ccsn-panel', 'popup,width=1200,height=800'); if (!w) toast('El navegador ha bloqueado la segunda ventana. Ábrela a mano: ' + other); }
+    <p>Activa la música y pone la pantalla completa. También abre el libro de firmas en una ventana nueva: arrástrala a la otra pantalla.</p></div></div>`;
+  $('#casgo').onclick = () => { CV.snd = true; try { ac(); } catch {} $('#casstart').remove();
+    if (other){ const w = window.open(other, 'ccsn-firmas', 'popup,width=1200,height=800'); if (!w) toast('El navegador ha bloqueado la segunda ventana. Abre a mano: ' + other, 9000); }
     try { document.documentElement.requestFullscreen().catch(() => {}); } catch {} };
   await connectHub(ctx); PH.ctx = ctx; const ch = HUB.room(roomPub(ctx.room)); await ch.ready(); VNOW = phV;
   ch.onKey('pub', v => { if (!v) return; PH.pub = v; if (v.ts){ PH.offs.push(v.ts - Date.now()); if (PH.offs.length > 20) PH.offs.shift(); PH.off = Math.max(...PH.offs); } casScreenRender(); });
@@ -4862,6 +4884,37 @@ function casBannerH(P){ return `<div class="cas-ban"><b>🎰 Casino abierto en l
 document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-cas]'); if (!t) return;
   if (t.dataset.cas === 'leave'){ phSend({t: 'cas', a: 'leave'}); return; }
   const inp = $('#cascode'); let c = (inp && inp.value || '').trim().toUpperCase().replace(/\s+/g, ''); if (/^\d{4}$/.test(c)) c = 'C' + c; if (!/^C\d{4}$/.test(c)) return toast('El código del casino es una C y cuatro cifras: míralo en la pantalla de la Trastienda'); phSend({t: 'cas', a: 'join', c}); inp.value = ''; });
+
+// ================= el libro de firmas (segunda pantalla de la Trastienda) =================
+// Muestra un código de firma que cambia cada minuto. Vale para todo lo que antes pedía una tira
+// de papel (las tiras impresas siguen valiendo como plan B). Las firmas aparecen sin nombres.
+const BOOK_MIN = 60000;
+function bookCode(room, t){ const m = Math.floor(t / BOOK_MIN); let h = 2166136261; const s = 'csn-libro-' + room + '-' + m; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return 'T' + (1000 + h % 9000); }
+{ const _tu = trasUse; trasUse = function(S, pid, code){ const C = S.club; const k = trasNorm(code); const now = NOW();
+    let ok = false;
+    if ([0, -BOOK_MIN, BOOK_MIN].some(d => k === bookCode(S.room, now + d))){ C.trasUsed ||= {}; const u = k + ':' + pid; if (C.trasUsed[u]){ flash(S, pid, 'Ya has firmado con este código. Espera al siguiente minuto.', false); return false; } C.trasUsed[u] = pid; cm(S, pid).trasAt = now; ok = true; }
+    else if (/^T\d{4}$/.test(k) && !TRAS_CODES.includes(k)){ flash(S, pid, 'Ese código ya no vale: cambia cada minuto. Míralo en el libro de firmas de la Trastienda.', false); return false; }
+    else ok = _tu(S, pid, code);
+    if (ok) bookLog(S, C.bookCtx); return ok; }; }
+function bookLog(S, a){ const C = S.club; C.book ||= []; const w = a && a.a === 'tras' ? a.what : 'room';
+  const t = w === 'sign' ? 'Alguien ha firmado un trato con el Presidente' : w === 'enc' ? 'Alguien ha recogido un encargo' : w === 'chivato' ? 'Alguien ha dejado un chivatazo en el buzón' : w === 'room' ? 'Alguien ha dejado su marca en el libro' : 'Alguien ha entrado en la Trastienda';
+  C.book.unshift({at: NOW(), t}); C.book = C.book.slice(0, 30); }
+{ const _ca = clubAct; clubAct = function(S, pid, a){ if (S.club) S.club.bookCtx = a; try { return _ca(S, pid, a); } finally { if (S.club) S.club.bookCtx = null; } }; }
+
+const BK = {html: ''};
+const hhmm = t => { const d = new Date(t); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+function bookScreenRender(){ const root = $('#bookroot'); if (!root) return; const P = PH.pub; const now = Date.now() + (PH.off || 0);
+  const code = bookCode(PH.ctx.room, now); const left = BOOK_MIN - now % BOOK_MIN;
+  const list = P && P.book && P.book.length ? P.book.map(b => `<li><time>${hhmm(b.at)}</time><span>${esc(b.t)}</span></li>`).join('') : '<li class="empty"><span>Todavía no ha firmado nadie. Las páginas esperan.</span></li>';
+  const html = `<div class="book"><div class="bk-page l"><h1>El libro de firmas</h1><p class="bk-sub">Quien entra en la Trastienda deja constancia.</p><p class="bk-how">Para firmar, escribe este código en tu expediente</p><div class="bk-code">${code}</div><div class="bk-bar"><i style="transform:scaleX(${(left / BOOK_MIN).toFixed(3)})"></i></div><p class="bk-note">Cambia cada minuto. Vale para firmar tratos, recoger encargos, dejar chivatazos y cumplir la misión de la Trastienda.</p></div>
+    <div class="bk-page r"><h2>Firmas de esta noche</h2><ul class="bk-list">${list}</ul><p class="bk-foot">El libro no guarda nombres. El club, sí.</p></div></div>`;
+  if (html !== BK.html){ BK.html = html; root.innerHTML = html; } }
+async function bootBook(ctx){ document.body.className = 'v-book';
+  $('#app').innerHTML = `<div id="bookroot"></div><div id="casstart" class="bk-start"><div>${logoH('big')}<h2>El libro de firmas</h2><button class="btn gold huge" id="bkgo">Abrir el libro</button><p>Pone la pantalla completa.</p></div></div>`;
+  $('#bkgo').onclick = () => { $('#casstart').remove(); try { document.documentElement.requestFullscreen().catch(() => {}); } catch {} };
+  await connectHub(ctx); PH.ctx = ctx; const ch = HUB.room(roomPub(ctx.room)); await ch.ready();
+  ch.onKey('pub', v => { if (!v) return; PH.pub = v; if (v.ts){ PH.offs.push(v.ts - Date.now()); if (PH.offs.length > 20) PH.offs.shift(); PH.off = Math.max(...PH.offs); } bookScreenRender(); });
+  setInterval(bookScreenRender, 500); bookScreenRender(); }
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
@@ -5004,7 +5057,7 @@ function vzClues(){ const S = window.__E && __E.S; const out = new Set(); const 
 // todas las frases de la noche, en orden de importancia (si se acaban los créditos, lo primero ya está)
 function vzLines(){ const L = []; const add = (...t) => t.forEach(x => x && L.push(x)); const names = vzNames();
   INTRO.forEach(s => add(s.say));
-  add(CAS_SAY);
+  add(CAS_SAY, CAS_FIRST.say);
   add('Abrid vuestro expediente. Tenéis unos minutos para leerlo antes de la primera convocatoria.');
   NIGHT().forEach(B => { const n = blockName(B); if (B.k === 'conv') add(`Convocatoria. ${n}. Todos los miembros, a la tele.`); if (B.k === 'ops') add(`${n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`); });
   add('Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'Votad en secreto.', '¿Absolver o condenar? Votad.', 'Tiene la palabra.',
@@ -5210,6 +5263,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const {view, p} = parseHash();
   try {
     if (view === 'tv'){ const ctx = ctxFromURL(p); if (ctx) return await bootTV(ctx); }
+    if (view === 'firmas'){ const ctx = ctxFromURL(p); if (ctx) return await bootBook(ctx); }
     if (view === 'casino'){ const ctx = ctxFromURL(p); if (ctx) return await bootCasino(ctx, p); }
     if (view === 'p'){ const ctx = ctxFromURL(p); if (ctx) return await bootPlayer(ctx, p); return phCodeScreen(); }
     landing();
