@@ -953,6 +953,27 @@ button .ico,.gb .ico{color:inherit}
 .lob-tools .tool .ico{flex:none}.lob-tools .tool .ico .ic{width:1.25em;height:1.25em}
 .tool.hot{border-color:#7a2335;color:var(--cream)}
 .lob-tools .tool.hot{flex-direction:row;align-items:center;gap:.5vw}.lob-tools .tool.hot span{font-family:inherit;font-size:inherit;font-style:normal;color:inherit}
+
+/* minijuegos nuevos */
+.track{display:flex;flex-direction:column;gap:.8vh;width:min(88vw,1400px);margin-top:2vh}.tr-l{display:grid;grid-template-columns:16vw 1fr 4vw;align-items:center;gap:1vw}
+.tr-n{display:flex;align-items:center;gap:.6vw;font-size:1.8vh;overflow:hidden;white-space:nowrap}.tr-run{position:relative;height:4.2vh;border-bottom:2px dashed var(--line);background:linear-gradient(90deg,transparent 96%,#c9a45c33 96%)}
+.tr-h{position:absolute;bottom:0;font-size:3.6vh;font-style:normal;transform:translateX(-50%) scaleX(-1);transition:left .35s ease}.tr-h.fin{filter:drop-shadow(0 0 1vh var(--gold))}.tr-l em{font-style:normal;color:var(--gold2);font-family:var(--disp);font-size:2vh}
+.hfb{text-align:center;font-family:var(--disp);font-size:18px;margin:4px 0}.hfb.ok{color:var(--ok)}.hfb.ko{color:var(--ko)}.pq.big{font-size:30px;font-family:var(--disp)}
+.patata .pat-bomb{font-size:22vh;line-height:1;transition:transform .08s}.patata .pat-bomb.tick{transform:scale(1.08)}.patata .pat-boom{font-size:26vh;line-height:1;animation:pop .5s both}
+.pat-start{min-height:9vh;display:flex;align-items:center;gap:1vw;justify-content:center;font-size:3vh;color:var(--gold2)}.pat-start b{font-family:var(--disp)}.pat-cmd{color:var(--cream);animation:pop .4s both}
+.drw-live{width:min(62vh,52vw);aspect-ratio:1;border-radius:1.4vh;overflow:hidden;border:2px solid var(--gold);margin:1.4vh auto}.drw-live canvas{width:100%;height:100%;display:block}
+.drw-who{display:flex;align-items:center;gap:1vw;justify-content:center;font-size:2.4vh;color:var(--gold2)}.drw-who b{font-family:var(--disp)}
+.dv-list,.resp-list{display:flex;flex-direction:column;gap:1.4vh;width:min(80vw,1200px);margin-top:2vh}.dv-it,.resp-it{display:flex;align-items:center;gap:1.4vw;padding:2vh 2vw;border:1px solid var(--line);border-radius:1.4vh;background:#0e1110;font-size:3vh}
+.dv-it i,.resp-it i{font-style:normal;font-family:var(--disp);color:var(--gold);font-size:3.4vh}.dv-it span,.resp-it span{flex:1}.dv-it em,.resp-it em{font-style:normal;font-size:2vh;color:var(--mute)}
+.dv-it.lie{border-color:var(--ko);background:#2a0b10}.dv-it.lie em{color:#f3b3bd}.dv-it.tru{opacity:.75}.resp-it.win{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}
+.dv-in{display:flex;gap:8px;align-items:center;margin:8px 0}.dv-in .field{flex:1}.dv-in label{display:flex;gap:4px;align-items:center;font-size:13px;color:var(--mute);white-space:nowrap}
+.resp-ph{display:flex;flex-direction:column;gap:8px}.resp-b span{font-size:15px;text-align:left}.case.big p{font-size:5vh}
+.corre canvas{width:min(92vw,160vh);aspect-ratio:16/9;border-radius:1.4vh;border:1px solid var(--line);display:block;margin:1vh auto}.cr-top{display:flex;justify-content:space-between;width:min(92vw,160vh);margin:0 auto;font-size:2.2vh;color:var(--mute)}.cr-top b{color:var(--gold2);font-family:var(--disp)}
+.joywrap{display:flex;flex-direction:column;align-items:center;gap:22px;padding-top:4vh}.joy{position:relative;width:72vw;max-width:340px;aspect-ratio:1;border-radius:50%;border:2px solid var(--gold);background:radial-gradient(circle,#1c1a12,#0b0c0c 70%);touch-action:none}
+.joy i{position:absolute;left:32%;top:32%;width:36%;height:36%;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--gold2),var(--gold));box-shadow:0 6px 20px #000a;transition:transform .05s}
+#joydash{width:72vw;max-width:340px;font-size:22px}
+
+.gq.corre{padding-top:5vh}.dv-ph{display:flex;flex-direction:column;gap:10px}.dv-b{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;text-align:left;min-height:64px;padding:12px 14px!important}.dv-b i{font-style:normal;font-family:var(--disp);font-size:22px;color:var(--gold2)}.dv-b span{font-size:16px;line-height:1.3}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -1520,7 +1541,7 @@ const ESTIMATES = [
   ['¿Cuántas estrellas tiene la bandera de la Unión Europea?', 12, 'estrellas'],
   ['¿Cuántos años duró la Guerra de los Cien Años?', 116, 'años'],
   ['¿Cuántas piezas hay en un tablero de ajedrez al empezar la partida?', 32, 'piezas'],
-  ['¿Cuántas cartas tiene una baraja española de 40?', 40, 'cartas'],
+  ['¿Cuántas cartas tiene una baraja de póker, sin comodines?', 52, 'cartas'],
 ];
 
 // [criterio, elementos en orden correcto]
@@ -2468,7 +2489,7 @@ function quizGame(k, meta, o){ def(k, Object.assign({
     if (g.st === 'rev' && v >= g.t1 && o.show){ g.r++; if (g.r >= g.n) return true; this.show_(g, v); return false; }
     return rStep(S, g, v); },
   act(S, g, pid, a, v){ if (a.a !== 'ans' || g.st !== 'q' || g.ans[g.r][pid] != null) return false; g.ans[g.r][pid] = {i: +a.i, ms: v - g.t0}; },
-  result(S, g){ return {raw: sumRaw(S, g, (x, i) => x.i === g.rounds[i].c ? 100 + Math.round(80 * Math.max(0, 1 - x.ms / g.qms)) : 0)}; },
+  result(S, g){ return {raw: sumRaw(S, g, (x, i) => x.i === g.rounds[i].c ? 100 + Math.round(100 * Math.max(0, 1 - x.ms / g.qms)) : 0)}; },
   pub(S, g){ const R = g.rounds[g.r]; return Object.assign(rPub(g), {q: R.q, qh: g.st === 'show' ? R.showH : R.qh || null, o: g.st === 'show' ? null : R.o, c: g.st === 'rev' ? R.c : null, picks: g.st === 'rev' ? Object.fromEntries(Object.entries(g.ans[g.r]).map(([p, x]) => [p, x.i])) : null}); },
   me(S, g, pid){ const x = g.ans[g.r][pid]; return {mine: x ? x.i : null}; },
   tv(P, gp){ if (gp.st === 'show') return `<div class="gq">${roundTag(gp)}<div class="tag">${esc(o.showTxt || '¡Mirad bien!')}</div>${gp.qh}${barH(gp.t0, gp.t1)}</div>`;
@@ -2851,6 +2872,377 @@ Object.entries({trivial: ['📺', '🔘', '⚡'], mentiroso: ['📜', '🪙', '�
   precio: ['🏷️', '🔢', '🎯'], ultimo: ['🟢', '🔴', '❤️'], ppt: ['👀', '✊', '🏆'], dibujo: ['✏️', '🖼️', '🤔'], infiltrado: ['🤫', '🗣️', '🕵️'], caos: ['🌪️', '⚡', '✖️2'],
   mimica: ['🎭', '🗣️', '🏆'], tararea: ['🎵', '🗣️', '🏆'], tabu: ['🗣️', '🚫', '🏆'], respuesta: ['🤔', '🗣️', '😂'], dosverdades: ['🗣️', '🤔', '🤥'], patata: ['💣', '👉', '💥'], juicio: ['⚖️', '🗣️', '🔨']})
   .forEach(([k, ri]) => { if (GAMES[k]) GAMES[k].ri = ri; });
+
+// =====================================================================
+// CONTENIDO NUEVO: más preguntas, con dificultad, para que nada se repita en la noche
+// =====================================================================
+// Verdad o mentira, ahora con trampa (para La Ruleta del Mentiroso)
+const TRUTHS_HARD = [
+  ['Un día en Mercurio dura más que su año.', true], ['Los flamencos nacen de color gris.', true], ['El animal nacional de Escocia es el unicornio.', true],
+  ['La Antártida es el desierto más grande del mundo.', true], ['En la Tierra hay más árboles que estrellas en la Vía Láctea.', true], ['El corazón de una gamba está en su cabeza.', true],
+  ['Nueva Zelanda fue el primer país en dar el voto a las mujeres.', true], ['Los pulpos pueden saborear con los brazos.', true], ['No hay ningún puente que cruce el río Amazonas.', true],
+  ['La Universidad de Oxford es más antigua que el Imperio azteca.', true], ['Los tiburones existen desde antes que los árboles.', true], ['La Sagrada Familia se empezó a construir en el siglo XIX.', true],
+  ['Rusia tiene más superficie que el planeta enano Plutón.', true], ['En Australia hay más canguros que personas.', true], ['Los osos polares tienen la piel negra.', true],
+  ['Los plátanos son ligeramente radiactivos.', true], ['Japón tiene más de 6.000 islas.', true], ['La palabra «robot» viene del checo.', true], ['Nepal tiene una bandera que no es rectangular.', true],
+  ['Cristóbal Colón murió creyendo que había llegado a Asia.', true], ['Un huevo de avestruz tarda más de media hora en cocerse duro.', true], ['El Everest crece unos milímetros cada año.', true],
+  ['Los toros se enfurecen con el color rojo.', false], ['Einstein suspendió matemáticas en el colegio.', false], ['La sangre sin oxígeno es de color azul.', false],
+  ['Las uñas y el pelo siguen creciendo después de morir.', false], ['Los vikingos llevaban cascos con cuernos.', false], ['Medida desde su base, el Everest es la montaña más alta del mundo.', false],
+  ['La Gran Muralla china es una única muralla continua.', false], ['Los perros solo ven en blanco y negro.', false], ['La lengua tiene una zona distinta para cada sabor.', false],
+  ['El oro es el metal más caro del mundo.', false], ['El inglés es el idioma con más hablantes nativos del mundo.', false], ['Groenlandia es más grande que África.', false],
+  ['Portugal tiene frontera con Francia.', false], ['El agua del mar Muerto tiene menos sal que la del océano.', false], ['Los elefantes son los únicos animales que no pueden saltar.', false],
+  ['Bolivia tiene salida al mar.', false], ['Marte es el planeta más caliente del sistema solar.', false], ['Los murciélagos son ciegos.', false], ['Los camellos guardan agua en la joroba.', false],
+];
+// Cine en emojis con dificultad (1 fácil · 2 media · 3 difícil) y número variable de emojis
+const EMOJI2 = [
+  ['🦁👑', 'El Rey León', 1], ['🚢🧊💔', 'Titanic', 1], ['❄️👸⛄', 'Frozen', 1], ['🦈🌊', 'Tiburón', 1], ['🧙‍♂️⚡👓', 'Harry Potter', 1], ['🐠🔍', 'Buscando a Nemo', 1],
+  ['🦖🏝️', 'Jurassic Park', 1], ['🧸🤠🚀', 'Toy Story', 1], ['👽📞🏠', 'E.T., el extraterrestre', 1], ['🐭👨‍🍳🍲', 'Ratatouille', 1], ['🕷️🧑‍🎓🏙️', 'Spider-Man', 1], ['👻🚫🔫', 'Cazafantasmas', 1],
+  ['💍🌋🧙', 'El Señor de los Anillos', 2], ['🏃‍♂️🍫🪶', 'Forrest Gump', 2], ['⏰🚗⚡', 'Regreso al futuro', 2], ['🤖❤️🌱', 'WALL·E', 2], ['🎈🏠👴', 'Up', 2], ['💊🕶️🐇', 'Matrix', 2],
+  ['🧜‍♀️🐚🦀', 'La sirenita', 2], ['🐼🥋', 'Kung Fu Panda', 2], ['🦍🏙️✈️', 'King Kong', 2], ['🏴‍☠️💀⚓🍾', 'Piratas del Caribe', 2], ['🍫🏭🎩', 'Charlie y la fábrica de chocolate', 2],
+  ['🌹🏰📚🫖', 'La Bella y la Bestia', 2], ['🃏🃏😂🪜', 'Joker', 2], ['👦🏠🎄🪤', 'Solo en casa', 2],
+  ['🧠😊😢😡😱', 'Del revés', 3], ['🧑‍🚀🌽🕳️⏳', 'Interstellar', 3], ['🌪️👠🦁🤖🧙', 'El mago de Oz', 3], ['🔪🚿🏨', 'Psicosis', 3], ['🏹👧🔥🕊️', 'Los juegos del hambre', 3],
+  ['🌌⚔️👨‍👦💡', 'La guerra de las galaxias', 3], ['🎤👑🌈🎸', 'Bohemian Rhapsody', 3], ['🧔🏝️🏐', 'Náufrago', 3], ['💤🌀🏙️🔄', 'Origen', 3],
+  ['👨‍🔬🧪💀💊📺', 'Breaking Bad', 3], ['🦇👨‍💼🏙️🃏', 'El caballero oscuro', 3], ['🐒🚀🌍', 'El planeta de los simios', 3],
+];
+// Termina el refrán, de fácil a difícil
+const REFRANES2 = [
+  ['A quien madruga…', 'Dios le ayuda', 1], ['Más vale pájaro en mano…', 'que ciento volando', 1], ['No por mucho madrugar…', 'amanece más temprano', 1], ['En boca cerrada…', 'no entran moscas', 1],
+  ['Perro ladrador…', 'poco mordedor', 1], ['Dime con quién andas…', 'y te diré quién eres', 1], ['A caballo regalado…', 'no le mires el diente', 1], ['Ojos que no ven…', 'corazón que no siente', 1],
+  ['Más vale tarde…', 'que nunca', 1], ['Quien ríe el último…', 'ríe mejor', 1], ['De tal palo…', 'tal astilla', 1], ['Cría cuervos…', 'y te sacarán los ojos', 1],
+  ['Camarón que se duerme…', 'se lo lleva la corriente', 2], ['El que avisa…', 'no es traidor', 2], ['Cuando el río suena…', 'agua lleva', 2], ['A falta de pan…', 'buenas son tortas', 2],
+  ['Al mal tiempo…', 'buena cara', 2], ['No hay mal…', 'que por bien no venga', 2], ['Quien siembra vientos…', 'recoge tempestades', 2], ['Donde fueres…', 'haz lo que vieres', 2],
+  ['Más sabe el diablo por viejo…', 'que por diablo', 2], ['Zapatero…', 'a tus zapatos', 2], ['En casa del herrero…', 'cuchillo de palo', 2], ['Quien mucho abarca…', 'poco aprieta', 2],
+  ['A otro perro…', 'con ese hueso', 3], ['Agua que no has de beber…', 'déjala correr', 3], ['Del dicho al hecho…', 'hay mucho trecho', 3], ['Hasta el cuarenta de mayo…', 'no te quites el sayo', 3],
+  ['A buen entendedor…', 'pocas palabras bastan', 3], ['Cada mochuelo…', 'a su olivo', 3], ['Por la boca…', 'muere el pez', 3], ['Muerto el perro…', 'se acabó la rabia', 3],
+  ['El que parte y reparte…', 'se queda con la mejor parte', 3], ['Gato escaldado…', 'del agua fría huye', 3], ['Año de nieves…', 'año de bienes', 3], ['Unos tienen la fama…', 'y otros cardan la lana', 3],
+  ['A Dios rogando…', 'y con el mazo dando', 3],
+];
+// Más preguntas para El Gran Trivial
+const TRIVIA2 = [
+  ['¿Qué país tiene forma de bota?', 'Italia', 'Grecia', 'Portugal', 'Chile'], ['¿Cuántos lados tiene un hexágono?', 'Seis', 'Cinco', 'Ocho', 'Siete'],
+  ['¿Qué gas respiran las plantas para hacer la fotosíntesis?', 'Dióxido de carbono', 'Oxígeno', 'Nitrógeno', 'Helio'], ['¿Quién pintó «Las meninas»?', 'Velázquez', 'Goya', 'El Greco', 'Murillo'],
+  ['¿En qué año llegó el ser humano a la Luna?', '1969', '1972', '1965', '1959'], ['¿Cuál es el río más largo de España?', 'Tajo', 'Ebro', 'Duero', 'Guadalquivir'],
+  ['¿Cuál es la capital de Canadá?', 'Ottawa', 'Toronto', 'Montreal', 'Vancouver'], ['¿Cuántos jugadores tiene un equipo de baloncesto en la pista?', 'Cinco', 'Seis', 'Siete', 'Cuatro'],
+  ['¿Qué instrumento tocaba Paco de Lucía?', 'Guitarra', 'Piano', 'Cajón', 'Violín'], ['¿De qué color es la caja negra de un avión?', 'Naranja', 'Negra', 'Roja', 'Amarilla'],
+  ['¿Cuál es el hueso más largo del cuerpo humano?', 'El fémur', 'El húmero', 'La tibia', 'El peroné'], ['¿Qué planeta tiene más lunas conocidas?', 'Saturno', 'Júpiter', 'Urano', 'Neptuno'],
+  ['¿Quién escribió «Don Quijote de la Mancha»?', 'Cervantes', 'Lope de Vega', 'Quevedo', 'Calderón'], ['¿Cuántos minutos tiene un día?', '1.440', '1.240', '1.640', '1.040'],
+  ['¿En qué país está Machu Picchu?', 'Perú', 'Bolivia', 'México', 'Chile'], ['¿Qué selección ganó el Mundial de fútbol de 2010?', 'España', 'Países Bajos', 'Alemania', 'Brasil'],
+  ['¿Cuál es el océano más grande?', 'Pacífico', 'Atlántico', 'Índico', 'Ártico'], ['¿Qué vitamina nos da el sol?', 'Vitamina D', 'Vitamina C', 'Vitamina A', 'Vitamina B12'],
+  ['¿Cuántas patas tiene una araña?', 'Ocho', 'Seis', 'Diez', 'Doce'], ['¿Qué ciudad es conocida como «la ciudad eterna»?', 'Roma', 'Atenas', 'París', 'Jerusalén'],
+  ['¿Cuál es el símbolo químico del oro?', 'Au', 'Ag', 'Or', 'Go'], ['¿Qué animal es el más rápido en tierra?', 'Guepardo', 'León', 'Antílope', 'Caballo'],
+  ['¿En qué continente está Egipto?', 'África', 'Asia', 'Europa', 'Oceanía'], ['¿Cuántos colores tiene el arcoíris?', 'Siete', 'Seis', 'Ocho', 'Cinco'],
+  ['¿Qué idioma se habla en Brasil?', 'Portugués', 'Español', 'Brasileño', 'Inglés'], ['¿Quién compuso «Las cuatro estaciones»?', 'Vivaldi', 'Mozart', 'Bach', 'Beethoven'],
+  ['¿Cuál es la montaña más alta de España?', 'El Teide', 'El Mulhacén', 'El Aneto', 'El Veleta'], ['¿Cuántos corazones tiene un pulpo?', 'Tres', 'Uno', 'Dos', 'Cuatro'],
+  ['¿Qué moneda se usaba en España antes del euro?', 'La peseta', 'El duro', 'El real', 'El escudo'], ['¿Qué significa la «e» de «e-mail»?', 'Electrónico', 'Europeo', 'Enviado', 'Exprés'],
+];
+// La Patata Caliente con un objeto de verdad: lo que la tele va ordenando
+const PATATA_CMDS = ['¡Cambio de sentido!', '¡Más rápido!', '¡Sáltate a uno!', '¡Pásala por la espalda!', '¡Solo con la mano izquierda!', '¡Quien la tenga, que diga un color antes de pasarla!',
+  '¡Pásasela a alguien que lleve algo negro!', '¡Todos de pie!', '¡Pásala con los ojos cerrados!', '¡Quien la tenga, que diga su nombre en voz alta!', '¡Pásasela a alguien que no la haya tocado todavía!',
+  '¡Cambio de sentido otra vez!', '¡Con las dos manos!', '¡Quien la tenga, que haga una reverencia!'];
+const PATATA_OBJ = ['un cojín', 'una servilleta hecha bola', 'un vaso de plástico vacío', 'una naranja', 'un peluche', 'un rollo de papel'];
+
+// =====================================================================
+// MINIJUEGOS · revisión para la fiesta
+// - Las preguntas no se repiten en toda la noche (S.used) y puntúan por rapidez, como en Kahoot.
+// - Se quitan los que no encajan y se rehacen varios para que se jueguen hablando y mirando la tele.
+// =====================================================================
+// coge n elementos que todavía no han salido esta noche
+function fresh(S, key, arr, n, id = x => JSON.stringify(x)){ S.used ||= {}; const u = new Set(S.used[key] || []);
+  let pool = shuffle(arr.filter(x => !u.has(id(x)))); if (pool.length < n){ u.clear(); pool = shuffle(arr); }
+  const out = pool.slice(0, n); S.used[key] = [...u, ...out.map(id)]; return out; }
+const speedPts = (ms, max, base = 100, bonus = 100) => base + Math.round(bonus * Math.max(0, 1 - ms / max));
+
+// ---------- fuera de la noche ----------
+// (no se borran del todo: El Caos Final reutiliza piezas de Reflejos)
+['duelo', 'banderas', 'calculo', 'atrapa', 'toques', 'ultimo', 'reflejos', 'juicio', 'rasca', 'diez'].forEach(k => { if (GAMES[k]){ GAMES[k].hidden = true; GAMES[k].removed = true; } });
+const metaOf = g => ({name: g.name, cat: g.cat, icon: g.icon, desc: g.desc, rules: g.rules, ri: g.ri, ctl: g.ctl, min: g.min});
+
+// ---------- preguntas que no se repiten y puntúan por rapidez ----------
+GAMES.trivial.init = function(S){ const g = {}; rInit(g, fresh(S, 'trivia', TRIVIA.concat(TRIVIA2), 6, t => t[0]).map(t => { const o = shuffle(t.slice(1)); return {q: t[0], o, c: o.indexOf(t[1])}; }), 12000, 3800); return g; };
+GAMES.mayoria.init = function(S){ const g = {}; rInit(g, fresh(S, 'mayoria', MAJORITY, 4, m => m[0]).map(m => ({q: m[0], o: m.slice(1)})), 12000, 4800); return g; };
+GAMES.quien.init = function(S){ const g = {}; rInit(g, fresh(S, 'who', WHO, 3).map(q => ({q})), 15000, 5500); return g; };
+GAMES.precio.init = function(S){ const g = {}; rInit(g, fresh(S, 'precio', ESTIMATES, 4, e => e[0]).map(e => ({q: e[0], val: e[1], u: e[2]})), 20000, 6500); return g; };
+GAMES.caras.init = function(S){ const g = {}; rInit(g, fresh(S, 'caras', FACES, 3).map(q => ({q})), 0, 6000); return g; };
+// La Ruleta del Mentiroso, con afirmaciones que tienen trampa y más rondas
+GAMES.mentiroso.init = function(S){ const g = {}; rInit(g, fresh(S, 'verdades', TRUTHS_HARD, 5, t => t[0]).map(t => ({q: t[0], v: t[1]})), 13000, 4800); return g; };
+GAMES.mentiroso.result = function(S, g){ return {raw: sumRaw(S, g, (x, i) => x.v === g.rounds[i].v ? speedPts(x.ms, g.qms) : 0)}; };
+// Termina el refrán: de fácil a difícil, y entre 5 y 7 rondas
+quizGame('refran', metaOf(GAMES.refran), {qms: 10000, rounds: S => { const n = 5 + rnd(3); const by = d => REFRANES2.filter(r => r[2] === d);
+  const pickD = [1, 1, 2, 2, 3, 3, 3].slice(0, n); const used = new Set(); return pickD.map(d => { const [r] = fresh(S, 'refran' + d, by(d), 1, x => x[0]); used.add(r[0]); return Object.assign({q: r[0]}, mkOpts(r[1], by(d).map(x => x[1]))); }); }});
+GAMES.refran.desc = 'Medio refrán en la tele. ¿Cómo acaba? Empiezan fáciles y acaban de abuelo sabio.';
+// Cine en emojis: más películas, de fácil a difícil, con 2 a 6 emojis
+quizGame('emoji', metaOf(GAMES.emoji), {qms: 13000, rounds: S => { const n = 5 + rnd(2); const by = d => EMOJI2.filter(e => e[2] === d);
+  return [1, 1, 2, 2, 3, 3].slice(0, n).map(d => { const [e] = fresh(S, 'emoji' + d, by(d), 1, x => x[1]); return Object.assign({q: d === 3 ? '¿Qué película o serie es? (difícil)' : '¿Qué película es?', qh: `<div class="emo">${e[0]}</div>`}, mkOpts(e[1], EMOJI2.map(x => x[1]))); }); }});
+// Colores Tramposos: cuenta sobre todo la rapidez
+GAMES.colores.result = function(S, g){ return {raw: sumRaw(S, g, (x, i) => x.i === g.rounds[i].c ? speedPts(x.ms, g.qms, 40, 160) : 0)}; };
+GAMES.colores.desc = 'La palabra dice un color y está pintada de otro. Acierta el color de la tinta… y sé el más rápido.';
+// ¿Más o Menos? sin repetir
+GAMES.masalto.init = function(S){ const g = {}; rInit(g, fresh(S, 'compare', COMPARE, 6, x => x[0]).map(([q, a, b, c]) => ({q, o: [a, b], c})), 8000, 3200); return g; };
+
+// ---------- Memoria de Élite: hasta que solo quede uno ----------
+def('memoria', {name: 'Memoria de Élite', cat: 'Memoria', icon: '🧠', desc: 'La tele enciende colores y cada ronda añade uno más, cada vez más rápido. Quien falla, fuera. Hasta que quede uno.', min: 2,
+  rules: ['Mira la tele: se encenderán colores en orden.', 'Repítelos en tu móvil. Cada ronda la secuencia crece y va más rápido.', 'Si fallas, quedas eliminado. Gana el último que siga dentro.'], ri: ['👀', '🟥🟦', '🧠'], ctl: 'Cuatro botones de colores',
+  init(S){ return {seq: [rnd(4), rnd(4)], alive: pidsAll(S).slice(), out: [], r: 0, st: 'wait', ans: {}}; },
+  start(S, g, v){ this.show(g, v); },
+  sp(g){ return Math.max(320, 760 - g.r * 45); },
+  show(g, v){ g.seq.push(rnd(4)); g.ans = {}; g.st = 'show'; g.t0 = v; g.t1 = v + 700 + g.seq.length * this.sp(g) + 300; },
+  step(S, g, v){
+    if (g.st === 'show' && v >= g.t1){ g.st = 'q'; g.t0 = v; g.t1 = v + 3500 + g.seq.length * 750; return false; }
+    if (g.st === 'q'){ const live = g.alive.filter(p => pidsOn(S).includes(p) || S.players[p].bot); if (v >= g.t1 || (live.length && live.every(p => g.ans[p] != null))){
+        const fail = g.alive.filter(p => !(g.ans[p] && g.ans[p].ok)); const keep = g.alive.filter(p => g.ans[p] && g.ans[p].ok);
+        g.lastOut = fail; if (keep.length) { g.out.push({r: g.r, ps: fail}); g.alive = keep; } else g.out.push({r: g.r, ps: []});
+        g.st = 'rev'; g.t0 = v; g.t1 = v + 3200; } return false; }
+    if (g.st === 'rev' && v >= g.t1){ if (g.alive.length <= 1 || g.r >= 40) return true; g.r++; this.show(g, v); }
+    return false; },
+  act(S, g, pid, a, v){ if (a.a !== 'seq' || g.st !== 'q' || +a.r !== g.r || g.ans[pid] != null || !g.alive.includes(pid) || !Array.isArray(a.s)) return false; g.ans[pid] = {ok: a.s.length === g.seq.length && a.s.every((x, i) => +x === g.seq[i]), ms: v - g.t0}; },
+  result(S, g){ const raw = {}; pidsAll(S).forEach(p => raw[p] = 0); g.out.forEach(o => o.ps.forEach(p => raw[p] = o.r * 100)); g.alive.forEach(p => raw[p] = (g.r + 2) * 100); return {raw}; },
+  pub(S, g){ return {r: g.r, n: 1, st: g.st, t0: g.t0, t1: g.t1, len: g.seq.length, sp: this.sp(g), seq: g.st === 'q' ? null : g.seq, alive: g.alive, lastOut: g.st === 'rev' ? g.lastOut : null, done: Object.keys(g.ans)}; },
+  me(S, g, pid){ return {mine: g.ans[pid] || null, alive: g.alive.includes(pid)}; },
+  fast: true,
+  litAt(gp, v){ if (gp.st !== 'show') return -1; const sp = gp.sp || 760; const rel = v - gp.t0 - 700; if (rel < 0) return -1; const k = Math.floor(rel / sp); if (k >= gp.seq.length || rel % sp > sp * .75) return -1; return k; },
+  pads(lit, live){ return `<div class="pads">${MEM_COLORS.map((c, i) => live ? `<button class="pad" data-pad="${i}" style="--pc:${c[1]}"></button>` : `<div class="pad ${lit === i ? 'lit' : ''}" style="--pc:${c[1]}"></div>`).join('')}</div>`; },
+  tv(P, gp, v){ const k = this.litAt(gp, v); const lit = k >= 0 ? gp.seq[k] : -1; if (k >= 0 && TVS.memBeep !== gp.r + ':' + k){ TVS.memBeep = gp.r + ':' + k; tone(MEM_COLORS[lit][2], .35, 'triangle', .14); }
+    const head = `<div class="rtag">Ronda ${gp.r + 1} · ${gp.len} colores · quedan ${gp.alive.length}</div>`;
+    if (gp.st === 'rev') return `<div class="gq">${head}<div class="seqrow">${gp.seq.map(i => `<i style="background:${MEM_COLORS[i][1]}"></i>`).join('')}</div>${gp.lastOut && gp.lastOut.length ? `<h2 class="q">Fuera: ${gp.lastOut.map(p => esc(pOf(P, p).name)).join(', ')}</h2>` : '<h2 class="q">¡Nadie falla! Más rápido…</h2>'}<div class="mini">${gp.alive.map(p => chipH(pOf(P, p))).join('')}</div></div>`;
+    return `<div class="gq">${head}<div class="tag">${gp.st === 'show' ? `Memorizad ${gp.len} colores` : '¡Repetidla en el móvil!'}</div>${this.pads(lit)}${gp.st === 'q' ? barH(gp.t0, gp.t1) + answeredRow(Object.assign({}, P, {players: P.players.filter(p => gp.alive.includes(p.pid))}), gp.done) : ''}</div>`; },
+  ph(P, gp, M){ if (!M.alive) return waitPh('Eliminado', 'Mira la tele: a ver quién aguanta más');
+    if (gp.st === 'rev') return M.mine && M.mine.ok ? phVerdict(true, 'Sigues dentro') : phVerdict(false, 'Te has equivocado');
+    if (gp.st === 'show') return waitPh('Mira la tele', `Memoriza ${gp.len} colores`); if (M.mine) return waitPh('Enviado', 'Espera a los demás');
+    const inp = PH.gs['m' + gp.r] || []; return `<div class="mprog">${Array.from({length: gp.len}, (_, i) => `<i class="${i < inp.length ? 'on' : ''}" style="${i < inp.length ? 'background:' + MEM_COLORS[inp[i]][1] : ''}"></i>`).join('')}</div>${this.pads(-1, true)}`; },
+  pad(P, gp, i){ if (gp.st !== 'q') return null; const k = 'm' + gp.r; const inp = PH.gs[k] = (PH.gs[k] || []).concat(i); tone(MEM_COLORS[i][2], .22, 'triangle', .12); return inp.length >= gp.len ? {a: 'seq', r: gp.r, s: inp} : null; },
+  bot(S, g, pid, v){ if (g.st === 'q' && g.alive.includes(pid) && !g.ans[pid] && v - g.t0 > 2000 + Math.random() * 3000) this.act(S, g, pid, {a: 'seq', r: g.r, s: Math.random() < .95 - g.seq.length * .05 ? g.seq : g.seq.map(() => rnd(4))}, v); },
+});
+
+// ---------- La Carrera de Caballos: cada uno a su ritmo ----------
+function miniQ(){ const t = rnd(5);
+  if (t === 0){ const a = 2 + rnd(9), b = 2 + rnd(9); const r = a + b; const o = shuffle([r, r + 1, r - 1, r + 2]); return {q: `${a} + ${b}`, o: o.map(String), c: o.indexOf(r)}; }
+  if (t === 1){ const a = 2 + rnd(8), b = 2 + rnd(6); const r = a * b; const o = shuffle([r, r + a, r - b, r + 1]); return {q: `${a} × ${b}`, o: o.map(String), c: o.indexOf(r)}; }
+  if (t === 2){ const c = rnd(4); return {q: `Pulsa el ${MEM_COLORS[c][0].toUpperCase()}`, colors: true, o: MEM_COLORS.map(x => x[0].toUpperCase()), c}; }
+  if (t === 3){ const a = 10 + rnd(90), b = 10 + rnd(90); if (a === b) return miniQ(); return {q: '¿Cuál es mayor?', o: [String(a), String(b)], c: a > b ? 0 : 1}; }
+  const w = pick(['GATO', 'LUNA', 'CASA', 'MESA', 'PERRO', 'FUEGO', 'NUBE', 'TREN']); const bad = w.split('').reverse().join(''); return {q: `¿Cuál está bien escrita?`, o: shuffle([w, bad, w.slice(1) + w[0]]), c: -1, word: w}; }
+const fixQ = Q => { if (Q.c === -1) Q.c = Q.o.indexOf(Q.word); return Q; };
+def('caballos', {name: 'La Carrera de Caballos', cat: 'Rapidez', icon: '🏇', desc: 'Preguntas relámpago en tu móvil, cada uno a su ritmo. Acierta y tu caballo avanza; falla y retrocede.',
+  rules: ['Cada uno recibe en su móvil preguntas rapidísimas: sumas, «pulsa el rojo», ¿cuál es mayor?…', 'Acierto: tu caballo avanza. Fallo: retrocede. Al momento te sale otra.', 'Mirad la tele: los tres primeros en cruzar la meta ganan.'], ri: ['📱', '🏇', '🏁'], ctl: 'Botones grandes',
+  init(S){ return {pos: {}, fin: [], st: 'wait', goal: 12, Q: {}, k: {}, last: {}}; },
+  start(S, g, v){ g.st = 'q'; g.t0 = v; g.t1 = v + 75000; pidsAll(S).forEach(p => { g.pos[p] = 0; g.k[p] = 0; g.Q[p] = fixQ(miniQ()); }); },
+  step(S, g, v){ if (g.st === 'q' && (v >= g.t1 || g.fin.length >= Math.min(3, pidsAll(S).length) || pidsAll(S).every(p => g.fin.includes(p)))){ g.st = 'rev'; g.t0 = v; g.t1 = v + 6000; return false; }
+    return g.st === 'rev' && v >= g.t1; },
+  act(S, g, pid, a, v){ if (a.a !== 'ans' || g.st !== 'q' || g.fin.includes(pid) || +a.k !== g.k[pid]) return false; const ok = +a.i === g.Q[pid].c;
+    g.pos[pid] = Math.max(0, (g.pos[pid] || 0) + (ok ? 1 : -1)); g.last[pid] = ok; if (g.pos[pid] >= g.goal && !g.fin.includes(pid)) g.fin.push(pid); g.k[pid]++; g.Q[pid] = fixQ(miniQ()); return true; },
+  result(S, g){ const raw = {}; pidsAll(S).forEach(p => { const i = g.fin.indexOf(p); raw[p] = i >= 0 ? 3000 - i * 400 : (g.pos[p] || 0) * 100; }); return {raw}; },
+  pub(S, g){ return {st: g.st, t0: g.t0, t1: g.t1, pos: g.pos, fin: g.fin, goal: g.goal}; },
+  me(S, g, pid){ const Q = g.Q[pid]; return {Q: Q ? {q: Q.q, o: Q.o, colors: Q.colors} : null, k: g.k[pid], pos: g.pos[pid] || 0, fin: g.fin.indexOf(pid), last: g.last[pid]}; },
+  tv(P, gp){ if (gp.st === 'rev') return `<div class="gq"><h2 class="q">¡Foto finish!</h2><div class="podline">${gp.fin.map((p, i) => `<div class="pp${i + 1}">${avH(pOf(P, p), 'lg')}<b>${i + 1}º ${esc(pOf(P, p).name)}</b></div>`).join('') || '<p class="note">Nadie llegó a la meta.</p>'}</div></div>`;
+    return `<div class="gq horseq"><h2 class="q">¡Corred! Contestad en el móvil</h2>${barH(gp.t0, gp.t1)}<div class="track">${P.players.map(p => { const d = gp.pos[p.pid] || 0; const f = gp.fin.indexOf(p.pid);
+      return `<div class="tr-l"><span class="tr-n">${avH(p, 'sm')}<b>${esc(p.name)}</b></span><div class="tr-run"><i class="tr-h ${f >= 0 ? 'fin' : ''}" style="left:${Math.min(100, d / gp.goal * 100)}%">🏇</i></div><em>${f >= 0 ? f + 1 + 'º' : d}</em></div>`; }).join('')}</div></div>`; },
+  ph(P, gp, M){ if (gp.st === 'rev') return phVerdict(M.fin >= 0, M.fin >= 0 ? `Cruzaste la meta el ${M.fin + 1}º` : 'Tu caballo llegó al paso ' + M.pos);
+    if (M.fin >= 0) return waitPh('¡Meta!', `Has llegado el ${M.fin + 1}º`); if (!M.Q) return waitPh('Preparados…');
+    const fb = M.last == null ? '' : `<div class="hfb ${M.last ? 'ok' : 'ko'}">${M.last ? '¡Galopa!' : '¡Tropiezo!'}</div>`;
+    return `<div class="pprog horse"><i style="width:${Math.round(M.pos / gp.goal * 100)}%"></i><span>🏇 ${M.pos}/${gp.goal}</span></div>${fb}<p class="pq big center">${esc(M.Q.q)}</p><div class="pbtns n${M.Q.o.length}">${M.Q.o.map((o, i) => gbtn({a: 'ans', k: M.k, i}, `<span>${esc(o)}</span>`, 'ob', M.Q.colors ? `style="--oc:${MEM_COLORS[i][1]}"` : '')).join('')}</div>`; },
+  bot(S, g, pid, v){ if (g.st !== 'q' || g.fin.includes(pid) || Math.random() > .3) return; this.act(S, g, pid, {a: 'ans', k: g.k[pid], i: Math.random() < .75 ? g.Q[pid].c : rnd(g.Q[pid].o.length)}, v); },
+});
+
+// ---------- La Patata Caliente: con un objeto de verdad ----------
+def('patata', {name: 'La Patata Caliente', cat: 'Caos', icon: '💣', desc: 'Un objeto de verdad pasa de mano en mano mientras la tele da órdenes. Cuando explote, que no lo tengas tú.', min: 3,
+  rules: ['Coged un objeto que se pueda pasar: un cojín, una naranja, un peluche…', 'La tele dice quién empieza. Pasadlo de mano en mano y haced caso de lo que vaya diciendo la tele.', 'Nadie sabe cuándo explota. Cuando explote, votad en el móvil quién lo tenía: ese pierde.'], ri: ['🥔', '📺', '💥'], ctl: 'Solo para votar',
+  init(S){ return {st: 'wait', r: 0, n: 3, obj: pick(PATATA_OBJ), votes: {}, losers: [], cmd: null}; },
+  start(S, g, v){ this.arm(S, g, v); },
+  arm(S, g, v){ g.st = 'q'; g.start = pick(pidsAll(S)); g.t0 = v; g.boom = v + 22000 + rnd(26000); g.nextCmd = v + 7000 + rnd(3000); g.cmd = null; g.votes = {}; },
+  step(S, g, v){
+    if (g.st === 'q'){ if (v >= g.nextCmd){ g.cmd = pick(PATATA_CMDS.filter(c => c !== g.cmd)); g.cmdAt = v; g.nextCmd = v + 5500 + rnd(4000); }
+      if (v >= g.boom){ g.st = 'vote'; g.t0 = v; g.t1 = v + 16000; } return false; }
+    if (g.st === 'vote'){ const on = pidsOn(S); if (v >= g.t1 || (v - g.t0 > 2500 && on.length && on.every(p => g.votes[p]))){ const c = {}; Object.values(g.votes).forEach(x => c[x] = (c[x] || 0) + 1);
+        const top = Object.entries(c).sort((a, b) => b[1] - a[1])[0]; g.loser = top ? top[0] : null; if (g.loser) g.losers.push(g.loser); g.st = 'rev'; g.t0 = v; g.t1 = v + 5000; } return false; }
+    if (g.st === 'rev' && v >= g.t1){ g.r++; if (g.r >= g.n) return true; this.arm(S, g, v); }
+    return false; },
+  act(S, g, pid, a){ if (a.a !== 'who' || g.st !== 'vote' || !S.players[a.pid]) return false; g.votes[pid] = a.pid; return true; },
+  result(S, g){ const raw = {}; pidsAll(S).forEach(p => raw[p] = 300); g.losers.forEach(p => raw[p] = (raw[p] || 300) - 150); return {raw}; },
+  pub(S, g){ return {st: g.st, r: g.r, n: g.n, t0: g.t0, t1: g.t1, start: g.start, cmd: g.cmd, cmdAt: g.cmdAt, obj: g.obj, loser: g.st === 'rev' ? g.loser : null, done: Object.keys(g.votes), boomIn: g.st === 'q' ? g.boom - g.t0 : 0}; },
+  me(S, g, pid){ return {mine: g.votes[pid] || null}; },
+  fast: true,
+  tv(P, gp, v){ const head = `<div class="rtag">Ronda ${gp.r + 1} de ${gp.n}</div>`;
+    if (gp.st === 'q'){ const el = v - gp.t0; const beat = el % Math.max(220, 900 - el / 60) < 80; if (beat && TVS.patBeat !== Math.floor(el / 200)){ TVS.patBeat = Math.floor(el / 200); tone(el > 25000 ? 880 : 660, .05, 'square', .06); }
+      if (gp.cmd && TVS.patCmd !== gp.cmdAt){ TVS.patCmd = gp.cmdAt; try { SFX.stinger(); } catch {} say(gp.cmd); }
+      const S0 = pOf(P, gp.start); return `<div class="gq patata">${head}<div class="pat-start">${el < 6000 ? `Empieza ${avH(S0, 'lg')}<b>${esc(S0.name)}</b> con ${esc(gp.obj)}` : ''}</div><div class="pat-bomb ${beat ? 'tick' : ''}">💣</div><h2 class="q big pat-cmd">${esc(gp.cmd || '¡Pasadla!')}</h2></div>`; }
+    if (gp.st === 'vote'){ if (TVS.patBoom !== gp.t0){ TVS.patBoom = gp.t0; try { SFX.boom(); } catch {} } return `<div class="gq patata">${head}<div class="pat-boom">💥</div><h2 class="q big">¡BOOM! ¿Quién la tenía?</h2><p class="note">Votad en el móvil</p>${barH(gp.t0, gp.t1)}${answeredRow(P, gp.done)}</div>`; }
+    const L = gp.loser && pOf(P, gp.loser); return `<div class="gq patata">${head}${L ? `<div class="spot"><div class="spot-p">${avH(L, 'xl')}<b>${esc(L.name)}</b></div><div class="spot-n">¡Le ha explotado!</div></div>` : '<h2 class="q">Nadie se pone de acuerdo…</h2>'}</div>`; },
+  ph(P, gp, M){ if (gp.st === 'q') return waitPh('¡Pasad el objeto!', 'Haced caso a la tele. El móvil, al bolsillo.');
+    if (gp.st === 'rev') return waitPh(gp.loser ? 'Le ha explotado a ' + esc(pOf(P, gp.loser).name) : 'Mira la tele');
+    if (M.mine) return waitPh('Voto enviado'); return `<p class="pq">¿Quién tenía el objeto cuando explotó?</p><div class="pgrid">${P.players.map(p => gbtn({a: 'who', pid: p.pid}, avH(p, 'lg') + `<b>${esc(p.name)}</b>`, 'pp')).join('')}</div>`; },
+  bot(S, g, pid, v){ if (g.st === 'vote' && !g.votes[pid] && v - g.t0 > 2000 + Math.random() * 5000){ const ps = pidsAll(S); this.act(S, g, pid, {a: 'who', pid: g.votes[ps[0]] || pick(ps)}); } },
+});
+
+// ---------- Dibujo Clandestino: uno dibuja en directo y los demás gritan ----------
+def('dibujo', {name: 'Dibujo Clandestino', cat: 'Creatividad', icon: '🎨', desc: 'Uno dibuja en su móvil y la tele lo enseña en directo. Los demás gritan. El que dibuja marca quién acertó.', min: 3,
+  rules: ['En cada ronda le toca dibujar a alguien al azar: su móvil le da una palabra secreta.', 'La tele enseña el dibujo en directo. ¡Gritad lo que creáis que es!', 'Cuando alguien acierte, el que dibuja lo marca en su móvil. Cuanto antes, más puntos para los dos.'], ri: ['✏️', '📺', '🗣️'], ctl: 'Dibujar con el dedo',
+  init(S){ const ps = shuffle(pidsAll(S).filter(p => !S.players[p].bot)); const drawers = (ps.length ? ps : shuffle(pidsAll(S))).slice(0, Math.min(4, pidsAll(S).length)); const words = fresh(S, 'dibujo', DRAW_WORDS, drawers.length);
+    return {rounds: drawers.map((pid, i) => ({pid, w: words[i]})), r: 0, n: drawers.length, st: 'wait', s: [], got: [], ms: 75000}; },
+  start(S, g, v){ this.go(g, v); },
+  go(g, v){ g.st = 'draw'; g.t0 = v; g.t1 = v + g.ms; g.s = []; g.hit = null; },
+  step(S, g, v){ if (g.st === 'draw' && (v >= g.t1 || g.hit)){ g.st = 'rev'; g.t0 = v; g.t1 = v + 5500; g.got.push({r: g.r, hit: g.hit}); return false; }
+    if (g.st === 'rev' && v >= g.t1){ g.r++; if (g.r >= g.n) return true; this.go(g, v); } return false; },
+  act(S, g, pid, a, v){ const R = g.rounds[g.r]; if (!R || pid !== R.pid || g.st !== 'draw') return false;
+    if (a.a === 'draw' && Array.isArray(a.s)){ g.s = a.s.slice(0, 120); return false; }
+    if (a.a === 'hit' && S.players[a.pid] && a.pid !== pid){ g.hit = {pid: a.pid, ms: v - g.t0}; return true; }
+    if (a.a === 'pass'){ g.t1 = v; return true; } return false; },
+  result(S, g){ const raw = {}; pidsAll(S).forEach(p => raw[p] = 0); g.got.forEach(x => { if (!x.hit) return; const pts = speedPts(x.hit.ms, g.ms, 80, 120); raw[x.hit.pid] += pts; raw[g.rounds[x.r].pid] += pts; }); return {raw}; },
+  pub(S, g){ const R = g.rounds[g.r] || {}; return {st: g.st, r: g.r, n: g.n, t0: g.t0, t1: g.t1, drawer: R.pid, word: g.st === 'rev' ? R.w : null, len: R.w ? R.w.length : 0, hit: g.st === 'rev' ? g.hit : null}; },
+  me(S, g, pid){ const R = g.rounds[g.r] || {}; return {isDrawer: R.pid === pid, word: R.pid === pid ? R.w : null}; },
+  tv(P, gp){ const D = pOf(P, gp.drawer); const head = `<div class="rtag">Ronda ${gp.r + 1} de ${gp.n}</div>`;
+    if (gp.st === 'rev'){ const H = gp.hit && pOf(P, gp.hit.pid); return `<div class="gq">${head}<h2 class="q">Era: <b>${esc(gp.word || '')}</b></h2><div class="drw-live" data-live="1"><canvas id="drwtv" width="1000" height="1000"></canvas></div><p class="note">${H ? `¡Lo ha acertado ${esc(H.name)}!` : 'Nadie lo ha acertado'}</p></div>`; }
+    return `<div class="gq">${head}<div class="drw-who">${avH(D, 'md')}<b>${esc(D.name)}</b> dibuja · ${gp.len} letras · ¡gritad!</div><div class="drw-live" data-live="1"><canvas id="drwtv" width="1000" height="1000"></canvas></div>${barH(gp.t0, gp.t1)}</div>`; },
+  ph(P, gp, M){ if (gp.st === 'rev') return waitPh('Era: ' + esc(gp.word || ''), gp.hit ? 'Acertó ' + esc(pOf(P, gp.hit.pid).name) : 'Nadie acertó');
+    if (!M.isDrawer) return waitPh('¡Grita lo que creas que es!', esc(pOf(P, gp.drawer).name) + ' está dibujando en la tele');
+    PH.gs.live = true; return `<p class="pq center">Dibuja: <b>${esc(M.word)}</b></p><canvas id="cv" class="cv" width="600" height="600"></canvas><p class="muted center">Cuando alguien lo acierte, márcalo:</p><div class="pgrid sm">${P.players.filter(p => p.pid !== gp.drawer).map(p => gbtn({a: 'hit', pid: p.pid}, avH(p, 'md') + `<b>${esc(p.name)}</b>`, 'pp')).join('')}</div>${gbtn({a: 'pass'}, '<span>Nadie lo saca: pasar</span>', 'ob', 'style="--oc:#333"')}`; },
+  bot(S, g, pid, v){ const R = g.rounds[g.r]; if (R && R.pid === pid && g.st === 'draw' && v - g.t0 > 8000 + Math.random() * 20000) this.act(S, g, pid, {a: 'hit', pid: pick(pidsAll(S).filter(p => p !== pid))}, v); },
+});
+// la tele pinta el dibujo en directo (sin pasar por el estado que viaja a los móviles)
+function drwPaint(){ const cv = $('#drwtv'); if (!cv || !window.__E || !__E.S.g || __E.S.g.k !== 'dibujo') return; const s = __E.S.g.s || []; const key = JSON.stringify(s).length + ':' + s.length; if (cv.dataset.k === key) return; cv.dataset.k = key;
+  const ctx = cv.getContext('2d'); ctx.fillStyle = '#f5efe3'; ctx.fillRect(0, 0, 1000, 1000); ctx.strokeStyle = '#1b1720'; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  s.forEach(st => { ctx.beginPath(); for (let i = 0; i + 1 < st.length; i += 2){ if (!i) ctx.moveTo(st[i], st[i + 1]); else ctx.lineTo(st[i], st[i + 1]); } if (st.length === 2) ctx.arc(st[0], st[1], 5, 0, 7); ctx.stroke(); }); }
+if (typeof setInterval !== 'undefined' && typeof document !== 'undefined'){ const iv = setInterval(() => { if (document.body && document.body.classList.contains('v-tv')) drwPaint(); }, 250); iv && iv.unref && iv.unref(); }
+
+// ---------- Dos Verdades y una Mentira: se escriben y la tele las enseña ----------
+def('dosverdades', {name: 'Dos Verdades y una Mentira', cat: 'Social', icon: '🤥', desc: 'Escribe tres cosas sobre ti: una es mentira. La tele las enseña y el club vota cuál.', min: 3,
+  rules: ['Escribe en tu móvil tres cosas sobre ti y marca cuál es la mentira.', 'La tele enseña las de varios miembros, una persona cada vez.', 'Vota cuál es la mentira. Si aciertas, sumas; si engañas a los demás, sumas tú.'], ri: ['✍️', '📺', '🤥'], ctl: 'Escribir y votar',
+  init(S){ return {w: {}, feat: [], f: 0, st: 'wait', votes: []}; },
+  start(S, g, v){ g.st = 'write'; g.t0 = v; g.t1 = v + 90000; },
+  step(S, g, v){
+    if (g.st === 'write' && (v >= g.t1 || (v - g.t0 > 4000 && allIn(S, g.w)))){ g.feat = shuffle(Object.keys(g.w)).slice(0, 5); g.votes = g.feat.map(() => ({})); g.f = 0; if (g.feat.length < 1) return true; g.st = 'q'; g.t0 = v; g.t1 = v + 25000; return false; }
+    if (g.st === 'q'){ const a = g.feat[g.f]; const on = pidsOn(S).filter(p => p !== a); if (v >= g.t1 || (v - g.t0 > 2000 && on.every(p => g.votes[g.f][p] != null))){ g.st = 'rev'; g.t0 = v; g.t1 = v + 6500; } return false; }
+    if (g.st === 'rev' && v >= g.t1){ g.f++; if (g.f >= g.feat.length) return true; g.st = 'q'; g.t0 = v; g.t1 = v + 25000; }
+    return false; },
+  act(S, g, pid, a){ if (a.a === 'dv' && g.st === 'write'){ const s = (a.s || []).map(x => String(x || '').trim().slice(0, 80)); if (s.length !== 3 || s.some(x => !x) || ![0, 1, 2].includes(+a.lie)) return false; const order = shuffle([0, 1, 2]); g.w[pid] = {s: order.map(i => s[i]), lie: order.indexOf(+a.lie)}; return true; }
+    if (a.a === 'lie' && g.st === 'q'){ const au = g.feat[g.f]; if (pid === au || g.votes[g.f][pid] != null) return false; g.votes[g.f][pid] = +a.i; return true; } return false; },
+  result(S, g){ const raw = {}; pidsAll(S).forEach(p => raw[p] = g.w[p] ? 20 : null); g.feat.forEach((au, i) => Object.entries(g.votes[i] || {}).forEach(([p, x]) => { if (x === g.w[au].lie) raw[p] = (raw[p] || 0) + 100; else raw[au] = (raw[au] || 0) + 60; })); return {raw}; },
+  pub(S, g){ const au = g.feat[g.f]; const b = {st: g.st, t0: g.t0, t1: g.t1, f: g.f, fn: g.feat.length, done: g.st === 'write' ? Object.keys(g.w) : Object.keys(g.votes[g.f] || {})};
+    if (g.st !== 'write' && au) Object.assign(b, {au, s: g.w[au].s, lie: g.st === 'rev' ? g.w[au].lie : null, picks: g.st === 'rev' ? g.votes[g.f] : null}); return b; },
+  me(S, g, pid){ return {sent: !!g.w[pid], mine: (g.votes[g.f] || {})[pid], isAuthor: g.feat[g.f] === pid}; },
+  tv(P, gp){ if (gp.st === 'write') return `<div class="gq"><h2 class="q big">Escribid vuestras dos verdades y una mentira</h2><p class="note">En el móvil, sin que nadie os vea</p>${barH(gp.t0, gp.t1)}${answeredRow(P, gp.done)}</div>`;
+    const A = pOf(P, gp.au); const rev = gp.st === 'rev'; const cnt = i => rev ? Object.values(gp.picks || {}).filter(x => x === i).length : 0;
+    return `<div class="gq"><div class="rtag">${gp.f + 1} de ${gp.fn}</div><div class="drw-who">${avH(A, 'md')}<b>${esc(A.name)}</b> dice que…</div><div class="dv-list">${gp.s.map((t, i) => `<div class="dv-it ${rev ? (i === gp.lie ? 'lie' : 'tru') : ''}"><i>${'ABC'[i]}</i><span>${esc(t)}</span>${rev ? `<em>${i === gp.lie ? 'MENTIRA' : 'Verdad'} · ${cnt(i)} votos</em>` : ''}</div>`).join('')}</div>${rev ? '' : barH(gp.t0, gp.t1) + answeredRow(P, gp.done)}</div>`; },
+  ph(P, gp, M){ if (gp.st === 'write'){ if (M.sent) return waitPh('Enviado', 'Espera a los demás');
+      return `<p class="pq">Escribe tres cosas sobre ti y marca la mentira</p>${[0, 1, 2].map(i => `<div class="dv-in"><input class="field" id="dv${i}" maxlength="80" placeholder="${['Algo que he hecho…', 'Algo que me pasó…', 'Algo que me encanta…'][i]}"><label><input type="radio" name="dvlie" value="${i}"> Mentira</label></div>`).join('')}<button class="btn gold wide" data-dvsend="1">Enviar</button>`; }
+    if (M.isAuthor) return gp.st === 'rev' ? waitPh('Ya saben la verdad') : waitPh('¡Son las tuyas!', 'Pon cara de póker');
+    if (gp.st === 'rev') return M.mine != null ? phVerdict(M.mine === gp.lie, 'La mentira era la ' + 'ABC'[gp.lie]) : phVerdict(false, 'No votaste');
+    if (M.mine != null) return waitPh('Voto enviado'); return `<p class="pq">¿Cuál es la mentira?</p><div class="dv-ph">${gp.s.map((t, i) => gbtn({a: 'lie', i}, `<i>${'ABC'[i]}</i><span>${esc(t)}</span>`, 'ob dv-b')).join('')}</div>`; },
+  bot(S, g, pid, v){ if (g.st === 'write' && !g.w[pid] && v - g.t0 > 5000 + Math.random() * 20000) this.act(S, g, pid, {a: 'dv', s: ['He estado en Japón', 'Sé hacer malabares', 'Tengo un gato'], lie: rnd(3)});
+    if (g.st === 'q' && g.feat[g.f] !== pid && g.votes[g.f][pid] == null && v - g.t0 > 3000 + Math.random() * 9000) this.act(S, g, pid, {a: 'lie', i: rnd(3)}); },
+});
+
+// ---------- La Respuesta Más Ingeniosa: se escribe, se lee y se vota ----------
+def('respuesta', {name: 'La Respuesta Más Ingeniosa', cat: 'Social', icon: '💬', desc: 'Completa la frase en el móvil. La tele las lee una a una, sin nombre, y al final se vota la mejor.', min: 3,
+  rules: ['La tele enseña una frase a medias.', 'Complétala en tu móvil con lo más gracioso que se te ocurra.', 'La tele las enseña una a una sin decir de quién son. Al final, vota la mejor (no vale la tuya).'], ri: ['✍️', '📺', '🗳️'], ctl: 'Escribir y votar',
+  init(S){ return {rounds: fresh(S, 'prompts', PROMPTS, 2), r: 0, n: 2, st: 'wait', w: {}, order: [], i: 0, votes: {}, sc: {}}; },
+  start(S, g, v){ this.write(g, v); },
+  write(g, v){ g.st = 'write'; g.t0 = v; g.t1 = v + 60000; g.w = {}; g.votes = {}; g.order = []; g.i = 0; },
+  step(S, g, v){
+    if (g.st === 'write' && (v >= g.t1 || (v - g.t0 > 4000 && allIn(S, g.w)))){ g.order = shuffle(Object.keys(g.w)); if (g.order.length < 2) return this.nextR(g, v); g.st = 'show'; g.i = 0; g.t0 = v; g.t1 = v + 6000; return false; }
+    if (g.st === 'show' && v >= g.t1){ g.i++; if (g.i >= g.order.length){ g.st = 'vote'; g.t0 = v; g.t1 = v + 25000; } else { g.t0 = v; g.t1 = v + 6000; } return false; }
+    if (g.st === 'vote'){ const on = pidsOn(S).filter(p => g.w[p] || true); if (v >= g.t1 || (v - g.t0 > 2000 && on.every(p => g.votes[p]))){ Object.values(g.votes).forEach(x => g.sc[x] = (g.sc[x] || 0) + 1); g.st = 'rev'; g.t0 = v; g.t1 = v + 7000; } return false; }
+    if (g.st === 'rev' && v >= g.t1) return this.nextR(g, v);
+    return false; },
+  nextR(g, v){ g.r++; if (g.r >= g.n) return true; this.write(g, v); return false; },
+  act(S, g, pid, a){ if (a.a === 'write' && g.st === 'write'){ const w = String(a.w || '').trim().slice(0, 90); if (!w) return false; g.w[pid] = w; return true; }
+    if (a.a === 'vote' && g.st === 'vote'){ if (a.pid === pid || !g.w[a.pid] || g.votes[pid]) return false; g.votes[pid] = a.pid; return true; } return false; },
+  result(S, g){ const raw = {}; pidsAll(S).forEach(p => raw[p] = 0); Object.entries(g.sc).forEach(([p, n]) => raw[p] = (raw[p] || 0) + n * 100); return {raw}; },
+  pub(S, g){ const q = g.rounds[g.r]; const b = {st: g.st, r: g.r, n: g.n, t0: g.t0, t1: g.t1, q, done: g.st === 'write' ? Object.keys(g.w) : Object.keys(g.votes)};
+    if (g.st === 'show') Object.assign(b, {txt: g.w[g.order[g.i]], i: g.i, cnt: g.order.length});
+    if (g.st === 'vote' || g.st === 'rev') Object.assign(b, {opts: g.order.map(p => ({id: p, t: g.w[p]})), res: g.st === 'rev' ? Object.fromEntries(g.order.map(p => [p, Object.values(g.votes).filter(x => x === p).length])) : null}); return b; },
+  me(S, g, pid){ return {sent: g.w[pid] || null, mine: g.votes[pid] || null}; },
+  tv(P, gp){ const head = `<div class="rtag">Frase ${gp.r + 1} de ${gp.n}</div>`;
+    if (gp.st === 'write') return `<div class="gq">${head}<h2 class="q big">${esc(gp.q)}…</h2><p class="note">Completadla en el móvil</p>${barH(gp.t0, gp.t1)}${answeredRow(P, gp.done)}</div>`;
+    if (gp.st === 'show'){ if (TVS.respI !== gp.r + ':' + gp.i){ TVS.respI = gp.r + ':' + gp.i; try { tone(660, .08, 'sine', .08); } catch {} } return `<div class="gq">${head}<div class="note">${gp.i + 1} de ${gp.cnt}</div><h2 class="q">${esc(gp.q)}…</h2><div class="case big"><p>«${esc(gp.txt)}»</p></div></div>`; }
+    if (gp.st === 'vote') return `<div class="gq">${head}<h2 class="q">${esc(gp.q)}… ¿Cuál es la mejor?</h2><div class="resp-list">${gp.opts.map((o, i) => `<div class="resp-it"><i>${i + 1}</i><span>${esc(o.t)}</span></div>`).join('')}</div>${barH(gp.t0, gp.t1)}${answeredRow(P, gp.done)}</div>`;
+    const best = gp.opts.slice().sort((a, b) => gp.res[b.id] - gp.res[a.id]); return `<div class="gq">${head}<h2 class="q">${esc(gp.q)}…</h2><div class="resp-list">${best.map((o, i) => `<div class="resp-it ${i === 0 ? 'win' : ''}">${avH(pOf(P, o.id), 'sm')}<span>${esc(o.t)}</span><em>${gp.res[o.id]} votos</em></div>`).join('')}</div></div>`; },
+  ph(P, gp, M, me){ if (gp.st === 'write') return M.sent ? waitPh('Enviado', '«' + esc(M.sent) + '»') : `<p class="pq">${esc(gp.q)}…</p><textarea id="resp" class="field big" maxlength="90" rows="3" placeholder="Tu respuesta"></textarea><button class="btn gold wide" data-resp="resp">Enviar</button>`;
+    if (gp.st === 'show') return waitPh('Mira la tele', 'Las respuestas salen una a una');
+    if (gp.st === 'rev') return waitPh('Mira la tele');
+    if (M.mine) return waitPh('Voto enviado'); return `<p class="pq">Vota la mejor (la tuya no vale)</p><div class="resp-ph">${gp.opts.filter(o => o.id !== me.pid).map(o => gbtn({a: 'vote', pid: o.id}, `<span>${esc(o.t)}</span>`, 'ob resp-b')).join('')}</div>`; },
+  bot(S, g, pid, v){ if (g.st === 'write' && !g.w[pid] && v - g.t0 > 5000 + Math.random() * 20000) this.act(S, g, pid, {a: 'write', w: pick(['mi suegra', 'un pato con gafas', 'el wifi del vecino', 'una siesta de tres días'])});
+    if (g.st === 'vote' && !g.votes[pid] && v - g.t0 > 2000 + Math.random() * 8000){ const o = Object.keys(g.w).filter(p => p !== pid); if (o.length) this.act(S, g, pid, {a: 'vote', pid: pick(o)}); } },
+});
+const me_pid = () => (typeof PH !== 'undefined' && PH.me && PH.me.pid) || null;
+
+// ---------- Corre o muere: la policía os persigue ----------
+const CR = {}; // la simulación vive en la tele, fuera del estado que viaja a los móviles
+const JOY = {};
+const CR_W = 1600, CR_H = 900, CR_R = 30, CR_PR = 34;
+def('corre', {name: 'Corre o Muere', cat: 'Acción', icon: '🏃', desc: 'La policía ha entrado en el club. Usa el móvil como mando, empuja a los demás y que no te pillen. El último en pie gana.', min: 2,
+  rules: ['Tu móvil es un mando: arrastra el dedo por el círculo para moverte por la tele.', 'Pulsa EMPUJAR para darte impulso y apartar a quien tengas al lado… o lanzarlo contra la poli.', 'Cada vez entran más policías y más rápidos. El último que quede libre, gana.'], ri: ['🕹️', '🚓', '🏃'], ctl: 'Mando en el móvil',
+  init(S){ const id = uid(6); return {id, st: 'wait', out: [], alive: pidsAll(S).slice()}; },
+  start(S, g, v){ g.st = 'q'; g.t0 = v; g.t1 = v + 150000; const ps = pidsAll(S); const C = CR[g.id] = {pl: {}, po: [], last: v, nextPo: v + 9000, t0: v};
+    ps.forEach((p, i) => { const a = i / ps.length * Math.PI * 2; C.pl[p] = {x: CR_W / 2 + Math.cos(a) * 260, y: CR_H / 2 + Math.sin(a) * 200, vx: 0, vy: 0, kx: 0, ky: 0, dash: 0, cd: 0}; });
+    C.po.push({x: 60, y: 60}, {x: CR_W - 60, y: CR_H - 60}); },
+  step(S, g, v){ if (g.st === 'rev') return v >= g.t1; if (g.st !== 'q') return false; const C = CR[g.id]; if (!C){ g.st = 'rev'; g.t1 = v + 4000; return false; }
+    let dt = Math.min(.2, (v - C.last) / 1000); C.last = v; const el = (v - C.t0) / 1000;
+    if (v >= C.nextPo && C.po.length < 10){ const c = pick([[60, 60], [CR_W - 60, 60], [60, CR_H - 60], [CR_W - 60, CR_H - 60]]); C.po.push({x: c[0], y: c[1]}); C.nextPo = v + Math.max(4000, 9000 - el * 60); }
+    const steps = Math.ceil(dt / .05); dt /= steps;
+    for (let s = 0; s < steps; s++){
+      const alive = g.alive.filter(p => C.pl[p]);
+      alive.forEach(p => { const P_ = C.pl[p]; const j = JOY[p] || (S.players[p].bot ? crBot(C, P_) : {x: 0, y: 0}); if (j.dash && P_.cd <= 0){ P_.dash = .28; P_.cd = 2.2; j.dash = 0; }
+        const sp = 300 * (P_.dash > 0 ? 2.4 : 1); P_.vx = j.x * sp + P_.kx; P_.vy = j.y * sp + P_.ky; P_.kx *= Math.pow(.02, dt); P_.ky *= Math.pow(.02, dt); P_.dash -= dt; P_.cd -= dt;
+        P_.x = Math.max(CR_R, Math.min(CR_W - CR_R, P_.x + P_.vx * dt)); P_.y = Math.max(CR_R, Math.min(CR_H - CR_R, P_.y + P_.vy * dt)); });
+      // choques entre jugadores: se apartan y el que embiste empuja
+      for (let i = 0; i < alive.length; i++) for (let k = i + 1; k < alive.length; k++){ const a = C.pl[alive[i]], b = C.pl[alive[k]]; const dx = b.x - a.x, dy = b.y - a.y; const d = Math.hypot(dx, dy) || 1; if (d < CR_R * 2){
+        const nx = dx / d, ny = dy / d, ov = CR_R * 2 - d; a.x -= nx * ov / 2; a.y -= ny * ov / 2; b.x += nx * ov / 2; b.y += ny * ov / 2;
+        const pa = a.dash > 0 ? 900 : 260, pb = b.dash > 0 ? 900 : 260; b.kx += nx * pa; b.ky += ny * pa; a.kx -= nx * pb; a.ky -= ny * pb; } }
+      // la policía persigue al más cercano, cada vez más rápido
+      const psp = Math.min(330, 150 + el * 2.2);
+      C.po.forEach(o => { let best = null, bd = 1e9; alive.forEach(p => { const P_ = C.pl[p]; const d = Math.hypot(P_.x - o.x, P_.y - o.y); if (d < bd){ bd = d; best = P_; } }); if (!best) return;
+        const dx = best.x - o.x, dy = best.y - o.y, d = Math.hypot(dx, dy) || 1; o.x += dx / d * psp * dt; o.y += dy / d * psp * dt; });
+      for (let i = 0; i < C.po.length; i++) for (let k = i + 1; k < C.po.length; k++){ const a = C.po[i], b = C.po[k]; const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1; if (d < CR_PR * 2){ const ov = (CR_PR * 2 - d) / 2; a.x -= dx / d * ov; a.y -= dy / d * ov; b.x += dx / d * ov; b.y += dy / d * ov; } }
+      alive.forEach(p => { const P_ = C.pl[p]; if (C.po.some(o => Math.hypot(P_.x - o.x, P_.y - o.y) < CR_R + CR_PR - 6)){ g.alive = g.alive.filter(x => x !== p); g.out.push(p); P_.caught = v; try { if (typeof document !== 'undefined') SFX.boom(); } catch {} } });
+    }
+    if (g.alive.length <= (pidsAll(S).length > 1 ? 1 : 0) || v >= g.t1){ g.st = 'rev'; g.t0 = v; g.t1 = v + 6500; }
+    return false; },
+  act(S, g, pid, a){ return false; },
+  result(S, g){ const raw = {}; const n = pidsAll(S).length; g.out.forEach((p, i) => raw[p] = (i + 1) * 100); g.alive.forEach(p => raw[p] = (n + 2) * 100); return {raw}; },
+  pub(S, g){ return {st: g.st, t0: g.t0, t1: g.t1, id: g.id, alive: g.alive, out: g.out}; },
+  me(S, g, pid){ return {alive: g.alive.includes(pid), place: g.alive.includes(pid) ? null : pidsAll(S).length - g.out.indexOf(pid)}; },
+  tv(P, gp){ if (gp.st === 'rev'){ const W = gp.alive.map(p => pOf(P, p)); return `<div class="gq"><h2 class="q">${W.length ? '¡' + W.map(p => esc(p.name)).join(' y ') + ' ha escapado!' : '¡La poli os ha pillado a todos!'}</h2><div class="podline">${gp.alive.concat(gp.out.slice().reverse()).slice(0, 3).map((p, i) => `<div class="pp${i + 1}">${avH(pOf(P, p), 'lg')}<b>${i + 1}º ${esc(pOf(P, p).name)}</b></div>`).join('')}</div></div>`; }
+    return `<div class="gq corre"><div class="cr-top"><span>Quedan <b>${gp.alive.length}</b></span><span>¡Que no os pille la poli!</span></div><canvas id="crtv" width="${CR_W}" height="${CR_H}"></canvas></div>`; },
+  ph(P, gp, M){ if (gp.st === 'rev') return waitPh(M.alive ? '¡Has escapado!' : 'Te pillaron', 'Mira la tele');
+    if (!M.alive) return waitPh('¡Te han pillado!', 'Mira la tele: a ver quién aguanta');
+    return `<div class="joywrap"><div id="joy" class="joy"><i id="joyk"></i></div><button class="btn gold huge" id="joydash">EMPUJAR</button><p class="muted center">Mira la tele y arrastra el dedo por el círculo</p></div>`; },
+  bot(S, g, pid, v){},
+});
+function crBot(C, P_){ let fx = 0, fy = 0; C.po.forEach(o => { const dx = P_.x - o.x, dy = P_.y - o.y, d = Math.hypot(dx, dy) || 1; fx += dx / d / d * 200; fy += dy / d / d * 200; });
+  fx += (CR_W / 2 - P_.x) * .0006; fy += (CR_H / 2 - P_.y) * .0006; const m = Math.hypot(fx, fy) || 1; return {x: fx / m * .85, y: fy / m * .85, dash: Math.random() < .01}; }
+// la tele dibuja la persecución a 60 fps
+function crPaint(){ const cv = $('#crtv'); if (!cv || !window.__E || !__E.S.g || __E.S.g.k !== 'corre') return; const g = __E.S.g, C = CR[g.id]; if (!C) return; const ctx = cv.getContext('2d'); const P = __E.S.players;
+  ctx.fillStyle = '#0b0d0c'; ctx.fillRect(0, 0, CR_W, CR_H); ctx.strokeStyle = '#c9a45c55'; ctx.lineWidth = 4; ctx.strokeRect(6, 6, CR_W - 12, CR_H - 12);
+  ctx.strokeStyle = '#ffffff0d'; ctx.lineWidth = 1; for (let x = 100; x < CR_W; x += 100){ ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CR_H); ctx.stroke(); } for (let y = 100; y < CR_H; y += 100){ ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CR_W, y); ctx.stroke(); }
+  const t = Date.now(); C.po.forEach(o => { ctx.beginPath(); ctx.arc(o.x, o.y, CR_PR, 0, 7); ctx.fillStyle = (t / 250 | 0) % 2 ? '#2b55c9' : '#b8283a'; ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = '700 30px Jost, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('P', o.x, o.y + 1); });
+  Object.entries(C.pl).forEach(([pid, p]) => { const pl = P[pid]; if (!pl) return; const out = !g.alive.includes(pid); const col = AV(pl.av)[2]; ctx.globalAlpha = out ? .25 : 1;
+    ctx.beginPath(); ctx.arc(p.x, p.y, CR_R, 0, 7); ctx.fillStyle = '#111'; ctx.fill(); ctx.lineWidth = p.dash > 0 ? 9 : 5; ctx.strokeStyle = col; ctx.stroke();
+    ctx.fillStyle = col; ctx.font = '700 28px Cinzel, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(monoL(pl.name), p.x, p.y + 2);
+    ctx.font = '600 20px Jost, sans-serif'; ctx.fillStyle = '#efe6d4'; ctx.fillText(pl.name, p.x, p.y + CR_R + 18); ctx.globalAlpha = 1; }); }
+if (typeof requestAnimationFrame !== 'undefined'){ const loop = () => { try { if (document.body && document.body.classList.contains('v-tv')) crPaint(); } catch {} requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+// en el móvil: el círculo hace de mando
+function joyBind(){ const el = $('#joy'); if (!el || el.dataset.bound) return; el.dataset.bound = 1; const k = $('#joyk'); let cur = {x: 0, y: 0}, sent = {x: 9, y: 9}, last = 0;
+  const send = (force) => { const now = Date.now(); if (!force && now - last < 140) return; if (!force && Math.abs(cur.x - sent.x) < .12 && Math.abs(cur.y - sent.y) < .12 && now - last < 1000) return; last = now; sent = Object.assign({}, cur); phSend({t: 'joy', x: +cur.x.toFixed(2), y: +cur.y.toFixed(2)}); };
+  const mv = e => { const r = el.getBoundingClientRect(); let x = (e.clientX - r.left - r.width / 2) / (r.width / 2), y = (e.clientY - r.top - r.height / 2) / (r.height / 2); const m = Math.hypot(x, y); if (m > 1){ x /= m; y /= m; } cur = {x, y}; k.style.transform = `translate(${x * 38}%, ${y * 38}%)`; send(); };
+  el.onpointerdown = e => { e.preventDefault(); el.setPointerCapture(e.pointerId); mv(e); }; el.onpointermove = e => { if (e.buttons || e.pointerType === 'touch') mv(e); };
+  el.onpointerup = el.onpointercancel = () => { cur = {x: 0, y: 0}; k.style.transform = ''; send(true); };
+  const d = $('#joydash'); if (d) d.onclick = () => { phSend({t: 'joy', x: +cur.x.toFixed(2), y: +cur.y.toFixed(2), dash: 1}); try { navigator.vibrate && navigator.vibrate(30); } catch {} };
+  clearInterval(PH.joyT); PH.joyT = setInterval(() => { if (!$('#joy')){ clearInterval(PH.joyT); return; } send(); }, 400); }
+if (typeof setInterval !== 'undefined' && typeof document !== 'undefined'){ const iv = setInterval(() => { if (document.body && document.body.classList.contains('v-ph')) joyBind(); }, 300); iv && iv.unref && iv.unref(); }
+// la tele recibe el mando (no pasa por el motor ni se reenvía a nadie)
+function joyRecv(pid, a){ JOY[pid] = {x: Math.max(-1, Math.min(1, +a.x || 0)), y: Math.max(-1, Math.min(1, +a.y || 0)), dash: a.dash ? 1 : (JOY[pid] && JOY[pid].dash) || 0}; }
+
+// ---------- en el móvil: enviar las dos verdades ----------
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { const t = e.target.closest('[data-dvsend]'); if (!t) return; e.stopPropagation();
+  const s = [0, 1, 2].map(i => ($('#dv' + i) || {}).value || ''); const r = document.querySelector('input[name=dvlie]:checked');
+  if (s.some(x => !x.trim())) return toast('Escribe las tres frases'); if (!r) return toast('Marca cuál es la mentira'); phSend({t: 'g', a: 'dv', s, lie: +r.value}); }, true);
+
+// ---------- la noche: los minijuegos elegidos, en orden, mezclando apuestas ----------
+const NIGHT_PLAN = {
+  'Primera convocatoria': ['emoji', 'quien', 'caballos'],
+  'Segunda convocatoria': ['subasta', 'mimica', 'corre'],
+  'La caída de la bolsa': ['@casino', 'mentiroso'],
+  'Tercera convocatoria': ['tararea', 'caras', 'dosverdades'],
+  'Última convocatoria': ['respuesta', 'dibujo', 'caos'],
+};
 
 // ================= mesas de casino (modo Casino) =================
 // Apuesta máxima: la mitad de tus fichas; en el Gran Casino, todo
@@ -3386,6 +3778,11 @@ function nextBlock(S){ const C = S.club; const D = C.dir; D.bi++; const B = D.bl
   }
 }
 function convStart(S, B){ const n = B.last ? 2 : B.casino ? 1 : S.club.cfg.games; const C = S.club;
+  // la noche usa una selección fija de los mejores, en orden; si alguno no se puede jugar, se rellena al azar
+  const NP = typeof NIGHT_PLAN !== 'undefined' && NIGHT_PLAN[blockName(B)]; const np = pidsAll(S).length;
+  if (NP){ let plan = NP.map(k => k === '@casino' ? pick(['ruleta', 'blackjack', 'tragaperras', 'mayormenor']) : k).filter(k => GAMES[k] && (!GAMES[k].hidden || GAMES[k].casino) && !GAMES[k].removed && np >= (GAMES[k].min || 2) && !C.played.includes(k));
+    const want = NP.length; if (plan.length < want){ const extra = buildPlan(S, 10).filter(k => !C.played.includes(k) && !plan.includes(k) && !GAMES[k].final && !GAMES[k].casino); plan = plan.concat(extra).slice(0, want); if (B.last && !plan.includes('caos')){ plan = plan.slice(0, want - 1).concat('caos'); } }
+    C.v = null; S.plan = plan; S.gi = -1; nextGame(S); return; }
   let plan = buildPlan(S, n + 6).filter(k => !C.played.includes(k) && !GAMES[k].final).slice(0, n);
   if (B.force) B.force.forEach(k => { if (GAMES[k] && !plan.includes(k)) plan.unshift(k); }); plan = plan.slice(0, Math.max(n, (B.force || []).length));
   if (B.casino) plan = [pick(['ruleta', 'blackjack', 'tragaperras', 'mayormenor'])].concat(buildPlan(S, 4).filter(k => !C.played.includes(k) && !GAMES[k].final).slice(0, 1));
@@ -3585,7 +3982,7 @@ class Engine {
     setInterval(() => this.loop(), 100);
     this.publish(true);
   }
-  async attach(pid){ const p = this.S.players[pid]; if (!p || p.bot || (this.rooms[pid] && this.rooms[pid]._tok === p.tok)) return; const old = this.rooms[pid]; if (old) try { old.setKey('me', {gone: true, moved: true, ts: Date.now()}); } catch {} const r = this.hub.room(roomPlayer(this.ctx.room, p.tok)); r._tok = p.tok; this.rooms[pid] = r; await r.ready(); r.onActions(a => { if (a.tok === p.tok && a.t === 'foto' && typeof ftRecv === 'function') return ftRecv(this, pid, a); if (a.tok !== p.tok) return; if (playerAct(this.S, pid, a)) this.change(); }); }
+  async attach(pid){ const p = this.S.players[pid]; if (!p || p.bot || (this.rooms[pid] && this.rooms[pid]._tok === p.tok)) return; const old = this.rooms[pid]; if (old) try { old.setKey('me', {gone: true, moved: true, ts: Date.now()}); } catch {} const r = this.hub.room(roomPlayer(this.ctx.room, p.tok)); r._tok = p.tok; this.rooms[pid] = r; await r.ready(); r.onActions(a => { if (a.tok === p.tok && a.t === 'foto' && typeof ftRecv === 'function') return ftRecv(this, pid, a); if (a.tok === p.tok && a.t === 'joy' && typeof joyRecv === 'function') return joyRecv(pid, a); if (a.tok !== p.tok) return; if (playerAct(this.S, pid, a)) this.change(); }); }
   handlePub(a){
     if (a.t !== 'join' || !a.tok) return;
     const r = joinPlayer(this.S, a);
@@ -3841,7 +4238,7 @@ function cvBind(){
   cv.onpointermove = e => { if (!cur) return; const [x, y] = pos(e); const lx = cur[cur.length - 2], ly = cur[cur.length - 1]; if (Math.hypot(x - lx, y - ly) < 8) return; if (cur.length < 800) cur.push(x, y); redraw(); };
   cv.onpointerup = cv.onpointercancel = () => { cur = null; PH.gs.dirty = true; };
   redraw();
-  clearInterval(PH.cvT); PH.cvT = setInterval(() => { const P = PH.pub; if (!P || !P.gp || P.gp.st !== 'draw'){ clearInterval(PH.cvT); return; } if (PH.gs.dirty){ PH.gs.dirty = false; phSend({t: 'g', a: 'draw', s: strokes}); } if (phV() > P.gp.t1 - 400 && !PH.gs.finalSent){ PH.gs.finalSent = true; phSend({t: 'g', a: 'draw', s: strokes, done: true}); } }, 1500);
+  clearInterval(PH.cvT); PH.cvT = setInterval(() => { const P = PH.pub; if (!P || !P.gp || P.gp.st !== 'draw'){ clearInterval(PH.cvT); return; } if (PH.gs.dirty){ PH.gs.dirty = false; phSend({t: 'g', a: 'draw', s: strokes}); } if (!PH.gs.live && phV() > P.gp.t1 - 400 && !PH.gs.finalSent){ PH.gs.finalSent = true; phSend({t: 'g', a: 'draw', s: strokes, done: true}); } }, PH.gs.live ? 350 : 1500);
   PH.gs.redraw = redraw;
 }
 
@@ -4228,7 +4625,7 @@ function waitRoomTick(P){ const ids = P.players.map(p => p.pid); if (!TVS.seenP)
 
 // ---- imprimibles: carteles de los espacios, tarjetas secretas y la hoja del anfitrión ----
 // modo de prueba: elegir un minijuego concreto y jugarlo ya
-function testGamesOverlay(){ const el = ovEl(); const cats = {}; Object.values(GAMES).filter(g => g.name).forEach(g => (cats[g.casino ? 'Casino' : g.cat || 'Otros'] ||= []).push(g));
+function testGamesOverlay(){ const el = ovEl(); const cats = {}; Object.values(GAMES).filter(g => g.name && !g.removed).forEach(g => (cats[g.casino ? 'Casino' : g.cat || 'Otros'] ||= []).push(g));
   el.innerHTML = `<div class="co-in wide tgov"><h2>Probar un minijuego</h2><p class="note">En las salas de prueba (no en la de la fiesta). Elige uno y empieza al momento con los jugadores que haya (si sois menos de 3, se añaden de prueba). Al terminar, vuelves a la sala de espera.</p>
     <div class="tg-grid">${Object.entries(cats).map(([c, gs]) => `<div class="tg-cat"><h3>${esc(c)}</h3>${gs.map(g => `<button class="tg-b" data-tg="${g.k}"><span>${g.icon || ''}</span>${esc(g.name)}</button>`).join('')}</div>`).join('')}</div><div class="co-b"><button class="btn" data-tg="">Cerrar</button></div></div>`;
   el.onclick = e => { const t = e.target.closest('[data-tg]'); if (!t) return; el.remove(); if (t.dataset.tg) E.host('testgame', {k: t.dataset.tg}); }; }
@@ -4451,6 +4848,7 @@ function vzLines(){ const L = []; const add = (...t) => t.forEach(x => x && L.pu
     'Algunos miembros acaban de recibir una oferta del Presidente. Una oferta… irrechazable.', 'Algunos miembros han recibido una invitación exclusiva. Tendrán que colaborar.',
     'Atención, miembros del club. Hay un infiltrado entre vosotros. Primera pista.', 'Nueva pista sobre el infiltrado.', 'El infiltrado está en esta sala.', 'Prueba final.', 'Siguiente prueba:', 'El Presidente dice:');
   RANKS.slice(1).forEach(R => add(`A partir de ahora es… ${R.n}.`));
+  if (typeof PATATA_CMDS !== 'undefined') PATATA_CMDS.forEach(c => add(c));
   add('Se le acusa de esto:'); ACCUSATIONS.forEach(a => /^\{n\} /.test(a) && add(accBare(a)));
   add('Simón dice:'); MEM_COLORS.forEach(c => add(`toca el ${c[0].toUpperCase()}.`));
   vzClues().forEach(t => add(`El infiltrado ${t}.`));
