@@ -1044,6 +1044,7 @@ button .ico,.gb .ico{color:inherit}
 .bk-list{list-style:none;margin:0;padding:0}.bk-list li{display:flex;gap:2vw;align-items:baseline;padding:1.2vh 0;border-bottom:1px dashed rgba(74,42,18,.25);font-size:2.6vh;font-style:italic}
 .bk-list time{font-family:var(--disp);font-style:normal;font-size:2vh;color:#6b1a2c;min-width:5ch}.bk-list li.empty{opacity:.55;border:0}
 .bk-foot{position:absolute;left:4vw;right:4vw;bottom:4vh;text-align:center;font-style:italic;opacity:.5;font-size:2vh}
+.inf-steps{margin:6px 0 10px;padding-left:20px}.inf-steps li{margin:6px 0;line-height:1.35}.inf-steps li.ok{opacity:.6}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -3792,7 +3793,7 @@ function infStart(S){ unlock(S, 'tras'); const I = S.club.inf; const PR = presPi
   if (pool.length < 3) return; const scored = pool.map(p => [p, Object.keys(cm(S, p).q).filter(k => !k.startsWith('_')).length]); const best = scored.filter(x => x[1] >= 3); let pid = pick(best.length ? best : scored)[0]; if (I.next && I.next !== PR && cm(S, I.next) && !I.past.includes(I.next)) pid = I.next; I.next = null;
   I.round++; I.pid = pid; I.past.push(pid); I.priv = {}; I.pubN = 1; I.clues = infClues(S, pid); I.goal = {n: 3, met: []}; I.t0 = NOW();
   I.got = false; I.tips = {};
-  pushInbox(S, pid, {k: 'note', t: '🕵️ Eres el infiltrado', d: 'Nadie lo sabe. Primero, ve a la Trastienda sin que te vean, escribe el código del libro de firmas y recoge tu encargo (en «Más» → «La Trastienda»). Después, pasa desapercibido hasta el Tribunal. Si no te descubren, te llevas una gran recompensa.'});
+  pushInbox(S, pid, {k: 'note', t: '🕵️ Eres el infiltrado', d: 'Nadie más lo sabe. Tienes los pasos arriba de tu camino: recoge tu encargo en la Trastienda cuando quieras (con el código del libro de firmas, en «Club» → «La Trastienda»), pasa desapercibido y sobrevive al Tribunal. Si no te descubren: +450 XP.'});
   memberIds(S).forEach(p => { const H = cm(S, p); if (p !== pid && H.sealed){ for (let k = 0; k < H.sealed; k++){ const c = nextClue(S, p); if (c != null){ (H.clues ||= []).push(c); } } H.sealed = 0; pushInbox(S, p, {k: 'note', t: '🔍 Se abre tu sobre sellado', d: (H.clues || []).slice(-2).map(c => 'El infiltrado ' + c + '.').join(' ')}); } });
   annc(S, {k: 'msg', ic: '🕵️', h: `Operación especial · Ronda ${I.round}`, p: `Hay un infiltrado entre vosotros. Las pistas irán llegando. Primera pista: el infiltrado ${I.clues[0] || 'está en esta sala'}.`, say: `Atención, miembros del club. Hay un infiltrado entre vosotros. Primera pista. El infiltrado ${I.clues[0] || 'está en esta sala'}.`, ms: 15000}); }
 function infClues(S, pid){ const m = cm(S, pid); const all = memberIds(S); const out = [];
@@ -4581,10 +4582,11 @@ function tutH(i){ const [h, p, ic] = TUT[i]; return `<div class="pc tut"><div cl
 function alertsH(P, me){ const c = me.club;
   const qrem = !c.qDone ? `<div class="inb k-note"><b>Tu cuestionario está a medias</b><p>Sin él tendrás menos misiones. Son un par de minutos.</p><button class="btn gold wide" data-cq="resume">Completarlo ahora</button></div>` : '';
   const ord = c.order ? `<div class="mis order"><div class="mis-h"><div><small>Orden del Presidente · aparte del camino</small><b>Registrad ${c.order.n} encuentros</b></div><em>+150 XP</em></div><p>Llevas ${c.order.got} de ${c.order.n}. El tiempo corre:</p>${barH(c.order.until - 7 * 60000 - (P.vOff || 0), c.order.until - (P.vOff || 0))}<div class="codein"><input class="field code3" id="cc0" inputmode="numeric" maxlength="3" placeholder="000"><button class="btn gold" data-ccode="0">Registrar</button></div></div>` : '';
-  const inf = c.isInf ? '<div class="inb k-inf"><b>Eres el infiltrado</b><p>Que no te descubran antes del Tribunal. Registra 3 encuentros sin levantar sospechas.</p></div>' : '';
-  const clues = c.clues.length ? `<div class="inb k-note"><b>Tus pistas sobre el infiltrado</b><p>${c.clues.map(x => 'El infiltrado ' + esc(x) + '.').join('<br>')}</p></div>` : '';
+  const inf = c.isInf ? `<div class="inb k-inf"><b>🕵️ Eres el infiltrado</b><p>Solo tú lo sabes. Así se juega:</p><ol class="inf-steps"><li class="${c.infGot ? 'ok' : ''}"><b>Recoge tu encargo${c.infGot ? ' ✓' : ''}.</b> Ve a la Trastienda cuando quieras (no hay prisa hasta el Tribunal), mira el código del libro de firmas y escríbelo en «Club» → «La Trastienda». +120 XP.</li><li><b>Pasa desapercibido.</b> Haz tus misiones como siempre. No eres el único que va a la Trastienda.</li><li><b>Sobrevive al Tribunal.</b> Si el club no te vota a ti: +450 XP. Si te pillan, solo +50.</li></ol>${c.infGot ? '' : '<button class="btn gold wide" data-gotras="1">Ir a «La Trastienda» del expediente</button>'}</div>` : '';
+  const pubI = P.club && P.club.inf; const hunt = !c.isInf && pubI && P.club.on ? `<div class="inb k-note"><b>🕵️ Hay un infiltrado en el club</b><p>Alguien recibe un encargo secreto. En el próximo Tribunal votaréis quién es: si aciertas, +200 XP.</p>${pubI.clues.length ? `<p><b>Pistas públicas:</b><br>${pubI.clues.map(x => 'El infiltrado ' + esc(x) + '.').join('<br>')}</p>` : ''}${c.clues.length ? `<p><b>Tus pistas privadas:</b><br>${c.clues.map(x => 'El infiltrado ' + esc(x) + '.').join('<br>')}</p>` : ''}<p class="muted">Más pistas: en «Fichas» → «Pista sobre el infiltrado» (6 fichas).</p></div>` : '';
+  const clues = !hunt && c.clues.length ? `<div class="inb k-note"><b>Tus pistas sobre el infiltrado</b><p>${c.clues.map(x => 'El infiltrado ' + esc(x) + '.').join('<br>')}</p></div>` : '';
   const fall = c.fallen ? '<div class="inb k-inf"><b>Caíste en la purga</b><p>Sigues jugando, negociando y votando, pero ya no puedes ascender.</p></div>' : '';
-  return qrem + c.inbox.map(inboxH).join('') + ord + inf + fall + clues; }
+  return qrem + c.inbox.map(inboxH).join('') + ord + inf + hunt + fall + clues; }
 function nodeInfo(c, N, i){
   if (N.st === 'done') return `<p class="pn-d"><b>Completada.</b> ${esc(N.t)}${N.xp ? ` · +${N.xp} XP` : ''}</p>`;
   if (N.st === 'skip') return '<p class="pn-d">Esta misión se saltó: no había con quién hacerla.</p>';
@@ -4906,7 +4908,7 @@ const hhmm = t => { const d = new Date(t); return String(d.getHours()).padStart(
 function bookScreenRender(){ const root = $('#bookroot'); if (!root) return; const P = PH.pub; const now = Date.now() + (PH.off || 0);
   const code = bookCode(PH.ctx.room, now); const left = BOOK_MIN - now % BOOK_MIN;
   const list = P && P.book && P.book.length ? P.book.map(b => `<li><time>${hhmm(b.at)}</time><span>${esc(b.t)}</span></li>`).join('') : '<li class="empty"><span>Todavía no ha firmado nadie. Las páginas esperan.</span></li>';
-  const html = `<div class="book"><div class="bk-page l"><h1>El libro de firmas</h1><p class="bk-sub">Quien entra en la Trastienda deja constancia.</p><p class="bk-how">Para firmar, escribe este código en tu expediente</p><div class="bk-code">${code}</div><div class="bk-bar"><i style="transform:scaleX(${(left / BOOK_MIN).toFixed(3)})"></i></div><p class="bk-note">Cambia cada minuto. Vale para firmar tratos, recoger encargos, dejar chivatazos y cumplir la misión de la Trastienda.</p></div>
+  const html = `<div class="book"><div class="bk-page l"><h1>El libro de firmas</h1><p class="bk-sub">Quien entra en la Trastienda deja constancia.</p><p class="bk-how">Para firmar, escribe este código en tu expediente</p><div class="bk-code">${code}</div><div class="bk-bar"><i style="transform:scaleX(${(left / BOOK_MIN).toFixed(3)})"></i></div><p class="bk-note">Cambia cada minuto. Vale para firmar tratos, recoger encargos y cumplir la misión de la Trastienda.</p></div>
     <div class="bk-page r"><h2>Firmas de esta noche</h2><ul class="bk-list">${list}</ul><p class="bk-foot">El libro no guarda nombres. El club, sí.</p></div></div>`;
   if (html !== BK.html){ BK.html = html; root.innerHTML = html; } }
 async function bootBook(ctx){ document.body.className = 'v-book';
@@ -4928,6 +4930,7 @@ const ENC_ANN = {k: 'msg', ic: '🚪', h: 'Movimiento en la Trastienda', p: 'Hac
     const PR = presPid(S); const pool = shuffle(memberIds(S).filter(p => p !== I.pid && p !== PR && isOn(S, p) && !cm(S, p).fallen));
     const free = pool.filter(p => !cm(S, p).side || cm(S, p).side.st !== 'active'); const busy = pool.filter(p => !free.includes(p) && !/^f/.test(cm(S, p).side.ty));
     free.concat(busy).slice(0, Math.min(4, Math.max(3, Math.floor(pool.length / 3)))).forEach(p => { const m = cm(S, p); m.side = mkMission(S, p, 'room'); m.sideAt = NOW(); flash(S, p, '📜 Nueva misión secundaria: visita la Trastienda'); }); }; }
+document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-gotras]'); if (!t) return; PH.tab = 'club'; PH.more = 'tras'; PH.lastHTML = ''; phRender(); });
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
