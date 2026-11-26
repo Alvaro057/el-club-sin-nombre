@@ -976,9 +976,8 @@ button .ico,.gb .ico{color:inherit}
 .gq.corre{padding-top:5vh}.dv-ph{display:flex;flex-direction:column;gap:10px}.dv-b{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;text-align:left;min-height:64px;padding:12px 14px!important}.dv-b i{font-style:normal;font-family:var(--disp);font-size:22px;color:var(--gold2)}.dv-b span{font-size:16px;line-height:1.3}
 
 /* casino del intermedio */
-#interov.cas{background:radial-gradient(ellipse at 40% 30%,#173326,#0b1410 55%,#070908)}
 .cas-in{height:100%;box-sizing:border-box;padding:4vh 3vw;display:grid;grid-template-columns:1fr 24vw;gap:2.5vw}
-.cas-main{display:flex;flex-direction:column;min-height:0;border:1px solid rgba(201,164,92,.35);border-radius:28px;background:radial-gradient(ellipse at 50% 45%,#1d5a3f,#123a29 60%,#0c2219);box-shadow:inset 0 0 80px rgba(0,0,0,.55),0 0 0 10px #2a1d12,0 0 0 12px rgba(201,164,92,.4);overflow:hidden}
+.cas-main{display:flex;flex-direction:column;min-height:0;border:1px solid rgba(201,164,92,.35);border-radius:28px;background:radial-gradient(ellipse at 50% 42%,#1d4a86,#10305c 58%,#091a35);box-shadow:inset 0 0 90px rgba(0,0,0,.55),0 0 0 10px #1a1410,0 0 0 12px rgba(201,164,92,.45),0 0 70px rgba(60,130,255,.28);overflow:hidden}
 .cas-mt{display:flex;justify-content:space-between;align-items:baseline;padding:2.2vh 2.4vw 0}
 .cas-mt span{font-family:var(--disp);font-size:3.4vh;color:var(--gold2);letter-spacing:.04em}
 .cas-mt small{font-size:1.9vh;color:rgba(239,230,212,.6)}
@@ -998,13 +997,35 @@ button .ico,.gb .ico{color:inherit}
 .cas-seats em{display:flex;align-items:center;gap:6px}
 .cas-hist p{margin:.8vh 0;font-size:2vh}.cas-hist small{opacity:.55;margin-left:6px}
 .cas-side>.btn{align-self:stretch}
-.cas-ban{border:1px solid var(--gold2);border-radius:16px;padding:14px 16px;margin:0 0 14px;background:linear-gradient(160deg,rgba(29,90,63,.45),rgba(12,34,25,.6))}
+.cas-ban{border:1px solid var(--gold2);border-radius:16px;padding:12px 14px;margin:0 0 14px;background:linear-gradient(160deg,rgba(29,74,134,.5),rgba(9,26,53,.7))}
 .cas-ban b{font-family:var(--disp);color:var(--gold2);font-size:18px}.cas-ban p{margin:6px 0 10px;font-size:14px;opacity:.8}
 .cas-ph-h{display:flex;align-items:center;gap:10px;padding:0 0 12px;margin-bottom:12px;border-bottom:1px solid rgba(201,164,92,.3)}
 .cas-ph-h span{flex:1;font-family:var(--disp);color:var(--gold2);font-size:17px}.cas-ph-h b{display:flex;align-items:center;gap:5px}
 .cas-table .slots{width:100%;grid-template-columns:repeat(2,1fr)}.cas-table .slotp{font-size:2.2vh}.cas-table .slotp b{text-align:left}
 
 .enc.locked{text-align:center}.enc-lock{font-size:54px;margin:18px 0 6px;opacity:.85}
+
+/* pantalla del casino (Trastienda, luz LED azul) */
+.v-cas{overflow:hidden;cursor:none;background:radial-gradient(ellipse at 50% 20%,#0f2347,#060b17 65%,#03050a);color:var(--cream);height:100vh}
+.v-cas #app{height:100vh}#casroot{height:100%}
+.v-cas .cas-in{height:100vh}.cas-in.one{grid-template-columns:1fr}
+.cas-side.solo{padding:3vh 4vw;max-width:70vh;width:100%;margin:0 auto}.cas-side.solo .cas-open{font-size:7vh}.cas-side.solo .cas-code{font-size:15vh}
+.cas-side.solo .cas-seats{flex:0 0 auto}
+.v-cas .cas-code{box-shadow:0 0 40px rgba(60,130,255,.35);background:rgba(4,12,30,.6)}
+.cas-closed{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4vh}
+.cas-closed .cas-ic{font-size:13vh;opacity:.55;filter:grayscale(.4)}
+.cas-closed h1{font-family:var(--disp);color:var(--gold2);font-size:8vh;margin:2vh 0 1vh}
+.cas-closed p{font-size:2.8vh;opacity:.8;margin:.6vh 0}
+.cas-rich{margin-top:5vh;width:min(60vh,90vw);text-align:left}
+#casstart{position:fixed;inset:0;z-index:40;background:radial-gradient(ellipse at 50% 30%,#10264d,#04070f 70%);display:grid;place-items:center;text-align:center;cursor:default}
+#casstart .logo{flex-direction:column}#casstart h2{font-family:var(--disp);color:var(--gold2);font-size:4.5vh;margin:3vh 0 0}
+#casstart .btn{margin-top:5vh;font-size:3vh;padding:2vh 4vw}#casstart p{color:var(--mute);font-size:2.2vh;max-width:60ch;margin:2vh auto 0}
+#casstart .cas-two a{color:var(--gold2)}
+#casbadge{position:fixed;right:2vw;bottom:2.4vh;z-index:34;display:none;align-items:center;gap:1vw;padding:1.2vh 1.6vw;border-radius:99px;border:1px solid rgba(110,160,255,.55);background:rgba(8,20,45,.85);color:#cfe0ff;font-size:2vh;box-shadow:0 0 30px rgba(60,130,255,.3)}
+#casbadge.on{display:flex}#casbadge i{width:1.2vh;height:1.2vh;border-radius:50%;background:#5b9bff;box-shadow:0 0 12px #5b9bff;animation:casblink 1.6s infinite}
+@keyframes casblink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){#casbadge i{animation:none}}
+.cas-ban{padding:10px 12px}.cas-ban b{display:block;font-size:15px;margin-bottom:8px}.cas-ban .codein .field{height:42px;font-size:16px}.cas-ban .codein .btn{min-height:42px;padding:0 16px}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -4080,7 +4101,7 @@ function tvLobby(P){
   return `<div class="lobby">
     <div class="lob-l">${logoH('big')}<p class="tagline">Se te ha concedido la entrada. Esta noche, aquí se juega.</p>
       <div class="join"><div class="qr" id="qr"></div><div class="jt"><span class="kick-l">Invitación privada</span><span>Escanea o entra en</span><b class="url">${esc(JOINURL.split('#')[0].replace(/^https?:\/\//, ''))}</b><span>y escribe el código</span><div class="code">${esc(P.room)}</div></div></div>
-      <div class="lob-tools"><button class="tool" data-host="editor">✏️ Personalizar pruebas</button><button class="tool" data-host="club">🏆 Clasificación del club</button>${P.gm === 'noche' ? '<button class="tool hot" data-host="quiz">📋 Cuestionario</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button>' : '<button class="tool" data-host="inter">🍸 Intermedio</button>'}${P.gm === 'lobos' ? '' : `<button class="tool ${P.tele ? 'on' : ''}" data-host="tele" title="Quita los juegos de mirar solo el móvil y espacia los de escribir">📺 Más tele, menos móvil: <b>${P.tele ? 'Sí' : 'No'}</b></button>`}${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Abrir un móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
+      <div class="lob-tools"><button class="tool" data-host="editor">✏️ Personalizar pruebas</button><button class="tool" data-host="club">🏆 Clasificación del club</button>${P.gm === 'noche' ? '<button class="tool hot" data-host="quiz">📋 Cuestionario</button><button class="tool" data-host="ajustes">⚙️ Ajustes de la noche</button><a class="tool" href="' + esc(linkFor('casino', (window.__E && __E.ctx) || {room: P.room, mode: P.mode})) + '" target="_blank">🎰 Pantalla del casino</a>' : '<button class="tool" data-host="inter">🍸 Intermedio</button>'}${P.gm === 'lobos' ? '' : `<button class="tool ${P.tele ? 'on' : ''}" data-host="tele" title="Quita los juegos de mirar solo el móvil y espacia los de escribir">📺 Más tele, menos móvil: <b>${P.tele ? 'Sí' : 'No'}</b></button>`}${P.mode === 'local' ? `<a class="tool" href="${esc(JOINURL)}" target="_blank">📱 Abrir un móvil de ensayo</a><button class="tool" data-host="bots" data-n="1">+1 de prueba</button><button class="tool" data-host="bots" data-n="5">+5</button>` : ''}</div>
     </div>
     <div class="lob-r"><div class="seats ${many ? 'many' : ''}">${P.players.map(p => `<div class="seat ${p.on ? '' : 'off'}">${avH(p, 'xl')}<b>${esc(p.name)}</b>${p.host ? '<i class="crown">anfitrión</i>' : ''}${p.on ? '' : '<i class="offl">desconectado</i>'}<button class="kick" data-host="kick" data-pid="${p.pid}" title="Sacar de la sala">×</button></div>`).join('')}${P.players.length < 4 ? Array.from({length: 4 - P.players.length}, () => '<div class="seat empty"><span class="av xl"></span><b>…</b></div>').join('') : ''}</div>
       <div class="rkick">¿A qué se juega esta noche?</div>
@@ -4740,9 +4761,9 @@ document.addEventListener('click', e => { if (!document.body.classList.contains(
 const CAS_TABLES = ['ruleta', 'blackjack', 'tragaperras'];
 const CAS_CAP = 10; // apuesta máxima por mano en el casino del intermedio
 const CAS_HANDS = 3; // manos por mesa antes de cambiar
-const CAS_SAY = 'El casino del club abre sus puertas. Quien quiera jugar, que escriba el código de la pantalla.';
+const CAS_SAY = 'El casino de la Trastienda está abierto. Quien quiera jugar, ya sabe dónde encontrarlo.';
 const casSeated = S => S.cas ? Object.keys(S.cas.seats).filter(p => S.players[p]) : [];
-function casOpenNow(S){ const C = S.club; return !!(C && C.on && S.phase === 'club' && C.v && C.v.k === 'inter'); }
+function casOpenNow(S){ const C = S.club; return !!(C && C.on && S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k)); }
 function casRefund(S){ const X = S.cas; if (!X || !X.g) return; const g = X.g; if (g.k === 'blackjack' && ['play', 'bank'].includes(g.st)) Object.entries(g.bets).forEach(([p, b]) => addFichas(S, p, b)); if (g.k === 'ruleta' && g.st === 'spin') Object.entries(g.bets).forEach(([p, b]) => { if (b.ret) addFichas(S, p, b.ret); }); }
 function casTick(S){ const v = vnow(S);
   if (!casOpenNow(S)){ if (S.cas){ casRefund(S); S.cas = null; return true; } return false; }
@@ -4769,7 +4790,7 @@ function casBig(S, g){ let best = null; const add = (p, w) => { if (w > 0 && (!b
   return best ? {name: S.players[best.p].name, w: best.w, t: GAMES[g.k].name} : null; }
 function casAct(S, pid, a){ const X = S.cas; if (!X) return false;
   if (a.t === 'cas'){
-    if (a.a === 'join'){ if (String(a.c || '').toUpperCase() !== X.code){ typeof flash === 'function' && flash(S, pid, 'Ese código no abre el casino. Mira el de la tele', false); return true; } X.seats[pid] = 1; typeof flash === 'function' && flash(S, pid, 'Te sientas en el casino. ¡Suerte!'); return true; }
+    if (a.a === 'join'){ if (String(a.c || '').toUpperCase() !== X.code){ typeof flash === 'function' && flash(S, pid, 'Ese código no abre el casino. Mira el de la pantalla de la Trastienda', false); return true; } X.seats[pid] = 1; typeof flash === 'function' && flash(S, pid, 'Te sientas en el casino. ¡Suerte!'); return true; }
     if (a.a === 'leave'){ if (X.g && X.g.k === 'blackjack' && X.g.hands[pid] && !X.g.stood[pid]) X.g.stood[pid] = 1; delete X.seats[pid]; return true; }
     return false; }
   if (a.t === 'g' && X.g && X.seats[pid]){ const def = GAMES[X.g.k]; return def.act(S, X.g, pid, a, vnow(S)) !== false; }
@@ -4782,23 +4803,51 @@ function casAct(S, pid, a){ const X = S.cas; if (!X) return false;
     P.cas = {code: X.code, k, name: def.name, icon: def.icon, next: GAMES[CAS_TABLES[(X.ti + 1) % CAS_TABLES.length]].name, hand: X.n + 1, of: CAS_HANDS, seats: casSeated(S), gp: X.g ? def.pub(S, X.g, v) : null, nextAt: X.nextAt, changed: X.changed || 0, hist: X.hist}; } return P; }; }
 { const _mv = meView; meView = function(S, pid){ const M = _mv(S, pid); const X = S.cas; if (X && M && !M.gone){ const seated = !!X.seats[pid]; const def = X.g ? GAMES[X.g.k] : null; M.cas = {seated, gm: seated && def && def.me ? def.me(S, X.g, pid, vnow(S)) : null}; } return M; }; }
 
-// ---- la tele ----
-function casTVH(P){ const X = P.cas; const def = GAMES[X.k];
-  const seated = P.players.filter(p => X.seats.includes(p.pid)); const P2 = Object.assign({}, P, {players: seated});
-  let table;
-  if (X.gp) table = def.tv.call(def, P2, X.gp, vnowTV(P));
-  else if (!seated.length) table = `<div class="cas-wait"><div class="cas-ic">${X.icon}</div><h2>${esc(X.name)}</h2><p>La mesa está vacía. Escribe el código en tu expediente para sentarte.</p></div>`;
-  else table = `<div class="cas-wait"><div class="cas-ic">${X.icon}</div><h2>${esc(X.name)}</h2><p>${X.hand === 1 && X.changed ? 'Cambio de mesa. ' : ''}La próxima mano empieza enseguida…</p></div>`;
-  return `<div class="cas-in"><div class="cas-main"><div class="cas-mt"><span>${X.icon} ${esc(X.name)}</span><small>Mano ${X.hand} de ${X.of} · después: ${esc(X.next)}</small></div><div class="cas-table">${table}</div></div>
-    <aside class="cas-side"><div class="cas-open">Casino abierto</div><p class="cas-how">Para jugar, escribe en «Código» de tu expediente</p><p class="cas-how">Apuesta máxima: ${CAS_CAP} fichas por mano</p><div class="cas-code">${esc(X.code)}</div>
-      <div class="cas-seats"><div class="ct-h"><span>En la mesa · ${seated.length}</span></div>${seated.length ? seated.slice().sort((a, b) => b.fichas - a.fichas).map(p => `<div class="ct-r">${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${p.fichas}<i class="coin"></i></em></div>`).join('') : '<p class="note">Nadie todavía. ¿Quién se atreve?</p>'}</div>
-      ${X.hist.length ? `<div class="cas-hist"><div class="ct-h"><span>Últimos premios</span></div>${X.hist.map(h => `<p><b>${esc(h.name)}</b> gana ${h.w} fichas <small>${esc(h.t)}</small></p>`).join('')}</div>` : ''}
-      <button class="btn gold" data-host="inter">Seguir con la noche</button></aside></div>`; }
-function vnowTV(P){ return window.__E && __E.S ? vnow(__E.S) : P.vnow; }
-{ const _ih = interH; interH = function(P){ if (P.cas) return casTVH(P); return _ih(P); }; }
-{ const _it = interTick; interTick = function(P){ _it(P); const el = $('#interov'); if (el) el.classList.toggle('cas', !!P.cas);
-    if (P.cas && !TVS.casOn){ TVS.casOn = true; setTimeout(() => say(CAS_SAY, null, {rate: .92, pitch: .75}), 4200); } if (!P.cas) TVS.casOn = false;
-    const sk = P.cas && P.cas.gp ? P.cas.k + P.cas.hand + P.cas.gp.st : ''; if (sk !== TVS.casSt){ TVS.casSt = sk; try { if (P.cas && P.cas.gp){ const st = P.cas.gp.st; if (st === 'rev'){ SFX.reveal(); setTimeout(() => SFX.chips(), 500); } else if (st === 'play' || st === 'spin') SFX.cards(); } } catch {} } }; }
+// ---- la tele principal: solo un aviso; el casino se ve en la pantalla de la Trastienda ----
+{ const _it = interTick; interTick = function(P){ _it(P); let b = $('#casbadge'); if (!b && document.body){ b = document.createElement('div'); b.id = 'casbadge'; document.body.appendChild(b); }
+    if (b){ const on = !!P.cas; b.classList.toggle('on', on); if (on) b.innerHTML = `<i></i><span>El casino está abierto en la Trastienda</span>`; }
+    if (P.cas && !TVS.casOn){ TVS.casOn = true; setTimeout(() => say(CAS_SAY, null, {rate: .92, pitch: .75}), 6000); } if (!P.cas) TVS.casOn = false; }; }
+
+// ---- la pantalla del casino (otro ordenador, en la Trastienda) ----
+// #casino?r=SALA            mesa y marcador juntos (una pantalla)
+// #casino?r=SALA&v=mesa     solo la mesa           (pantalla 1)
+// #casino?r=SALA&v=panel    código, jugadores y premios (pantalla 2)
+const CV = {view: '', vAt: {}, html: '', st: ''};
+function casMesaH(P, X, seated){ const def = GAMES[X.k]; const P2 = Object.assign({}, P, {players: seated}); let table;
+  if (X.gp){ const key = X.k + X.hand + X.gp.st + X.gp.t0; if (CV.vAt.k !== key) CV.vAt = {k: key, v: phV()}; table = def.tv.call(def, P2, X.gp, X.gp.st === 'spin' ? CV.vAt.v : phV()); }
+  else table = `<div class="cas-wait"><div class="cas-ic">${X.icon}</div><h2>${esc(X.name)}</h2><p>${seated.length ? (X.hand === 1 && X.changed ? 'Cambio de mesa. ' : '') + 'La próxima mano empieza enseguida…' : 'La mesa está vacía. Escribe el código en tu expediente para sentarte.'}</p></div>`;
+  return `<div class="cas-main"><div class="cas-mt"><span>${X.icon} ${esc(X.name)}</span><small>Mano ${X.hand} de ${X.of} · después: ${esc(X.next)}</small></div><div class="cas-table">${table}</div></div>`; }
+function casRichH(P, n = 8){ return P.players.filter(p => !p.bot || P.mode === 'local').slice().sort((a, b) => b.fichas - a.fichas).slice(0, n); }
+function casPanelH(P, X, seated, solo){ return `<aside class="cas-side ${solo ? 'solo' : ''}"><div class="cas-open">Casino abierto</div><p class="cas-how">Para jugar, escribe en «Código» de tu expediente</p><div class="cas-code">${esc(X.code)}</div><p class="cas-how">Apuesta máxima: ${CAS_CAP} fichas por mano</p>
+  <div class="cas-seats"><div class="ct-h"><span>En la mesa · ${seated.length}</span></div>${seated.length ? seated.slice().sort((a, b) => b.fichas - a.fichas).map(p => `<div class="ct-r"><i></i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${p.fichas}<i class="coin"></i></em></div>`).join('') : '<p class="note">Nadie todavía. ¿Quién se atreve?</p>'}</div>
+  ${X.hist.length ? `<div class="cas-hist"><div class="ct-h"><span>Últimos premios</span></div>${X.hist.map(h => `<p><b>${esc(h.name)}</b> gana ${h.w} fichas <small>${esc(h.t)}</small></p>`).join('')}</div>` : ''}
+  ${solo ? `<div class="cas-hist"><div class="ct-h"><span>Las fortunas del club</span></div>${casRichH(P).map((p, i) => `<div class="ct-r ${i === 0 ? 'top' : ''}"><i>${i + 1}</i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${p.fichas}<i class="coin"></i></em></div>`).join('')}</div>` : ''}</aside>`; }
+function casClosedH(P){ const inGame = ['wheel', 'intro', 'rules', 'count', 'play', 'res', 'rank'].includes(P.phase); const V = P.club && P.club.v;
+  const why = !P.club || !P.club.on ? 'La noche todavía no ha empezado.' : P.phase === 'final' ? 'La noche ha terminado. La banca da las gracias.' : inGame || (V && V.k === 'call') ? 'Hay minijuegos en el salón. Todos a la tele.' : 'Ahora mismo pasa algo en el salón. Todos a la tele.';
+  return `<div class="cas-closed"><div class="cas-ic">🎰</div><h1>Casino cerrado</h1><p>${why}</p><p class="cas-how">Abre durante las operaciones y en el intermedio.</p>
+    ${P.players.length ? `<div class="cas-rich"><div class="ct-h"><span>Las fortunas del club</span></div>${casRichH(P, 6).map((p, i) => `<div class="ct-r ${i === 0 ? 'top' : ''}"><i>${i + 1}</i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${p.fichas}<i class="coin"></i></em></div>`).join('')}</div>` : ''}</div>`; }
+function casScreenRender(){ const P = PH.pub; const root = $('#casroot'); if (!root) return;
+  let html; if (!P) html = `<div class="cas-closed"><h1>Buscando la partida…</h1><p>La tele principal tiene que estar encendida.</p></div>`;
+  else if (!P.cas) html = casClosedH(P);
+  else { const X = P.cas; const seated = P.players.filter(p => X.seats.includes(p.pid));
+    html = CV.view === 'mesa' ? `<div class="cas-in one">${casMesaH(P, X, seated)}</div>` : CV.view === 'panel' ? `<div class="cas-in one">${casPanelH(P, X, seated, true)}</div>` : `<div class="cas-in">${casMesaH(P, X, seated)}${casPanelH(P, X, seated)}</div>`; }
+  if (html !== CV.html){ CV.html = html; root.innerHTML = html; }
+  // sonidos de la mesa (solo en la pantalla de la mesa)
+  if (CV.view !== 'panel' && CV.snd){ const sk = P && P.cas && P.cas.gp ? P.cas.k + P.cas.hand + P.cas.gp.st : (P && P.cas ? 'open' : 'closed'); if (sk !== CV.st){ const prev = CV.st; CV.st = sk;
+    try { if (P && P.cas && P.cas.gp){ const st = P.cas.gp.st; if (st === 'rev'){ SFX.reveal(); setTimeout(() => SFX.chips(), 500); } else if (st === 'play' || st === 'spin'){ SFX.cards(); } else if (st === 'bet' || st === 'q') SFX.coin(); } else if (sk === 'open' && prev === 'closed') SFX.bell(2); } catch {} } }
+  // la música baja cuando está cerrado
+  if (CV.snd && typeof bsoLevel === 'function'){ const lv = P && P.cas ? .7 : .35; if (CV.lv !== lv){ CV.lv = lv; bsoLevel(lv); } } }
+async function bootCasino(ctx, p){ CV.view = p.get('v') || ''; document.body.className = 'v-cas';
+  BSO.url = 'musica/casino.mp3';
+  const other = CV.view === 'mesa' ? linkFor('casino', ctx, {v: 'panel'}) : '';
+  $('#app').innerHTML = `<div id="casroot"></div><div id="casstart"><div>${logoH('big')}<h2>El casino de la Trastienda</h2><button class="btn gold huge" id="casgo">Abrir el casino</button>
+    <p>Activa la música y pone la pantalla completa.</p>${CV.view === '' ? `<p class="cas-two">¿Tienes dos pantallas? <a href="${esc(linkFor('casino', ctx, {v: 'mesa'}))}">Usa este enlace</a> en la primera: abrirá la mesa aquí y el marcador en una ventana nueva para la segunda.</p>` : ''}</div></div>`;
+  $('#casgo').onclick = () => { CV.snd = CV.view !== 'panel'; try { ac(); } catch {} if (CV.snd){ BSO.level = .7; bsoStart(); } $('#casstart').remove();
+    if (other){ const w = window.open(other, 'ccsn-panel', 'popup,width=1200,height=800'); if (!w) toast('El navegador ha bloqueado la segunda ventana. Ábrela a mano: ' + other); }
+    try { document.documentElement.requestFullscreen().catch(() => {}); } catch {} };
+  await connectHub(ctx); PH.ctx = ctx; const ch = HUB.room(roomPub(ctx.room)); await ch.ready(); VNOW = phV;
+  ch.onKey('pub', v => { if (!v) return; PH.pub = v; if (v.ts){ PH.offs.push(v.ts - Date.now()); if (PH.offs.length > 20) PH.offs.shift(); PH.off = Math.max(...PH.offs); } casScreenRender(); });
+  setInterval(casScreenRender, 250); requestAnimationFrame(timerLoop); casScreenRender(); }
 
 // ---- el móvil ----
 function casPhoneH(P, me, v){ const X = P.cas, M = me.cas; const def = GAMES[X.k];
@@ -4808,11 +4857,11 @@ function casPhoneH(P, me, v){ const X = P.cas, M = me.cas; const def = GAMES[X.k
   if (X.gp && M.gm){ const gp = X.gp; const timed = gp.t1 && ['q', 'bet'].includes(gp.st) && !def.fast; body = `${timed ? barH(gp.t0, gp.t1) : ''}${def.ph(P, gp, M.gm, me, v)}`; }
   else body = waitPh(X.icon, 'La próxima mano empieza enseguida. Mira la mesa en la tele');
   return `<div class="pc game g-${X.k} cas-ph">${head}${body}</div>`; }
-function casBannerH(P){ return `<div class="cas-ban"><b>🎰 El casino está abierto</b><p>Escribe el código que sale en la tele para sentarte a la mesa.</p><div class="codein"><input class="field" id="cascode" autocapitalize="characters" autocomplete="off" placeholder="C0000"><button class="btn gold" data-cas="join">Entrar</button></div></div>`; }
+function casBannerH(P){ return `<div class="cas-ban"><b>🎰 Casino abierto en la Trastienda</b><div class="codein"><input class="field" id="cascode" autocapitalize="characters" autocomplete="off" placeholder="C0000"><button class="btn gold" data-cas="join">Entrar</button></div></div>`; }
 { const _nb = nocheBody; nocheBody = function(P, me, v){ if (P.cas && me.cas){ if (me.cas.seated) return casPhoneH(P, me, v); const r = _nb(P, me, v); return r == null || me.club.vote || !me.club.qDone ? r : casBannerH(P) + r; } return _nb(P, me, v); }; }
 document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-cas]'); if (!t) return;
   if (t.dataset.cas === 'leave'){ phSend({t: 'cas', a: 'leave'}); return; }
-  const inp = $('#cascode'); let c = (inp && inp.value || '').trim().toUpperCase().replace(/\s+/g, ''); if (/^\d{4}$/.test(c)) c = 'C' + c; if (!/^C\d{4}$/.test(c)) return toast('El código del casino es una C y cuatro cifras'); phSend({t: 'cas', a: 'join', c}); inp.value = ''; });
+  const inp = $('#cascode'); let c = (inp && inp.value || '').trim().toUpperCase().replace(/\s+/g, ''); if (/^\d{4}$/.test(c)) c = 'C' + c; if (!/^C\d{4}$/.test(c)) return toast('El código del casino es una C y cuatro cifras: míralo en la pantalla de la Trastienda'); phSend({t: 'cas', a: 'join', c}); inp.value = ''; });
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
@@ -5161,6 +5210,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const {view, p} = parseHash();
   try {
     if (view === 'tv'){ const ctx = ctxFromURL(p); if (ctx) return await bootTV(ctx); }
+    if (view === 'casino'){ const ctx = ctxFromURL(p); if (ctx) return await bootCasino(ctx, p); }
     if (view === 'p'){ const ctx = ctxFromURL(p); if (ctx) return await bootPlayer(ctx, p); return phCodeScreen(); }
     landing();
   } catch (e){ console.error(e); $('#app').innerHTML = `<div class="land">${logoH('big')}<h2>No se pudo conectar</h2><p class="tagline">Revisa la conexión a internet y vuelve a intentarlo.</p><button class="btn gold" onclick="location.reload()">Reintentar</button></div>`; }
