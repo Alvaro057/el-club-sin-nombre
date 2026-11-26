@@ -3551,7 +3551,9 @@ const PATH_PLAN = [['mix', 'contact', 'G:fragment'], ['findwho', 'casino', 'G:po
 function buildPath(S, pid){ const m = cm(S, pid); m.path = []; PATH_PLAN.forEach((row, r) => row.forEach((ty, i) => { const g = ty.startsWith('G:'); m.path.push({r, ty: g ? ty.slice(2) : ty, gate: g, st: 'locked', mis: null}); })); m.node = -1; nextNode(S, pid); }
 function nextNode(S, pid){ const m = cm(S, pid); if (!m.qDone){ m.node = -1; return; } for (let i = 0; i < m.path.length; i++){ const N = m.path[i]; if (N.st === 'done' || N.st === 'skip') continue;
     if (N.r > m.rank) break;
-    if (N.st === 'locked' || !N.mis){ const mis = mkMission(S, pid, N.ty, N.gate); if (!mis){ N.st = 'skip'; continue; } N.mis = mis; N.st = 'active'; }
+    if (N.st === 'locked' || !N.mis){ const mis = mkMission(S, pid, N.ty, N.gate); if (!mis){ N.st = 'skip'; continue; } N.mis = mis; N.st = 'active';
+      // pruebas que ya se consiguieron antes de llegar aquí (un podio, un duelo ganado): cuentan
+      if (m.bank && m.bank[mis.ty]){ m.bank[mis.ty] = 0; m.node = i; misDone(S, pid, mis, 'ya lo habías conseguido antes'); return; } }
     m.node = i; return; }
   m.node = -1; }
 const activeMis = (S, pid) => { const m = cm(S, pid); return m && m.node >= 0 ? m.path[m.node].mis : null; };
@@ -3611,7 +3613,7 @@ function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[t
     case 'final': return Object.assign(base, {need: 'final', t: 'Las altas esferas', d: 'Ya eres de la Élite. En la ceremonia final, el club elegirá quién entra en el Círculo Interno. Mientras tanto, sigue sumando.'});
   }
   return null; }
-const SIDE_POOL = ['fportada', 'fpeligro', 'fraro', 'fperju', 'ffuma', 'fcome', 'fportada', 'fpeligro', 'fraro', 'fcome', 'contact_any', 'influence', 'ask', 'findwho', 'risk', 'betpod', 'anecdote', 'win', 'room', 'hunt', 'hunt'];
+const SIDE_POOL = ['fportada', 'fpeligro', 'fraro', 'fperju', 'ffuma', 'fcome', 'fportada', 'fpeligro', 'fraro', 'fcome', 'contact_any', 'influence', 'ask', 'findwho', 'risk', 'betpod', 'anecdote', 'room', 'hunt', 'hunt'];
 const SIDE_LIM = {fportada: 1, fpeligro: 1, fraro: 1, fperju: 1, ffuma: 1, fcome: 1, influence: 3, risk: 2, betpod: 3, contact_any: 6, win: 2, trade: 2, room: 1, hunt: 3};
 // la tele confirma que la foto de una misión ha llegado entera al álbum
 function clubFotoOk(S, pid, mid, mt){ const m = cm(S, pid); if (!m) return false; const x = [activeMis(S, pid), m.side].find(y => y && y.id === +mid && y.st === 'active' && y.need === 'photo');
@@ -3712,7 +3714,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
       if (it.k === 'duelres'){ const D = C.duels[it.did]; if (!D || D.st !== 'on') return true; const other = D.a === pid ? D.b : D.a; const win = a.yes ? pid : other; const lose = win === pid ? other : pid; D.st = 'done'; D.win = win;
         giveFichas(S, win, D.bet * 2); cm(S, win).st.duelW++; cm(S, lose).st.duelL++; [D.a, D.b].forEach(p => { const H = cm(S, p); H.inbox = H.inbox.filter(i => !(i.k === 'duelres' && i.did === it.did)); });
         feed(S, `Duelo: ${S.players[win].name} vence a ${S.players[lose].name} (${D.bet * 2} fichas)`, '⚔️'); flash(S, win, `Has ganado el duelo · +${D.bet * 2} fichas`); flash(S, lose, 'Has perdido el duelo', false); giveXP(S, win, 60, 'Duelo ganado'); giveXP(S, lose, 20, 'Duelo');
-        const H = cm(S, D.a); const x = [activeMis(S, D.a), H.side].find(y => y && y.ty === 'duel' && y.st === 'active'); if (x) misDone(S, D.a, x); const W = cm(S, win); const xw = [activeMis(S, win), W.side].find(y => y && y.ty === 'duelwin' && y.st === 'active'); if (xw) misDone(S, win, xw); checkAch(S, win); return true; }
+        const H = cm(S, D.a); const x = [activeMis(S, D.a), H.side].find(y => y && y.ty === 'duel' && y.st === 'active'); if (x) misDone(S, D.a, x); const W = cm(S, win); const xw = [activeMis(S, win), W.side].find(y => y && y.ty === 'duelwin' && y.st === 'active'); if (xw) misDone(S, win, xw); else W.bank = Object.assign(W.bank || {}, {duelwin: 1}); checkAch(S, win); return true; }
       if (it.k === 'trade'){ const T = C.trades[it.tid]; if (!T || T.st !== 'wait') return true; if (!a.yes){ T.st = 'no'; giveFichas(S, T.a, T.n); flash(S, T.a, `${me.name} rechaza las fichas. Te las devolvemos.`, false); return true; }
         T.st = 'done'; giveFichas(S, pid, T.n); [T.a, pid].forEach(p => { cm(S, p).st.trades++; const H = cm(S, p); const x = [activeMis(S, p), H.side].find(y => y && y.ty === 'trade' && y.st === 'active'); if (x) misDone(S, p, x); else giveXP(S, p, 20, 'Trato'); checkAch(S, p); }); flash(S, T.a, `${me.name} ha aceptado tus ${T.n} fichas`); feed(S, 'Se ha cerrado un trato en el mercado de favores', '💱'); return true; }
       if (it.k === 'offer'){ const O = C.offers[it.oid]; if (!O || O.st !== 'wait') return true; O.st = a.yes ? 'yes' : 'no'; if (a.yes) offerApply(S, pid, O); return true; }
@@ -3947,10 +3949,13 @@ function clubOnResult(S){ const C = S.club; if (!C || !C.on || !S.gres) return; 
     if (R.casino){ xp = x.place === 1 ? 80 : 30; } else if (x.place){ xp = PLACE_XP[x.place - 1] || 35; } else if (x.raw === 0 || x.pts > 0) xp = 25; else if (x.raw == null) xp = 0; else xp = 25;
     if (x.place && x.place <= 3 && !R.casino){ m.st.pods++; } if (x.place === 1 && !R.casino) m.st.wins++;
     if (xp) giveXP(S, x.pid, xp, R.name + (x.place ? ` (${x.place}º)` : ''));
+    let usedPod = false;
     [activeMis(S, x.pid), m.side].forEach(mis => { if (!mis || mis.st !== 'active') return;
-      if (mis.ty === 'podium' && x.place && x.place <= 3 && !R.casino) misDone(S, x.pid, mis);
+      if (mis.ty === 'podium' && x.place && x.place <= 3 && !R.casino){ misDone(S, x.pid, mis); usedPod = true; }
       if (mis.ty === 'win' && x.place === 1 && !R.casino) misDone(S, x.pid, mis);
       if (mis.ty === 'betpod' && mis.bet && !R.casino){ if (x.place && x.place <= 3){ giveFichas(S, x.pid, mis.bet * 2); m.st.betW++; misDone(S, x.pid, mis, `cobras ${mis.bet * 2} fichas`); } else { mis.xpOverride = 50; misDone(S, x.pid, mis, 'perdiste la apuesta'); } } });
+    // un podio que llega antes de tiempo se guarda para la prueba de ascenso
+    if (x.place && x.place <= 3 && !R.casino && !usedPod) m.bank = Object.assign(m.bank || {}, {podium: 1});
     if (x.place && x.place <= 3 && !R.casino) Object.values(C.alli || {}).forEach(A => { if (A.st !== 'on' || A.bonus >= 4) return; const other = A.a === x.pid ? A.b : A.b === x.pid ? A.a : null; if (other){ A.bonus++; giveXP(S, other, 50, 'Tu aliado subió al podio'); } });
     checkAch(S, x.pid); });
   // votos del público → experiencia
