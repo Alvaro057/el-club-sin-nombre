@@ -3607,7 +3607,7 @@ function clubMember(S, pid, ans){ const C = clubInit(S); if (C.m[pid]) return C.
     st: {games: 0, pods: 0, wins: 0, miss: 0, met: {}, inv: 0, duelW: 0, duelL: 0, trades: 0, betW: 0, gaveInf: 0, tribOk: 0, fooled: 0, fichasWon: 0, rankFrom: 0}, fallen: false, shield: false, lim: {}, flash: null, hist: []};
   buildPath(S, pid); if (S.players[pid] && S.players[pid].bot && !ans){ QS.forEach(Q => { if (!Q.text) m.q[Q.k] = rnd(Q.o.length); }); m.q.anecdota = pick(['Me quedé encerrado en un ascensor con mi jefe', 'Perdí un zapato en una boda', 'Me confundieron con un famoso en el aeropuerto']); m.qDone = true; buildPath(S, pid); } return m; }
 // la ruta: tres misiones por rango y una prueba de ascenso
-const PATH_PLAN = [['mix', 'contact', 'G:fragment'], ['findwho', 'casino', 'G:podium'], ['anecdote', 'arma', 'G:alliance'], ['pair', 'ask', 'G:duelwin'], ['ask', 'contact', 'G:final']];
+const PATH_PLAN = [['vino', 'mix', 'contact', 'G:fragment'], ['findwho', 'casino', 'G:podium'], ['anecdote', 'arma', 'G:alliance'], ['pair', 'firma', 'G:duelwin'], ['golpe', 'fgrupo', 'arma2', 'G:final']];
 function buildPath(S, pid){ const m = cm(S, pid); m.path = []; PATH_PLAN.forEach((row, r) => row.forEach((ty, i) => { const g = ty.startsWith('G:'); m.path.push({r, ty: g ? ty.slice(2) : ty, gate: g, st: 'locked', mis: null}); })); m.node = -1; nextNode(S, pid); }
 function nextNode(S, pid){ const m = cm(S, pid); if (!m.qDone){ m.node = -1; return; } for (let i = 0; i < m.path.length; i++){ const N = m.path[i]; if (N.st === 'done' || N.st === 'skip') continue;
     if (N.r > m.rank) break;
@@ -3620,7 +3620,7 @@ const activeMis = (S, pid) => { const m = cm(S, pid); return m && m.node >= 0 ? 
 
 // ---------- misiones ----------
 const MIS_INFO = {
-  mix: {cat: 'Romper el hielo', ic: '🤝', xp: 160}, casino: {cat: 'La Trastienda', ic: '🎰', xp: 140}, fportada: {cat: 'Fotos', ic: '🎬', xp: 180}, fpeligro: {cat: 'Fotos', ic: '🎬', xp: 120}, fraro: {cat: 'Fotos', ic: '🎬', xp: 120}, fperju: {cat: 'Fotos', ic: '🎬', xp: 120}, ffuma: {cat: 'Fotos', ic: '🎬', xp: 120}, fcome: {cat: 'Fotos', ic: '🎬', xp: 110}, duelwin: {cat: 'Riesgo', ic: '⚔️', xp: 220}, contact: {cat: 'Contactos', ic: '🤝', xp: 130}, contact_any: {cat: 'Contactos', ic: '🤝', xp: 100}, ask: {cat: 'Investigación', ic: '🔎', xp: 150}, findwho: {cat: 'Investigación', ic: '🔎', xp: 170},
+  mix: {cat: 'Romper el hielo', ic: '🤝', xp: 160}, vino: {cat: 'Bienvenida', ic: '🍷', xp: 100}, firma: {cat: 'La Trastienda', ic: '🚪', xp: 200}, golpe: {cat: 'Casino', ic: '🎰', xp: 260}, fgrupo: {cat: 'Fotos', ic: '🎬', xp: 220}, arma2: {cat: 'Riesgo', ic: '🎭', xp: 240}, casino: {cat: 'La Trastienda', ic: '🎰', xp: 140}, fportada: {cat: 'Fotos', ic: '🎬', xp: 180}, fpeligro: {cat: 'Fotos', ic: '🎬', xp: 120}, fraro: {cat: 'Fotos', ic: '🎬', xp: 120}, fperju: {cat: 'Fotos', ic: '🎬', xp: 120}, ffuma: {cat: 'Fotos', ic: '🎬', xp: 120}, fcome: {cat: 'Fotos', ic: '🎬', xp: 110}, duelwin: {cat: 'Riesgo', ic: '⚔️', xp: 220}, contact: {cat: 'Contactos', ic: '🤝', xp: 130}, contact_any: {cat: 'Contactos', ic: '🤝', xp: 100}, ask: {cat: 'Investigación', ic: '🔎', xp: 150}, findwho: {cat: 'Investigación', ic: '🔎', xp: 170},
   pair: {cat: 'Contactos', ic: '👥', xp: 210}, anecdote: {cat: 'Investigación', ic: '📜', xp: 150}, fragment: {cat: 'Códigos', ic: '🧩', xp: 220}, duel: {cat: 'Riesgo', ic: '⚔️', xp: 160},
   trade: {cat: 'Mercado de favores', ic: '🤝', xp: 130}, alliance: {cat: 'Alianzas', ic: '🫱🏻‍🫲🏼', xp: 220}, influence: {cat: 'Influencia', ic: '🗳️', xp: 90}, risk: {cat: 'Riesgo', ic: '🎲', xp: 0},
   betpod: {cat: 'Riesgo', ic: '🪙', xp: 120}, podium: {cat: 'Habilidad', ic: '🏆', xp: 220}, win: {cat: 'Habilidad', ic: '🥇', xp: 260}, arma: {cat: 'Riesgo', ic: '🎭', xp: 190},
@@ -3630,6 +3630,8 @@ const FRAGS = [['MEDIA', 'NOCHE'], ['CONTRA', 'BANDO'], ['TERCIO', 'PELO'], ['CO
 const ARMAS = [['te diga «salud»', 'Le hizo decir «salud»'], ['acepte algo que le des en mano', 'Aceptó algo de su mano'], ['te diga la hora', 'Le dijo la hora'], ['brinde contigo', 'Brindó con su cazador'],
   ['te choque la mano', 'Le chocó la mano'], ['diga tu nombre en voz alta', 'Pronunció su nombre'], ['se haga una foto contigo', 'Posó para la foto'], ['te recomiende una serie', 'Le recomendó una serie'],
   ['te sujete la copa un momento', 'Le sujetó la copa'], ['te pregunte algo', 'Le hizo una pregunta'], ['diga la palabra «club»', 'Dijo «club»'], ['te haga un cumplido', 'Le hizo un cumplido']];
+const ARMAS2 = [['te dé su bebida para que la pruebes', 'Le dio a probar su bebida'], ['diga tu nombre en voz alta delante de la tele', 'Dijo su nombre delante de la tele'], ['te deje su móvil un momento', 'Le dejó su móvil'],
+  ['baile contigo unos segundos', 'Bailó con su cazador'], ['te cuente un secreto', 'Le contó un secreto'], ['brinde por ti delante de todos', 'Brindó por su cazador'], ['te preste algo que lleve puesto', 'Le prestó algo que llevaba puesto'], ['cante un trozo de una canción contigo', 'Cantó con su cazador']];
 const unmetOnline = (S, pid) => memberIds(S).filter(p => p !== pid && isOn(S, p) && !cm(S, pid).st.met[p]);
 const othersOnline = (S, pid) => memberIds(S).filter(p => p !== pid && isOn(S, p));
 function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[ty]; const base = {id: S.club.nid++, ty, gate: !!gate, cat: I.cat, ic: I.ic, xp: I.xp, tries: 0, at: NOW(), st: 'active'};
@@ -3644,6 +3646,11 @@ function mkMission(S, pid, ty, gate){ const m = cm(S, pid); const I = MIS_INFO[t
     case 'ffuma': return Object.assign(base, {need: 'photo', free: 1, t: 'Los fumadores', d: 'Hazte una foto con gente que esté fumando. Si no hay nadie, cambia de misión gratis.'});
     case 'fcome': return Object.assign(base, {need: 'photo', t: 'El hambriento', d: 'Hazle una foto a alguien comiendo algo. Cuanto más pillado, mejor.'});
     case 'casino': { const d = pick(CAS_MIS); return Object.assign(base, {need: 'casino', ck: d.k, n: d.n, got: 0, xp: d.xp, t: d.t, d: `${d.d} El casino está en la Trastienda: escribe el código de su pantalla para sentarte. Abre durante las Operaciones y el Intermedio.`}); }
+    case 'vino': return Object.assign(base, {need: 'photo', t: 'Brindis de bienvenida', d: 'Sírvete una copa de vino (o lo que bebas), brinda con alguien que aún no conozcas mucho y haceos una foto chocando las copas.'});
+    case 'firma': return Object.assign(base, {ty: 'room', need: 'text', t: 'La firma secreta', d: 'Entra en la Trastienda sin que nadie te vea, busca el libro de firmas y escribe aquí su código. Que nadie sepa que has estado allí.'});
+    case 'golpe': return Object.assign(base, {need: 'golpe', t: 'El gran golpe', d: 'Gana 10 fichas netas en el casino de la Trastienda en una sola apertura. Si el casino cierra antes, empiezas de cero en la siguiente.'});
+    case 'fgrupo': return Object.assign(base, {need: 'photo', poster: 2, t: 'La foto de la Élite', d: 'Reúne al menos a 5 personas para una foto de grupo. El club le pondrá su cartel: «Los elegidos del club».'});
+    case 'arma2': { const t = pickT(othersOnline(S, pid)); if (!t) return mkMission(S, pid, 'contact_any', gate); const w = pick(ARMAS2); return Object.assign(base, {ty: 'arma', tg: t, arma: w, need: 'claim', t: 'Operación de alto nivel', d: `Consigue que ${nm(t)} ${w[0]}, sin que sospeche. Cuando lo consigas, pulsa «¡Hecho!»: tendrá que confirmarlo.`}); }
     case 'mix': return Object.assign(base, {need: 'code2', codes: [], n: 3, t: 'Rompe el hielo', d: 'Habla con tres personas con las que todavía no hayas hablado esta noche. Preséntate, pregúntales algo y registra sus códigos de encuentro.'});
     case 'duelwin': return Object.assign(base, {need: 'duel', t: 'Gana un duelo', d: 'Reta a alguien a un duelo cara a cara y gánalo. Se hace desde la pestaña «Fichas» → «Retar a un duelo».'});
     case 'contact_any': return Object.assign(base, {need: 'code', t: 'Una cara nueva', d: 'Habla con alguien con quien todavía no hayas hablado esta noche y registra su código de encuentro.'});
@@ -4716,7 +4723,8 @@ function misCard(P, me, x, side){ if (!x) return ''; const c = me.club; const id
     case 'claim': ui = x.wait ? '<p class="muted">Esperando a que lo confirme…</p>' : cxB({a: 'claim', mid: id}, '🎭 ¡Hecho! Que lo confirme', 'btn gold wide'); break;
     case 'card': ui = `<button class="btn wide" data-tab="code">Escribir el código de una tarjeta</button>`; break;
     case 'duel': case 'trade': ui = `<button class="btn wide" data-tab="fichas">Ir a ${x.need === 'duel' ? 'Retar a un duelo' : 'Enviar fichas'}</button>`; break;
-    case 'photo': ui = `<button class="btn gold wide" data-ftgo="${id}" data-mt="${esc(x.t)}" data-poster="${x.poster ? 1 : 0}">Hacer la foto</button>`; break;
+    case 'photo': ui = `<button class="btn gold wide" data-ftgo="${id}" data-mt="${esc(x.t)}" data-poster="${x.poster || 0}">Hacer la foto</button>`; break;
+    case 'golpe': ui = `<p class="muted">${P.cas ? '🎰 El casino está abierto ahora: escribe su código arriba y a por ello.' : 'El casino está cerrado: vuelve a abrir en las Operaciones o en el Intermedio.'}</p>`; break;
     case 'wait': ui = '<p class="muted">Se resuelve en el próximo minijuego.</p>'; break;
     case 'secret': ui = ''; break;
     case 'auto': ui = '<p class="muted">Se comprueba solo.</p>'; break;
@@ -4875,6 +4883,9 @@ function casTick(S){ const v = vnow(S);
         // tope de ganancias por apertura: quien gana demasiado se queda sin crédito hasta la siguiente
         X.net ||= {}; X.cut ||= {}; Object.entries(casNet(g)).forEach(([p, d]) => { const room = CAS_WIN_CAP - (X.net[p] || 0); if (d > 0 && d > room){ const back = d - Math.max(0, room); addFichas(S, p, -back); d -= back; typeof flash === 'function' && flash(S, p, `La banca solo paga hasta ${CAS_WIN_CAP} fichas por apertura: te quedas con ${Math.max(0, d)} de este premio.`, false); } X.net[p] = (X.net[p] || 0) + d; if (X.net[p] >= CAS_WIN_CAP && !X.cut[p]){ X.cut[p] = 1; delete X.seats[p]; typeof flash === 'function' && flash(S, p, `La banca te ha cortado el crédito: ya has ganado ${X.net[p]} fichas. Vuelve en la próxima apertura.`, false); } });
         casMisHand(S, g);
+        // el gran golpe (misión de la Élite): 10 fichas netas en una misma apertura
+        Object.keys(casNet(g)).forEach(p => { const m = cm(S, p); if (!m) return; const x = [activeMis(S, p), m.side].find(y => y && y.ty === 'golpe' && y.st === 'active'); if (!x) return; const n = (X.net || {})[p] || 0;
+          if (n >= 10) misDone(S, p, x, `+${n} fichas en esta apertura`); else flash(S, p, `🎰 El gran golpe: llevas ${n >= 0 ? '+' : ''}${n} de +10 en esta apertura`); });
         X.g = null; X.n++; X.nextAt = v + 3000; if (X.n >= CAS_HANDS){ X.n = 0; X.ti = (X.ti + 1) % CAS_TABLES.length; X.nextAt = v + 6000; X.changed = v; } }
     } finally { CAS_ON = null; } }
   let after = JSON.stringify(X); if (X.g && X.g.k === 'tragaperras') after += Math.floor(v / 700);
@@ -5150,11 +5161,11 @@ async function ftRecv(E, pid, a){ await ftDB(); const k = a.fid; const P = FT.pa
   E.host('fotook', {pid, mid: a.mid, mt: a.mt}); }
 // ---------- en el móvil: hacer, revisar y mandar ----------
 const FP = {img: null, mid: null, mt: '', poster: false, b64: '', sending: false};
-function ftPick(mid, mt, poster){ FP.mid = mid; FP.mt = mt; FP.poster = !!poster; let inp = $('#ftin'); if (!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'ftin'; inp.hidden = true; document.body.appendChild(inp); }
+function ftPick(mid, mt, poster){ FP.mid = mid; FP.mt = mt; FP.poster = +poster || 0; let inp = $('#ftin'); if (!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'ftin'; inp.hidden = true; document.body.appendChild(inp); }
   inp.value = ''; inp.setAttribute('capture', 'environment'); inp.onchange = () => { const f = inp.files && inp.files[0]; if (f) ftLoad(f); }; inp.click(); }
 function ftLoad(file){ const url = URL.createObjectURL(file); const im = new Image(); im.onload = async () => { URL.revokeObjectURL(url); try { await document.fonts.ready; } catch {}
   const max = 1600, sc = Math.min(1, max / Math.max(im.width, im.height)); const w = Math.round(im.width * sc), h = Math.round(im.height * sc);
-  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.drawImage(im, 0, 0, w, h); if (FP.poster) ftPoster(g, w, h);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.drawImage(im, 0, 0, w, h); if (FP.poster === 2) ftElite(g, w, h); else if (FP.poster) ftPoster(g, w, h);
   FP.b64 = cv.toDataURL('image/jpeg', .82).split(',')[1]; FP.preview = cv.toDataURL('image/jpeg', .7); PH.lastHTML = ''; phRender(); }; im.onerror = () => toast('No se pudo abrir la foto. Prueba otra vez.'); im.src = url; }
 // la plantilla de cartel de estreno (propia del club, sin marcas de nadie)
 function ftPoster(g, w, h){ const u = Math.min(w, h) / 100;
@@ -5165,6 +5176,17 @@ function ftPoster(g, w, h){ const u = Math.min(w, h) / 100;
   g.fillStyle = '#d8283a'; g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 2 * u; const s1 = fit('GENTE ANORMAL', 15 * u, 800, 'Cinzel, Georgia, serif'); g.fillText('GENTE ANORMAL', w / 2, h - 22 * u);
   g.fillStyle = '#f6ead2'; fit('EL MISTERIO', 7.5 * u, 700, 'Cinzel, Georgia, serif'); g.fillText('EL MISTERIO', w / 2, h - 22 * u + s1 * .75);
   g.shadowBlur = 0; g.fillStyle = 'rgba(246,234,210,.85)'; g.font = `500 ${2.8 * u}px Jost, sans-serif`; g.fillText('UNA PRODUCCIÓN DE EL CLUB SIN NOMBRE · 12 DE DICIEMBRE', w / 2, h - 5 * u); }
+// el cartel de la Élite: marco dorado y título en lo alto
+function ftElite(g, w, h){ const u = Math.min(w, h) / 100;
+  let gr = g.createLinearGradient(0, 0, 0, h * .32); gr.addColorStop(0, 'rgba(0,0,0,.85)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h * .32);
+  gr = g.createLinearGradient(0, h * .78, 0, h); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.85)'); g.fillStyle = gr; g.fillRect(0, h * .78, w, h * .22);
+  g.strokeStyle = '#e6cd92'; g.lineWidth = 1.2 * u; g.strokeRect(3 * u, 3 * u, w - 6 * u, h - 6 * u); g.lineWidth = .4 * u; g.strokeRect(5 * u, 5 * u, w - 10 * u, h - 10 * u);
+  const fit = (txt, size, weight, fam) => { let s = size; g.font = `${weight} ${s}px ${fam}`; while (g.measureText(txt).width > w * .84 && s > 8){ s -= 2; g.font = `${weight} ${s}px ${fam}`; } return s; };
+  g.textAlign = 'center'; g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 2 * u;
+  g.fillStyle = '#e6cd92'; g.font = `600 ${3 * u}px Jost, sans-serif`; g.fillText('EL CLUB SIN NOMBRE PRESENTA', w / 2, 11 * u);
+  g.fillStyle = '#f6ead2'; const s1 = fit('LOS ELEGIDOS', 12 * u, 800, 'Cinzel, Georgia, serif'); g.fillText('LOS ELEGIDOS', w / 2, 11 * u + s1 * 1.05);
+  g.fillStyle = '#e6cd92'; fit('DEL CLUB', 6 * u, 700, 'Cinzel, Georgia, serif'); g.fillText('DEL CLUB', w / 2, 11 * u + s1 * 1.05 + 7 * u);
+  g.shadowBlur = 0; g.fillStyle = 'rgba(246,234,210,.85)'; g.font = `500 ${2.8 * u}px Jost, sans-serif`; g.fillText('LA ÉLITE · 12 DE DICIEMBRE', w / 2, h - 8 * u); }
 function ftSend(){ if (!FP.b64 || FP.sending) return; FP.sending = true; const fid = 'f' + Date.now().toString(36) + uid(4); const C = 48000; const n = Math.ceil(FP.b64.length / C);
   for (let i = 0; i < n; i++) setTimeout(() => phSend({t: 'foto', fid, i, n, mid: FP.mid, mt: FP.mt, d: FP.b64.slice(i * C, (i + 1) * C)}), i * 120);
   FP.sentAt = Date.now(); FP.fid = fid; toast('Enviando la foto al club…'); setTimeout(() => { if (FP.sending && FP.fid === fid){ FP.sending = false; PH.lastHTML = ''; phRender(); toast('La foto no ha llegado. Pulsa «Enviar esta» otra vez.'); } }, 25000 + n * 150); PH.lastHTML = ''; phRender(); }
@@ -5175,7 +5197,7 @@ function ftPhoneH(){ if (!FP.preview) return null;
   return `<div class="pc ftprev"><div class="rkick">${esc(FP.mt)}</div><img src="${FP.preview}" alt="Tu foto"><p class="muted center">${FP.sending ? 'Enviando al club… no cierres esta pantalla.' : '¿Mandas esta al álbum del club o haces otra?'}</p>
     ${FP.sending ? '' : `<button class="btn gold wide huge" data-ft="send">Enviar esta</button><button class="btn wide" data-ft="again">Hacer otra</button><button class="lnk" data-ft="save">Guardar en mi móvil</button><button class="lnk" data-ft="cancel">Ahora no</button>`}</div>`; }
 if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { const t = e.target.closest('[data-ft],[data-ftgo]'); if (!t || !document.body.classList.contains('v-ph')) return; e.stopPropagation();
-  if (t.dataset.ftgo) return ftPick(+t.dataset.ftgo, t.dataset.mt, t.dataset.poster === '1');
+  if (t.dataset.ftgo) return ftPick(+t.dataset.ftgo, t.dataset.mt, +t.dataset.poster || 0);
   const k = t.dataset.ft; if (k === 'send') return ftSend(); if (k === 'again') return ftPick(FP.mid, FP.mt, FP.poster); if (k === 'save') return ftSaveLocal(); if (k === 'cancel'){ ftReset(); PH.lastHTML = ''; phRender(); } }, true);
 // ---------- en la tele: pase de fotos y álbum ----------
 const albShowH = () => `<div class="albshow" id="albshow"><div class="albh">El álbum del club</div><div class="albf"></div></div>`;
