@@ -3868,7 +3868,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
       C.found ||= {}; if (C.found[K.code]){ flash(S, pid, C.found[K.code] === pid ? 'Ya canjeaste esta tarjeta' : 'Alguien se te adelantó: esta tarjeta ya se usó', false); return true; }
       C.found[K.code] = pid; m.st.cards = (m.st.cards || 0) + 1; (m.cards ||= []).push(K.code); const kn = CARD_KINDS[K.k]; let msg = kn[0] + ' ' + kn[1];
       if (K.k === 'fichas'){ giveFichas(S, pid, K.v); msg += `: +${K.v} fichas`; }
-      if (K.k === 'pista'){ const c = C.inf.pid && C.inf.pid !== pid ? nextClue(S, pid) : null; if (c != null){ (m.clues ||= []).push(c); pushInbox(S, pid, {k: 'note', t: '🔍 Pista escondida', d: 'El infiltrado ' + c + '.'}); msg += ': mira tus pistas'; } else { m.sealed = (m.sealed || 0) + 1; msg += ': un sobre sellado que se abrirá con la próxima operación especial'; } }
+      if (K.k === 'pista'){ const c = typeof cardClue === 'function' ? cardClue(S, pid) : null; if (c != null){ pushInbox(S, pid, {k: 'note', t: '🔍 Pista escondida', d: c}); msg += ': mira tus pistas'; } else { m.sealed = (m.sealed || 0) + 1; msg += ': un sobre sellado que se abrirá cuando el Ojo descubra a un intruso'; } }
       if (K.k === 'escudo'){ m.shield = true; msg += ': te salva una vez de la purga'; }
       if (K.k === 'voto'){ m.dblVote = true; msg += ': tu próximo voto en el Tribunal vale doble'; }
       if (K.k === 'sello'){ giveXP(S, pid, 150, 'Sello del Ojo'); givePrest(S, pid, 1, 'Sello del Ojo'); msg += ': +230 XP'; }
@@ -5289,7 +5289,7 @@ function rolesTick(S){ let ch = false; memberIds(S).forEach(p => { const m = cm(
 // la ceremonia: rivales y revelación de roles
 { const _cs = cereStart; cereStart = function(S, B){ try { memberIds(S).forEach(p => { const m = cm(S, p); if (!m.rival || m.rivalDone || !cm(S, m.rival)) return; m.rivalDone = true; if (clubScore(S, p) > clubScore(S, m.rival)){ giveXP(S, p, 200, 'Has superado a tu rival'); flash(S, p, `⚔️ Has superado a tu rival, ${S.players[m.rival].name}: +200 XP`); } });
       const L = memberIds(S).filter(p => roleOf(S, p)).map(p => `${S.players[p].name}: ${roleOf(S, p).n}${cm(S, p).role.done ? ' ✓' : ''}`);
-      if (L.length){ annc(S, {k: 'msg', ic: '🎭', h: 'Los roles secretos de la noche', p: L.join(' · '), say: 'Antes de la ceremonia, el club revela los roles secretos de la noche.', ms: 14000}); feed(S, 'Se revelan los roles secretos', '🎭'); } } catch (e) { console.warn(e); }
+      if (L.length){ annc(S, {k: 'msg', ic: '🎭', h: 'Los roles secretos de la noche', p: L.join(' · '), say: 'Antes de la ceremonia, el Ojo revela los papeles secretos de la noche.', ms: 14000}); feed(S, 'Se revelan los roles secretos', '🎭'); } } catch (e) { console.warn(e); }
     return _cs(S, B); }; }
 
 // ---------- el mercado negro: servicios especiales ----------
@@ -5305,7 +5305,7 @@ function buy2(S, pid, a){ const C = S.club; if (!C || !C.on) return false; const
     C.lastMsg = NOW(); me.fichas -= it.c; annc(S, {k: 'msg', ic: '✉️', h: 'Mensaje anónimo', p: `«${t}»`, say: 'Un mensaje anónimo para el club.', ms: 9000}); feed(S, 'Alguien ha mandado un mensaje anónimo', '✉️'); flash(S, pid, 'Mensaje enviado a la tele'); return true; }
   if (a.k === 'reto'){ if (!cm(S, a.to) || a.to === pid) return false; const r = RETOS_MN[+a.r] || RETOS_MN[0]; if (C.lastReto && NOW() - C.lastReto < 60000){ flash(S, pid, 'Hay otro reto en marcha. Prueba en un minuto', false); return true; }
     if (!(S.phase === 'club')){ flash(S, pid, 'Los retos solo se anuncian fuera de los minijuegos', false); return true; }
-    C.lastReto = NOW(); me.fichas -= it.c; annc(S, {k: 'msg', ic: '🎭', h: 'Un encargo anónimo', p: `Alguien ha pagado para que ${nm(a.to)} ${r}. ¡Ahora!`, say: `Alguien ha pagado para que ${nm(a.to)} ${r}. Ahora.`, ms: 11000}); feed(S, `Reto encargado para ${nm(a.to)}`, '🎭'); flash(S, pid, 'Reto encargado'); return true; }
+    C.lastReto = NOW(); me.fichas -= it.c; annc(S, {k: 'msg', ic: '🎭', h: 'Un encargo anónimo', p: `Alguien ha pagado para que ${nm(a.to)} ${r}. ¡Ahora!`, say: 'Un encargo anónimo. Mirad la pantalla.', ms: 11000}); feed(S, `Reto encargado para ${nm(a.to)}`, '🎭'); flash(S, pid, 'Reto encargado'); return true; }
   if (a.k === 'redada'){ if (!raidOk(S)){ flash(S, pid, 'Ahora no se puede: solo en Operaciones o en el Intermedio, sin otros eventos en marcha', false); return true; } if (C.raidLast && NOW() - C.raidLast < 8 * 60000){ flash(S, pid, 'La policía acaba de irse. Espera unos minutos', false); return true; }
     me.fichas -= it.c; raidStart(S, pid); flash(S, pid, '🚨 Has llamado a la policía. Tú te libras.'); return true; }
   return false; }
@@ -5465,7 +5465,7 @@ const OJO_NAMED = ['{n}… te estoy viendo.', '{n}… ¿de verdad crees que nadi
       if (V.pid){ L.push(`${nm(V.pid)} era el Vengador${V.caught ? ' (desenmascarado)' : V.done ? ' (venganza cumplida)' : ' (no logró su venganza)'}`); }
       if (L.length) annc(S, {k: 'msg', ic: '👁️', h: 'Los intrusos de la noche', p: L.join(' · '), say: 'Antes de la ceremonia, el Ojo revela quiénes eran los intrusos.', ms: 14000});
       if (V.pid && V.done && !V.caught){ const top = memberIds(S).filter(p => p !== V.pid).sort((a, b) => clubScore(S, b) - clubScore(S, a)).slice(0, 3); top.forEach(p => giveXP(S, p, -300, 'La venganza del Vengador')); giveXP(S, V.pid, 400, 'Venganza cumplida');
-        annc(S, {k: 'msg', ic: '🔥', h: 'El Vengador se cobra su venganza', p: `${nm(V.pid)} ha cumplido su venganza sin que nadie le descubriera. Los tres aspirantes más poderosos pierden 300 XP: ${top.map(nm).join(', ')}.`, say: `El Vengador se cobra su venganza. ${top.map(nm).join(', ')}… perdéis trescientos puntos de experiencia.`, ms: 15000}); }
+        annc(S, {k: 'msg', ic: '🔥', h: 'El Vengador se cobra su venganza', p: `${nm(V.pid)} ha cumplido su venganza sin que nadie le descubriera. Los tres aspirantes más poderosos pierden 300 XP: ${top.map(nm).join(', ')}.`, say: 'El Vengador se cobra su venganza. Los tres más poderosos pierden trescientos puntos de experiencia.', ms: 15000}); }
       if (A.pid && A.done && !A.caught){ const elig = memberIds(S).filter(p => p !== A.pid && !cm(S, p).fallen && !cm(S, p).unmasked).sort((a, b) => cm(S, b).rank - cm(S, a).rank || clubScore(S, b) - clubScore(S, a)); const x = elig[0];
         giveXP(S, A.pid, 500, 'Operación del Agente');
         if (x){ cm(S, x).arrested = true; annc(S, {k: 'msg', ic: '🕶️', h: 'El Agente desmantela la Corporación', p: `${nm(A.pid)} ha completado su operación sin que nadie le descubriera. Las fuerzas especiales detienen a ${nm(x)}, el aspirante con más poder: queda fuera de la final.`, say: `Las fuerzas especiales entran en la Corporación. ${nm(x)}… quedas detenido. No optarás a la silla.`, ms: 16000}); } }
@@ -5522,6 +5522,12 @@ const isBrief = S => !!(S.club && S.club.v && S.club.v.k === 'brief');
 { const _ca4 = clubAct; clubAct = function(S, pid, a){ if (isBrief(S) && !['quiz', 'quizdone', 'seen', 'inbox'].includes(a.a)){ flash(S, pid, 'Ahora toca leer el expediente. Las misiones se activan en cuanto empiece la primera convocatoria', false); return true; } return _ca4(S, pid, a); }; }
 { const _cfo = clubFotoOk; clubFotoOk = function(S, pid, mid, mt){ if (isBrief(S)){ flash(S, pid, 'Foto guardada en el álbum. La misión contará cuando empiece la noche', false); return true; } return _cfo(S, pid, mid, mt); }; }
 { const _mc = misCard; misCard = function(P, me, x, side){ const h = _mc(P, me, x, side); if (P.club && P.club.v && P.club.v.k === 'brief') return `<div class="brieflock"><div class="bl-msg">🔒 Lee tu expediente con calma. Las misiones se activan en cuanto empiece la primera convocatoria.</div>${h}</div>`; return h; }; }
+
+// tarjetas escondidas de «pista»: dan una pista sobre un intruso ya anunciado; si aún no hay, sobre sellado
+function cardClue(S, pid){ const T = IN(S); for (const k of shuffle(['ag', 'ven'])){ const X = T[k]; if (X.on && !X.caught && X.pid !== pid){ const c = privClue(S, pid, k); if (c) return c; } } return null; }
+function openSealed(S){ memberIds(S).forEach(p => { const m = cm(S, p); while (m.sealed > 0){ m.sealed--; const c = cardClue(S, p); if (!c) break; pushInbox(S, p, {k: 'note', t: '🔍 Se abre tu sobre sellado', d: c}); } }); }
+{ const _ar = agReveal; agReveal = function(S){ const r = _ar(S); if (r) openSealed(S); return r; }; }
+{ const _vs = venStart; venStart = function(S){ const r = _vs(S); if (r) openSealed(S); return r; }; }
 
 // =====================================================================
 // INTERFAZ DEL MÓVIL, ORDENADA: la misión primero; lo demás en una fila de
@@ -5780,6 +5786,38 @@ function vozOverlay(){ const el = ovEl(); const c = vzCfg(); vzDB().then(() => d
     if (k === 'export'){ msg('Preparando la copia…'); const n = await vzExport(); return msg(`Copia descargada (${n} frases).`); }
     if (k === 'clear'){ if (!t.dataset.sure){ t.dataset.sure = '1'; t.textContent = 'Pulsa otra vez para borrarlas: tendrías que volver a generarlas'; return; } await vzClear(); return draw('Voces borradas.'); } };
   draw(); }
+
+// =====================================================================
+// La lista de frases del Ojo, al día con lo que dice ahora el juego
+// (sustituye a la antigua, que aún tenía al Presidente y al infiltrado).
+// =====================================================================
+vzLines = function(){ const L = []; const add = (...t) => t.forEach(x => x && L.push(x)); const names = vzNames();
+  INTRO.forEach(s => add(s.say));
+  add('Abrid vuestro expediente. Leedlo con atención. Tenéis unos minutos antes de la primera convocatoria.');
+  NIGHT().forEach(B => { const n = blockName(B); if (B.k === 'conv') add(`${n}. Todos ante la pantalla. Ahora.`); if (B.k === 'ops') add(`${n}. Moveos. Buscad, preguntad, negociad. Yo estaré mirando.`); });
+  ['¿Quién es el Agente?', '¿Quién es el Vengador?', '¿Quién es el Agente… o el Vengador?'].forEach(q => add(`Se abre el Tribunal. ${q} Debatid.`));
+  add('Votad en secreto.', 'Os habéis equivocado. El intruso sigue entre vosotros.', 'Era el Agente', 'Era el Vengador', '¿Absolver o condenar? Votad.', 'Tiene la palabra.', 'Se le acusa de esto:',
+    'Ha llegado la purga.', 'La invitación no garantiza la permanencia.', 'Los aspirantes al Círculo Interno son:', 'Que vote el club.', 'Está decidido.', 'Bienvenido al poder.',
+    'Intermedio. Comed. Bebed. Yo sigo mirando.', 'Se abre el mercado negro. Desde ahora, las fichas compran ventajas.', 'La Trastienda abre sus puertas.', CAS_SAY, CAS_FIRST.say,
+    'Algunos miembros acaban de recibir una oferta del Ojo. Una oferta… irrechazable.', 'Algunos miembros han recibido una invitación exclusiva. Tendrán que colaborar.',
+    'Escuchadme bien. Hay un agente infiltrado entre vosotros. Trabaja para las fuerzas especiales… y ha venido a destruirnos. Primera pista.',
+    'Un antiguo miembro ha vuelto. La Corporación se lo quitó todo… y ahora quiere venganza. Está entre vosotros. Primera pista.', 'El Ojo ha visto algo.',
+    'Antes de la ceremonia, el Ojo revela quiénes eran los intrusos.', 'Antes de la ceremonia, el Ojo revela los papeles secretos de la noche.',
+    'El Vengador se cobra su venganza. Los tres más poderosos pierden trescientos puntos de experiencia.', 'Las fuerzas especiales entran en la Corporación.', 'No optarás a la silla.',
+    '¡Redada! ¡Todos a la Trastienda!', 'Un mensaje anónimo para la Corporación.', 'Un mensaje anónimo para el club.', 'Un encargo anónimo. Mirad la pantalla.', 'Prueba final.', 'Siguiente prueba:');
+  if (typeof QUICK !== 'undefined') QUICK.forEach(q => add(`Reto rápido. ${q}`));
+  if (typeof OJO_LINES !== 'undefined') OJO_LINES.forEach(t => add(t));
+  RANKS.slice(1).forEach(R => add(`A partir de ahora es… ${R.n}.`));
+  if (typeof PATATA_CMDS !== 'undefined') PATATA_CMDS.forEach(c => add(c));
+  ACCUSATIONS.forEach(a => /^\{n\} /.test(a) && add(accBare(a)));
+  add('Simón dice:'); MEM_COLORS.forEach(c => add(`toca el ${c[0].toUpperCase()}.`));
+  const clues = vzClues().concat(['tiene un nombre que empieza por una letra de la A a la M', 'tiene un nombre que empieza por una letra de la N a la Z']); for (let n = 3; n <= 12; n++) clues.push(`tiene un nombre de ${n} letras`);
+  clues.forEach(t => add(`El Agente ${t}.`, `El Vengador ${t}.`));
+  Object.values(GAMES).forEach(g => g && g.name && !g.removed && add(g.name.replace(/[¿?:]/g, '') + '.'));
+  ['El más sociable', 'El más ambicioso', 'El banquero', 'El mejor competidor', 'El mejor estratega', 'El mejor intruso', 'El más activo'].forEach(t => add(t + '.'));
+  names.forEach(n => { add(`${n}.`, `${n} asciende.`, `${n} ha sido desenmascarado.`, `El club señala a ${n}.`, `${n} queda condenado.`, `${n} queda absuelto.`, `${n} cae.`, `${n} entra en el Círculo Interno.`, `${n}… quedas detenido.`);
+    if (typeof OJO_NAMED !== 'undefined') OJO_NAMED.forEach(t => add(t.replace('{n}', n))); });
+  const seen = new Set(), out = []; L.forEach(t => { const k = vzNorm(t); if (!seen.has(k)){ seen.add(k); out.push(k); } }); return out; };
 
 // =====================================================================
 // PLAN B · MODO SIN MÓVILES
