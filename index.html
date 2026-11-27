@@ -5819,6 +5819,20 @@ vzLines = function(){ const L = []; const add = (...t) => t.forEach(x => x && L.
     if (typeof OJO_NAMED !== 'undefined') OJO_NAMED.forEach(t => add(t.replace('{n}', n))); });
   const seen = new Set(), out = []; L.forEach(t => { const k = vzNorm(t); if (!seen.has(k)){ seen.add(k); out.push(k); } }); return out; };
 
+// mezcla: la voz del Ojo siempre por encima de la música
+Object.assign(BSO_LV, {lounge: .42, casino: .4, noir: .46, night: .4, low: .14});
+MUSIC.duck = function(on){ BSO.ducked = on; if (BSO.duckG) BSO.duckG.gain.setTargetAtTime(on ? .22 : 1, ac().currentTime, on ? .06 : .9); };
+{ const _sw = MUSIC.swell.bind(MUSIC); MUSIC.swell = function(ms){ if (BSO.ducked) return; _sw(ms); }; }
+// la voz pasa por un refuerzo con compresor (un <audio> no puede pasar de volumen 1)
+const VZBUS = {};
+function vzBus(){ if (VZBUS.g) return VZBUS.g; const c = ac(); const comp = c.createDynamicsCompressor(); comp.threshold.value = -20; comp.knee.value = 8; comp.ratio.value = 4; comp.attack.value = .005; comp.release.value = .2;
+  VZBUS.g = c.createGain(); VZBUS.g.gain.value = 1.7; VZBUS.g.connect(comp); comp.connect(out()); return VZBUS.g; }
+vzPlay = function(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; try { MUSIC.duck(true); } catch {} const fin = () => { try { MUSIC.duck(false); } catch {} };
+  const next = () => { if (gen !== VZP.gen) return; if (i >= urls.length){ fin(); return onend && onend(); }
+    const a = new Audio(); a.crossOrigin = 'anonymous'; a.src = urls[i++]; a.onloadedmetadata = () => { tot += (a.duration || 0) * 1000; if (opts && opts.onDur && i === urls.length && !told){ told = true; opts.onDur(tot + (urls.length - 1) * 140); } };
+    VZP.a = a; try { const c = ac(); if (c.state === 'suspended') c.resume(); c.createMediaElementSource(a).connect(vzBus()); a.volume = 1; } catch { a.volume = Math.min(1, (typeof VOL === 'number' ? VOL : .8) + .2); }
+    a.onended = () => setTimeout(next, 140); a.onerror = () => next(); a.play().catch(() => next()); }; next(); };
+
 // =====================================================================
 // PLAN B · MODO SIN MÓVILES
 // Si se cae internet (o los móviles dan guerra), la tele sigue sola: pruebas a viva voz
