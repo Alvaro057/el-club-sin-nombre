@@ -4587,7 +4587,7 @@ function tvIntroScene(P, V){ const C = P.club; const ps = P.players; let art = '
     <div class="isc-prog">${Array.from({length: V.sn}, (_, i) => `<i class="${i < V.si ? 'done' : i === V.si ? 'now' : ''}"></i>`).join('')}</div><div class="lb-bot"></div></div>`; }
 // anuncios (ascensos, acontecimientos): solo entre pruebas, nunca en mitad de un juego
 function clubAnnTick(E, P){ const el = $('#trov'); if (!el) return; const C = P.club;
-  if (TVS.annShow && Date.now() > TVS.annShow.until){ const S = E.S; if (S.club && S.club.ann.length && S.club.ann[0].id === TVS.annShow.id) S.club.ann.shift(); TVS.annShow = null; el.classList.remove('on'); E.change(); return; }
+  if (TVS.annShow && Date.now() > TVS.annShow.until && TVS.annTalk !== TVS.annShow.id){ const S = E.S; if (S.club && S.club.ann.length && S.club.ann[0].id === TVS.annShow.id) S.club.ann.shift(); TVS.annShow = null; el.classList.remove('on'); E.change(); return; }
   if (TVS.annShow && !['lobby', 'club', 'res', 'rank', 'final'].includes(P.phase)){ el.classList.remove('on'); return; }
   if (TVS.annShow){ if (!el.classList.contains('on') && ['lobby', 'club', 'res', 'rank', 'final'].includes(P.phase)) el.classList.add('on'); return; }
   if (!C || !C.ann) return;
@@ -4599,7 +4599,7 @@ function clubAnnTick(E, P){ const el = $('#trov'); if (!el) return; const C = P.
   TVS.annShow = {id: a.id, until: Date.now() + N.ms};
   if (P.phase === 'rank' && !E.S.pause) E.S.ends = Math.max(E.S.ends, vnow(E.S) + Math.min(N.ms, 4000));
   el.innerHTML = `<div class="trn k-${a.k}"><div class="trni">${N.ic}</div><h2>${esc(N.h)}</h2><p>${esc(N.p)}</p>${N.who ? `<div class="trwho" style="animation-delay:.6s">${avH(N.who, 'xl')}<b>${esc(N.who.name)}</b></div>` : ''}</div>`;
-  el.classList.add('on'); try { SFX[N.snd](); } catch {} if (a.k === 'rank') try { MUSIC.swell(N.ms); } catch {} setTimeout(() => say(N.say, null, a.k === 'rank' ? Object.assign({}, EPIC, {lightDuck: true}) : EPIC), 600); }
+  el.classList.add('on'); try { SFX[N.snd](); } catch {} if (a.k === 'rank') try { MUSIC.swell(N.ms); } catch {} TVS.annTalk = a.id; clearTimeout(TVS.annTalkT); TVS.annTalkT = setTimeout(() => { TVS.annTalk = null; }, N.ms + 30000); setTimeout(() => say(N.say, () => { if (TVS.annTalk === a.id){ TVS.annTalk = null; if (TVS.annShow && TVS.annShow.id === a.id) TVS.annShow.until = Math.max(TVS.annShow.until, Date.now() + 1500); } }, Object.assign({}, EPIC, {hold: true})), 600); }
 // la voz del club en cada momento
 const accBare = raw => String(raw).replace(/^\{n\}\s*/, '');
 function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) return; const V = C.v;
@@ -5843,6 +5843,22 @@ function bsoTrack(url){ if (BSO.url === url) return; const old = BSO.src, og = B
 const bsoForTV = P => BSO.url === 'musica/casino.mp3' ? 0 : bsoTrack(P && P.phase === 'club' && P.club && P.club.v && P.club.v.k === 'intro' ? BSO_INTRO : BSO_MAIN);
 { const _ct = clubTVSay; clubTVSay = function(P){ try { bsoForTV(P); } catch {} return _ct(P); }; }
 { const _op = onTVPhase; onTVPhase = function(P){ try { bsoForTV(P); } catch {} return _op(P); }; }
+// el narrador no se pisa: lo importante (anuncios) termina entero; lo demás espera su turno
+const NAR = {hold: 0, q: [], tm: null};
+function narFree(){ NAR.hold = 0; NAR.cur = null; clearTimeout(NAR.tm); const now = Date.now(); const q = NAR.q.splice(0);
+  const holds = q.filter(x => x.o && x.o.hold); const rest = q.filter(x => !(x.o && x.o.hold));
+  const last = rest.length && now - rest[rest.length - 1].at < 12000 ? rest[rest.length - 1] : null;
+  rest.forEach(x => { if (x !== last) try { x.cb && x.cb(); } catch {} });
+  const next = holds.shift() || last; NAR.q = holds.concat(last && next !== last ? [last] : []); if (next) say(next.t, next.cb, next.o); }
+const narBusy = now => { if (!NAR.cur || NAR.cur.done || now >= NAR.cur.until) return false; try { if (VZP.a && !VZP.a.paused && !VZP.a.ended) return true; } catch {} try { if (window.speechSynthesis && speechSynthesis.speaking) return true; } catch {} return now - NAR.cur.at < 1500; };
+{ const _sayN = say; say = function(text, onend, opts){ if (!text) return _sayN(text, onend, opts);
+    const hold = !!(opts && opts.hold); const now = Date.now();
+    if ((NAR.hold && now < NAR.hold) || (hold && narBusy(now))){ NAR.q.push({t: text, cb: onend, o: opts, at: now}); if (!NAR.hold || now >= NAR.hold){ NAR.hold = Math.max(now + 4000, NAR.cur ? NAR.cur.until : 0); clearTimeout(NAR.tm); NAR.tm = setTimeout(narFree, NAR.hold - now); } return; }
+    const est = (typeof estSpeak === 'function' ? estSpeak(text) : text.length * 70) / ((opts && opts.rate) || .9); const cur = NAR.cur = {done: false, at: now, until: now + est * 1.6 + 3000};
+    if (hold){ NAR.hold = now + est * 2 + 6000; clearTimeout(NAR.tm); NAR.tm = setTimeout(narFree, est * 2 + 6000); }
+    let done = false; return _sayN(text, () => { if (done) return; done = true; cur.done = true; try { onend && onend(); } catch {} if (NAR.hold && NAR.cur === cur){ clearTimeout(NAR.tm); NAR.tm = setTimeout(narFree, 500); } }, opts); }; }
+// «El Ojo habla» dura lo que tarda en contarse lo del Agente
+{ const _nbM = nextBlock; nextBlock = function(S){ const r = _nbM(S); try { const C = S.club; if (C && C.v && C.v.k === 'pres' && IN(S).ag.on){ C.v.t1 = C.v.t0 + 24000; S.ends = C.v.t1; } } catch {} return r; }; }
 
 // =====================================================================
 // PLAN B · MODO SIN MÓVILES
