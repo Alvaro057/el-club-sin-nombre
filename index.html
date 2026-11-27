@@ -688,8 +688,8 @@ textarea.field{resize:none}
 .spk{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:1.6vh 2vw;margin:2.5vh 0}
 .sp{display:flex;flex-direction:column;align-items:center;gap:.6vh;transition:all .3s;position:relative}.sp b{font-size:2vh}.sp.past{opacity:.45}.sp.now b{font-size:3vh;color:var(--gold2)}
 .sp.now .av{box-shadow:0 0 0 .5vh var(--gold2),0 0 4vh rgba(212,175,106,.5)}.sp em{font-style:normal;font-family:var(--disp);font-size:3vh;color:var(--gold2)}.sp.win .av{box-shadow:0 0 0 .5vh var(--gold2)}.sp.inf .av{box-shadow:0 0 0 .5vh var(--ko)}
-.nums3{display:flex;justify-content:center;gap:3vw;margin:3vh 0}.n3{width:14vh;min-height:14vh;border-radius:2vh;background:var(--oc);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 1vh 3vh rgba(0,0,0,.35)}
-.n3 b{font-family:var(--disp);font-size:9vh;color:#fff;line-height:1}.n3 em{font-style:normal;font-weight:700;font-size:1.8vh;color:#fff}.n3.truth{opacity:.45}.n3.lie{outline:.5vh solid #fff}.n3 .opick{display:flex;gap:.3vw;flex-wrap:wrap;justify-content:center;margin-top:.6vh}
+.nums3{display:flex;justify-content:center;gap:3vw;margin:3vh 0}.nums3 .n3{width:14vh;min-height:14vh;border-radius:2vh;background:var(--oc);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 1vh 3vh rgba(0,0,0,.35)}
+.nums3 .n3 b{font-family:var(--disp);font-size:9vh;color:#fff;line-height:1}.nums3 .n3 em{font-style:normal;font-weight:700;font-size:1.8vh;color:#fff}.nums3 .n3.truth{opacity:.45}.nums3 .n3.lie{outline:.5vh solid #fff}.nums3 .n3 .opick{display:flex;gap:.3vw;flex-wrap:wrap;justify-content:center;margin-top:.6vh}
 .pbtns.buzz.nums{display:grid;grid-template-columns:repeat(3,1fr);width:100%;min-height:24vh;grid-auto-rows:1fr}
 .tapzone.neutral{background:radial-gradient(circle,#323533,#181a19);border:2px solid rgba(212,175,106,.4);color:#f1e4c8;font-family:var(--disp);font-size:56px}.tapzone.neutral.hit{background:radial-gradient(circle,#2f7a55,#222d28)}
 .horseq .q{margin-bottom:1vh}.hippo.sm .hl{height:4.6vh}.horse.go{filter:drop-shadow(0 0 1vh #6fdc9c)}.horse.trip{animation:trip .5s}
@@ -1173,6 +1173,7 @@ body:has(#juice.on) #toast{opacity:0!important}
 .sheet.s-iam .iam{border:0;background:none;padding:0}
 .bell svg,.bell .ico{width:24px!important;height:24px!important}.sh-x{font-size:24px;line-height:1;display:grid;place-items:center}
 .ch2.sec{border-color:var(--line);color:var(--cream)}.idcard2 p{margin:8px 0}.sheet .iam+.idcard2{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.pprog.horse{position:relative;top:auto;transform:none;display:block;width:100%;flex-shrink:0;margin-bottom:6px;transition:none}.pprog.horse i{transform:none;font-size:inherit}.g-caballos .pbtns .gb.ob{justify-content:center;text-align:center;font-size:26px}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -3222,23 +3223,23 @@ function miniQ(){ const t = rnd(5);
 const fixQ = Q => { if (Q.c === -1) Q.c = Q.o.indexOf(Q.word); return Q; };
 def('caballos', {name: 'La Carrera de Caballos', cat: 'Rapidez', icon: '🏇', desc: 'Preguntas relámpago en tu móvil, cada uno a su ritmo. Acierta y tu caballo avanza; falla y retrocede.',
   rules: ['Cada uno recibe en su móvil preguntas rapidísimas: sumas, «pulsa el rojo», ¿cuál es mayor?…', 'Acierto: tu caballo avanza. Fallo: retrocede. Al momento te sale otra.', 'Mirad la tele: los tres primeros en cruzar la meta ganan.'], ri: ['📱', '🏇', '🏁'], ctl: 'Botones grandes',
-  init(S){ return {pos: {}, fin: [], st: 'wait', goal: 12, Q: {}, k: {}, last: {}}; },
-  start(S, g, v){ g.st = 'q'; g.t0 = v; g.t1 = v + 75000; pidsAll(S).forEach(p => { g.pos[p] = 0; g.k[p] = 0; g.Q[p] = fixQ(miniQ()); }); },
+  init(S){ return {pos: {}, fin: [], st: 'wait', goal: 12, Q: {}, qk: {}, last: {}}; },
+  start(S, g, v){ g.st = 'q'; g.t0 = v; g.t1 = v + 75000; pidsAll(S).forEach(p => { g.pos[p] = 0; g.qk[p] = 0; g.Q[p] = fixQ(miniQ()); }); },
   step(S, g, v){ if (g.st === 'q' && (v >= g.t1 || g.fin.length >= Math.min(3, pidsAll(S).length) || pidsAll(S).every(p => g.fin.includes(p)))){ g.st = 'rev'; g.t0 = v; g.t1 = v + 6000; return false; }
     return g.st === 'rev' && v >= g.t1; },
-  act(S, g, pid, a, v){ if (a.a !== 'ans' || g.st !== 'q' || g.fin.includes(pid) || +a.k !== g.k[pid]) return false; const ok = +a.i === g.Q[pid].c;
-    g.pos[pid] = Math.max(0, (g.pos[pid] || 0) + (ok ? 1 : -1)); g.last[pid] = ok; if (g.pos[pid] >= g.goal && !g.fin.includes(pid)) g.fin.push(pid); g.k[pid]++; g.Q[pid] = fixQ(miniQ()); return true; },
+  act(S, g, pid, a, v){ if (a.a !== 'ans' || g.st !== 'q' || g.fin.includes(pid) || +a.k !== g.qk[pid]) return false; const ok = +a.i === g.Q[pid].c;
+    g.pos[pid] = Math.max(0, (g.pos[pid] || 0) + (ok ? 1 : -1)); g.last[pid] = ok; if (g.pos[pid] >= g.goal && !g.fin.includes(pid)) g.fin.push(pid); g.qk[pid]++; g.Q[pid] = fixQ(miniQ()); return true; },
   result(S, g){ const raw = {}; pidsAll(S).forEach(p => { const i = g.fin.indexOf(p); raw[p] = i >= 0 ? 3000 - i * 400 : (g.pos[p] || 0) * 100; }); return {raw}; },
   pub(S, g){ return {st: g.st, t0: g.t0, t1: g.t1, pos: g.pos, fin: g.fin, goal: g.goal}; },
-  me(S, g, pid){ const Q = g.Q[pid]; return {Q: Q ? {q: Q.q, o: Q.o, colors: Q.colors} : null, k: g.k[pid], pos: g.pos[pid] || 0, fin: g.fin.indexOf(pid), last: g.last[pid]}; },
+  me(S, g, pid){ const Q = g.Q[pid]; return {Q: Q ? {q: Q.q, o: Q.o, colors: Q.colors} : null, k: g.qk[pid], pos: g.pos[pid] || 0, fin: g.fin.indexOf(pid), last: g.last[pid]}; },
   tv(P, gp){ if (gp.st === 'rev') return `<div class="gq"><h2 class="q">¡Foto finish!</h2><div class="podline">${gp.fin.map((p, i) => `<div class="pp${i + 1}">${avH(pOf(P, p), 'lg')}<b>${i + 1}º ${esc(pOf(P, p).name)}</b></div>`).join('') || '<p class="note">Nadie llegó a la meta.</p>'}</div></div>`;
     return `<div class="gq horseq"><h2 class="q">¡Corred! Contestad en el móvil</h2>${barH(gp.t0, gp.t1)}<div class="track">${P.players.map(p => { const d = gp.pos[p.pid] || 0; const f = gp.fin.indexOf(p.pid);
       return `<div class="tr-l"><span class="tr-n">${avH(p, 'sm')}<b>${esc(p.name)}</b></span><div class="tr-run"><i class="tr-h ${f >= 0 ? 'fin' : ''}" style="left:${Math.min(100, d / gp.goal * 100)}%">🏇</i></div><em>${f >= 0 ? f + 1 + 'º' : d}</em></div>`; }).join('')}</div></div>`; },
   ph(P, gp, M){ if (gp.st === 'rev') return phVerdict(M.fin >= 0, M.fin >= 0 ? `Cruzaste la meta el ${M.fin + 1}º` : 'Tu caballo llegó al paso ' + M.pos);
     if (M.fin >= 0) return waitPh('¡Meta!', `Has llegado el ${M.fin + 1}º`); if (!M.Q) return waitPh('Preparados…');
     const fb = M.last == null ? '' : `<div class="hfb ${M.last ? 'ok' : 'ko'}">${M.last ? '¡Galopa!' : '¡Tropiezo!'}</div>`;
-    return `<div class="pprog horse"><i style="width:${Math.round(M.pos / gp.goal * 100)}%"></i><span>🏇 ${M.pos}/${gp.goal}</span></div>${fb}<p class="pq big center">${esc(M.Q.q)}</p><div class="pbtns n${M.Q.o.length}">${M.Q.o.map((o, i) => gbtn({a: 'ans', k: M.k, i}, `<span>${esc(o)}</span>`, 'ob', M.Q.colors ? `style="--oc:${MEM_COLORS[i][1]}"` : '')).join('')}</div>`; },
-  bot(S, g, pid, v){ if (g.st !== 'q' || g.fin.includes(pid) || Math.random() > .3) return; this.act(S, g, pid, {a: 'ans', k: g.k[pid], i: Math.random() < .75 ? g.Q[pid].c : rnd(g.Q[pid].o.length)}, v); },
+    return `<div class="pprog horse"><i style="width:${Math.round(M.pos / gp.goal * 100)}%"></i><span>🏇 ${M.pos}/${gp.goal}</span></div>${fb}<p class="pq big center">${esc(M.Q.q)}</p><div class="pbtns n${M.Q.o.length}">${M.Q.o.map((o, i) => gbtn({a: 'ans', k: M.k, i}, `<span>${esc(o)}</span>`, 'ob', `style="--oc:${M.Q.colors ? MEM_COLORS[i][1] : OPTC[i % OPTC.length]}"`)).join('')}</div>`; },
+  bot(S, g, pid, v){ if (g.st !== 'q' || g.fin.includes(pid) || Math.random() > .3) return; this.act(S, g, pid, {a: 'ans', k: g.qk[pid], i: Math.random() < .75 ? g.Q[pid].c : rnd(g.Q[pid].o.length)}, v); },
 });
 
 // ---------- La Patata Caliente: con un objeto de verdad ----------
