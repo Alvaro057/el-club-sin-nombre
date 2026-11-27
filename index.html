@@ -1148,6 +1148,31 @@ body:has(#juice.on) #toast{opacity:0!important}
 .pbtns.buzz .ob.kh{min-height:22vh;border-radius:16px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.28)}.pbtns.buzz .ob.kh:active{transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.28)}
 .pbtns.buzz.n2 .ob.kh{min-height:34vh}.pbtns.buzz .ob.kh.sel{outline:4px solid #fff;outline-offset:-4px}
 .brieflock{position:relative}.brieflock .mis{opacity:.45;pointer-events:none;filter:grayscale(.4)}.brieflock .bl-msg{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:rgba(201,164,92,.12);border:1px solid rgba(201,164,92,.4);font-size:13px;color:var(--gold2)}
+
+/* ===== interfaz del móvil ordenada ===== */
+.v-ph #toast{top:84px;bottom:auto;transform:translateX(-50%) translateY(-20px);max-width:88vw;font-size:15px}
+.v-ph #toast.on,.v-ph #toast.show{transform:translateX(-50%) translateY(0)}
+.ph.noche main{font-size:16px}.ph.noche .mis p,.ph.noche .inb p,.ph.noche .pn-d,.ph.noche .iam p,.ph.noche .iam li{font-size:16px;line-height:1.45}.ph.noche .muted{font-size:14px}
+.phh.noche2 .hxp{height:8px;border-radius:5px}.phh.noche2 .hxp i{border-radius:5px}
+.chips2{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;margin:0 0 4px;scrollbar-width:none}.chips2::-webkit-scrollbar{display:none}
+.ch2{flex:0 0 auto;position:relative;display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;font-size:15px;font-weight:600;color:var(--cream);background:#15181a;border:1px solid var(--line);white-space:nowrap}
+.ch2.rol{border-color:rgba(201,164,92,.6);color:var(--gold2)}.ch2.riv b.up{color:var(--ok)}.ch2.riv b.down{color:var(--ko)}
+.ch2.ag{border-color:#6d8cff;background:rgba(40,70,160,.35);animation:chPulseB 2.4s infinite}.ch2.ven{border-color:#e0586b;background:rgba(160,30,50,.35);animation:chPulseR 2.4s infinite}
+.ch2.intr{border-color:rgba(224,88,107,.6)}.ch2.cas{border-color:#5b9bff;background:rgba(29,74,134,.45);color:#cfe0ff}
+.ch2 .dot{position:absolute;top:2px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--ko);box-shadow:0 0 6px var(--ko)}
+@keyframes chPulseB{50%{box-shadow:0 0 14px rgba(109,140,255,.6)}}@keyframes chPulseR{50%{box-shadow:0 0 14px rgba(224,88,107,.6)}}
+.bell{position:relative;background:none;border:0;font-size:22px;padding:4px 6px;margin-right:6px;opacity:.55;color:var(--cream)}.bell.on{opacity:1}
+.bell em{position:absolute;top:-2px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--ko);color:#fff;font-style:normal;font-size:11px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+.phh-s{display:flex;align-items:center}
+.sheet-bg{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);animation:juFade .2s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:81;max-height:82vh;overflow:auto;background:#101312;border-top:1px solid var(--gold);border-radius:22px 22px 0 0;padding:0 18px 28px;box-shadow:0 -20px 50px rgba(0,0,0,.7);animation:shUp .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes shUp{from{transform:translateY(40%);opacity:.4}}
+.sh-h{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;background:#101312;z-index:1}.sh-h b{font-family:var(--disp);color:var(--gold2);font-size:19px}
+.sh-x{background:none;border:1px solid var(--line);color:var(--cream);width:36px;height:36px;border-radius:50%;font-size:16px}
+.sheet .iam{margin:0}.sheet p{font-size:16px;line-height:1.45}.sheet .idr{font-size:19px}
+.sheet.s-iam .iam{border:0;background:none;padding:0}
+.bell svg,.bell .ico{width:24px!important;height:24px!important}.sh-x{font-size:24px;line-height:1;display:grid;place-items:center}
+.ch2.sec{border-color:var(--line);color:var(--cream)}.idcard2 p{margin:8px 0}.sheet .iam+.idcard2{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -5018,7 +5043,7 @@ function casPhoneH(P, me, v){ const X = P.cas, M = me.cas; const def = GAMES[X.k
   else body = waitPh(X.icon, 'La próxima mano empieza enseguida. Mira la mesa en la tele');
   return `<div class="pc game g-${X.k} cas-ph">${head}${body}</div>`; }
 function casBannerH(P, me){ return `<div class="cas-ban"><b>🎰 Casino abierto en la Trastienda</b>${me ? casMisH(me) : ''}<div class="codein"><input class="field" id="cascode" autocapitalize="characters" autocomplete="off" placeholder="C0000"><button class="btn gold" data-cas="join">Entrar</button></div></div>`; }
-{ const _nb = nocheBody; nocheBody = function(P, me, v){ if (P.cas && me.cas){ if (me.cas.seated) return casPhoneH(P, me, v); const r = _nb(P, me, v); return r == null || me.club.vote || !me.club.qDone ? r : casBannerH(P, me) + r; } return _nb(P, me, v); }; }
+{ const _nb = nocheBody; nocheBody = function(P, me, v){ if (P.cas && me.cas){ if (me.cas.seated) return casPhoneH(P, me, v); const r = _nb(P, me, v); return r; } return _nb(P, me, v); }; }
 document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-cas]'); if (!t) return;
   if (t.dataset.cas === 'leave'){ phSend({t: 'cas', a: 'leave'}); return; }
   const inp = $('#cascode'); let c = (inp && inp.value || '').trim().toUpperCase().replace(/\s+/g, ''); if (/^\d{4}$/.test(c)) c = 'C' + c; if (!/^C\d{4}$/.test(c)) return toast('El código del casino es una C y cuatro cifras: míralo en la pantalla de la Trastienda'); phSend({t: 'cas', a: 'join', c}); inp.value = ''; });
@@ -5315,7 +5340,7 @@ function raidPhH(P, me){ const R = P.raid; if (me.raidIn) return null;
       if (P.quick && P.quick.st === 'on' && !me.quickIn) return `<div class="pc evph quick"><small>Reto rápido · los 3 primeros: +50 XP</small><h1>${esc(P.quick.t)}</h1>${barH(P.quick.t0, P.quick.t1)}<button class="btn gold wide huge" data-quick="1">¡Hecho!</button><p class="muted">Sin trampas: el club lo está mirando.</p></div>`; }
     let r = _nb3(P, me, v); if (r == null || !c || !c.qDone || c.vote || inGame) return r;
     if (me.role || me.rival){ const chip = `<button class="idchip" data-gorole="1">${me.role ? `<span>${me.role.ic} ${esc(me.role.n)}${me.role.done ? ' ✓' : ''}</span>` : ''}${me.rival ? `<span>⚔️ Rival: ${esc(me.rival.name)} · <b class="${me.rival.ahead ? 'up' : 'down'}">${me.rival.ahead ? 'vas por delante' : 'vas por detrás'}</b></span>` : ''}</button>`;
-      if ((PH.tab || 'path') === 'path') r = chip + r; } return r; }; }
+      if (false) r = chip + r; } return r; }; }
 { const _ch = clubH; clubH = function(P, me, tOn){ let h = _ch(P, me, tOn); if (me.role || me.rival) h = `<div class="idcard"><b>Tu identidad secreta</b>${me.role ? `<p class="idr">${me.role.ic} <b>${esc(me.role.n)}</b>${me.role.done ? ' · objetivo cumplido ✓' : ''}</p><p><b>Ventaja:</b> ${esc(me.role.v)}</p><p><b>Objetivo (+250 XP):</b> ${esc(me.role.o)}</p>` : ''}${me.rival ? `<p><b>Rival secreto:</b> ${esc(me.rival.name)}. Si acabas por encima, +200 XP. Ahora mismo ${me.rival.ahead ? 'vas por delante' : 'vas por detrás'}.</p>` : ''}<p class="muted">Nadie más lo sabe. Se revela en la ceremonia.</p></div>` + h; return h; }; }
 { const _fh = fichasH; fichasH = function(P, me){ const h = _fh(P, me); const ms = (P.club ? P.club.members : []).filter(m => m.pid !== me.pid).map(m => `<option value="${m.pid}">${esc(pOf(P, m.pid).name)}</option>`).join('');
     const it = (k, body) => `<div class="mk2"><div><b>${MK2[k].n}</b><small>${MK2[k].d}</small></div>${body}<button class="btn gold" data-buy2="${k}">${MK2[k].c} fichas</button></div>`;
@@ -5350,10 +5375,10 @@ function decoys(S, ex){ const pool = shuffle(memberIds(S).filter(p => !ex.includ
 
 // ---------- el Agente ----------
 function agAssign(S){ const T = IN(S); if (T.ag.pid || memberIds(S).length < 4) return; const p = intrPick(S); if (!p) return; T.ag.pid = p; const m = cm(S, p); m.role = {k: 'intruso', done: true}; m.inbox = m.inbox.filter(i => !/Tu rol secreto/.test(i.t || ''));
-  pushInbox(S, p, {k: 'note', t: '🕶️ Eres el Agente', d: 'Trabajas para las fuerzas especiales. Te has infiltrado en la Corporación para reunir pruebas contra ella. Nadie sabe que existes… todavía. Tu camino es tu tapadera: síguelo como si nada. Tus 4 pruebas están arriba de tu camino. Si las completas sin que te desenmascaren, en la ceremonia detendrás al aspirante con más poder y le dejarás fuera de la final.'}); }
+  pushInbox(S, p, {k: 'note', t: '🕶️ Eres el Agente', d: 'Trabajas para las fuerzas especiales. Te has infiltrado en la Corporación para reunir pruebas contra ella. Nadie sabe que existes… todavía. Tu camino es tu tapadera: síguelo como si nada. Tus 4 pruebas están en el botón «Eres el Agente», arriba de tu camino. Si las completas sin que te desenmascaren, en la ceremonia detendrás al aspirante con más poder y le dejarás fuera de la final.'}); }
 function agReveal(S){ const T = IN(S); agAssign(S); const A = T.ag; if (!A.pid || A.on) return false; A.on = true; A.pub = 1; const c = intrClues(S, 'ag')[0] || 'está en esta sala.';
   annc(S, {k: 'msg', ic: '🕶️', h: 'Hay un agente infiltrado', p: `Las fuerzas especiales han colado a uno de los suyos en la Corporación. Ha venido a destruirnos. ${c}`, say: `Escuchadme bien. Hay un agente infiltrado entre vosotros. Trabaja para las fuerzas especiales… y ha venido a destruirnos. Primera pista. ${c}`, ms: 17000});
-  feed(S, 'El Ojo revela que hay un agente infiltrado', '🕶️'); memberIds(S).forEach(p => { if (p !== A.pid) flash(S, p, '🕶️ Hay un agente infiltrado. Las pistas están arriba de tu camino'); });
+  feed(S, 'El Ojo revela que hay un agente infiltrado', '🕶️'); memberIds(S).forEach(p => { if (p !== A.pid) flash(S, p, '🕶️ Hay un agente infiltrado. Mira «Intrusos», arriba de tu camino'); });
   memberIds(S).forEach(p => { const R = roleOf(S, p); if (R && R.k === 'detective'){ const x = privClue(S, p, 'ag'); if (x) pushInbox(S, p, {k: 'note', t: '🔍 Pista del Detective', d: x}); } });
   decoys(S, [A.pid]); flash(S, A.pid, '🕶️ El Ojo sabe que estás aquí. Ahora te buscan: cuidado'); return true; }
 function agCheck(S){ const A = IN(S).ag; if (!A.pid || A.done || A.caught) return; if (A.codes.length >= 3 && A.signs >= 2 && A.cas && A.foto){ A.done = true; giveXP(S, A.pid, 200, 'Operación del Agente completada');
@@ -5361,10 +5386,10 @@ function agCheck(S){ const A = IN(S).ag; if (!A.pid || A.done || A.caught) retur
 
 // ---------- el Vengador ----------
 function venStart(S){ const T = IN(S); if (T.ven.pid || memberIds(S).length < 6) return false; const p = intrPick(S, [T.ag.pid]); if (!p) return false; const V = T.ven; V.pid = p; V.on = true; V.pub = 1; const m = cm(S, p); m.role = {k: 'intruso', done: true}; m.inbox = m.inbox.filter(i => !/Tu rol secreto/.test(i.t || ''));
-  pushInbox(S, p, {k: 'note', t: '🔥 ¿Recuerdas lo que te hicieron?', d: 'Hace años la Corporación te lo quitó todo. Hoy has vuelto. Ahora eres el Vengador y tu papel anterior queda anulado. Tus herramientas, gratis y arriba de tu camino: llamar a la policía, robar fichas y mandar mensajes anónimos (una vez por bloque cada una), y elegir al próximo señalado. Objetivo: 3 golpes con éxito sin que te desenmascaren. Si lo consigues, en la ceremonia los tres aspirantes más poderosos perderán 300 XP cada uno.'});
+  pushInbox(S, p, {k: 'note', t: '🔥 ¿Recuerdas lo que te hicieron?', d: 'Hace años la Corporación te lo quitó todo. Hoy has vuelto. Ahora eres el Vengador y tu papel anterior queda anulado. Tus herramientas, gratis, están en el botón «Eres el Vengador», arriba de tu camino: llamar a la policía, robar fichas y mandar mensajes anónimos (una vez por bloque cada una), y elegir al próximo señalado. Objetivo: 3 golpes con éxito sin que te desenmascaren. Si lo consigues, en la ceremonia los tres aspirantes más poderosos perderán 300 XP cada uno.'});
   const c = intrClues(S, 'ven')[0] || 'está en esta sala.';
   annc(S, {k: 'msg', ic: '🔥', h: 'Alguien ha vuelto', p: `Un antiguo miembro de la Corporación ha regresado. Se lo quitamos todo… y quiere venganza. ${c}`, say: `Un antiguo miembro ha vuelto. La Corporación se lo quitó todo… y ahora quiere venganza. Está entre vosotros. Primera pista. ${c}`, ms: 17000});
-  feed(S, 'Un antiguo miembro ha vuelto para vengarse', '🔥'); memberIds(S).forEach(q => { if (q !== p) flash(S, q, '🔥 Un antiguo miembro ha vuelto. Mira las pistas arriba de tu camino'); });
+  feed(S, 'Un antiguo miembro ha vuelto para vengarse', '🔥'); memberIds(S).forEach(q => { if (q !== p) flash(S, q, '🔥 Un antiguo miembro ha vuelto. Mira «Intrusos», arriba de tu camino'); });
   memberIds(S).forEach(q => { const R = roleOf(S, q); if (R && R.k === 'detective'){ const x = privClue(S, q, 'ven'); if (x) pushInbox(S, q, {k: 'note', t: '🔍 Pista del Detective', d: x}); } }); return true; }
 function venHit(S, why){ const V = IN(S).ven; if (!V.pid || V.caught || V.done) return; V.hits++; flash(S, V.pid, `🔥 Golpe ${V.hits} de 3: ${why}`); if (V.hits >= 3){ V.done = true; giveXP(S, V.pid, 200, 'Venganza preparada');
     pushInbox(S, V.pid, {k: 'note', t: '🔥 Venganza preparada', d: 'Ya tienes tus tres golpes. Si llegas a la ceremonia sin que te desenmascaren, los tres aspirantes más poderosos perderán 300 XP delante de todos.'}); } }
@@ -5472,7 +5497,7 @@ function ojoShow(text){ if (typeof document === 'undefined' || !document.body ||
 // ---------- móvil ----------
 const AGF = {img: ''};
 function agFotoPick(){ let inp = $('#agfin'); if (!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'agfin'; inp.style.display = 'none'; document.body.appendChild(inp); }
-  inp.value = ''; inp.setAttribute('capture', 'environment'); inp.onchange = () => { const f = inp.files && inp.files[0]; if (!f) return; const url = URL.createObjectURL(f); const im = new Image(); im.onload = () => { URL.revokeObjectURL(url); const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const m = Math.min(im.width, im.height); g.drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, 128, 128); let q = .6, d = c.toDataURL('image/jpeg', q); while (d.length > 9000 && q > .2){ q -= .1; d = c.toDataURL('image/jpeg', q); } phSend({t: 'club', a: 'agfoto', img: d}); toast('Foto enviada a tus superiores'); }; im.src = url; }; inp.click(); }
+  inp.value = ''; inp.setAttribute('capture', 'environment'); inp.onchange = () => { const f = inp.files && inp.files[0]; if (!f) return; const url = URL.createObjectURL(f); const im = new Image(); im.onload = () => { URL.revokeObjectURL(url); const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const m = Math.min(im.width, im.height); g.drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, 128, 128); let q = .6, d = c.toDataURL('image/jpeg', q); while (d.length > 9000 && q > .2){ q -= .1; d = c.toDataURL('image/jpeg', q); } phSend({t: 'club', a: 'agfoto', img: d}); toast('Foto enviada'); }; im.src = url; }; inp.click(); }
 function iamH(P, me){ const X = me.iam; if (!X) return '';
   if (X.k === 'ag'){ const st = (ok, t) => `<li class="${ok ? 'ok' : ''}">${ok ? '✓' : '○'} ${t}</li>`;
     return `<div class="iam ag"><b>🕶️ Eres el Agente${X.caught ? ' · desenmascarado' : X.done ? ' · operación completada' : ''}</b>${X.caught ? '<p>Te han descubierto. Tu operación ha fracasado, pero sigues jugando tu camino.</p>' : `<p>${X.on ? 'El Ojo ya ha anunciado que hay un agente. Te buscan.' : 'Nadie sabe que existes… todavía.'}</p><ul>${st(X.codes >= 3, `Códigos de 3 miembros de rango Iniciado o superior (${Math.min(3, X.codes)}/3)`)}${st(X.signs >= 2, `Firmar 2 veces en el libro de la Trastienda (${X.signs}/2)`)}${st(X.cas, 'Ganar +10 fichas en una sola apertura del casino')}${st(X.foto, 'Fotografiar el libro de firmas sin que te vean')}</ul>${X.foto ? '' : '<button class="btn wide" data-agf="1">📷 Foto del libro (privada)</button>'}`}</div>`; }
@@ -5486,7 +5511,7 @@ function huntH(P, me){ const I = P.intr; if (!I || me.iam && !me.iam.caught && (
   const row = (k, X) => X && !(me.iam && me.iam.k === k) ? `<p><b>${k === 'ag' ? '🕶️ El Agente' : '🔥 El Vengador'}:</b> ${X.caught ? 'desenmascarado (' + esc(X.name) + ')' : X.clues.map(esc).join(' ') || 'sin pistas aún'}</p>` : '';
   const priv = (me.club.clues || []).length ? `<p class="muted"><b>Tus pistas privadas:</b> ${me.club.clues.map(esc).join(' ')}</p>` : '';
   return `<div class="inb k-note hunt2"><b>👁️ Intrusos en la Corporación</b>${row('ag', I.ag)}${row('ven', I.ven)}${priv}<p class="muted">En los Tribunales votaréis quiénes son: +200 XP si aciertas.</p></div>`; }
-{ const _nb4 = nocheBody; nocheBody = function(P, me, v){ let r = _nb4(P, me, v); const c = me.club; if (r == null || !c || !c.qDone || c.vote || (PH.tab || 'path') !== 'path') return r; if (/class="pc evph|pfin|cas-ph/.test(r)) return r; return iamH(P, me) + huntH(P, me) + r; }; }
+{ const _nb4 = nocheBody; nocheBody = function(P, me, v){ let r = _nb4(P, me, v); const c = me.club; if (r == null || !c || !c.qDone || c.vote || (PH.tab || 'path') !== 'path') return r; if (/class="pc evph|pfin|cas-ph/.test(r)) return r; return r; }; }
 if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-ven],[data-agf]'); if (!t) return;
   if (t.dataset.agf) return agFotoPick(); const k = t.dataset.ven; const a = {t: 'club', a: 'ven', do: k};
   if (k === 'rob') a.to = $('#ven_rob').value; if (k === 'senal') a.to = $('#ven_acc').value; if (k === 'msg'){ a.txt = $('#ven_msg').value; if (!a.txt.trim()) return toast('Escribe el mensaje'); $('#ven_msg').value = ''; }
@@ -5497,6 +5522,45 @@ const isBrief = S => !!(S.club && S.club.v && S.club.v.k === 'brief');
 { const _ca4 = clubAct; clubAct = function(S, pid, a){ if (isBrief(S) && !['quiz', 'quizdone', 'seen', 'inbox'].includes(a.a)){ flash(S, pid, 'Ahora toca leer el expediente. Las misiones se activan en cuanto empiece la primera convocatoria', false); return true; } return _ca4(S, pid, a); }; }
 { const _cfo = clubFotoOk; clubFotoOk = function(S, pid, mid, mt){ if (isBrief(S)){ flash(S, pid, 'Foto guardada en el álbum. La misión contará cuando empiece la noche', false); return true; } return _cfo(S, pid, mid, mt); }; }
 { const _mc = misCard; misCard = function(P, me, x, side){ const h = _mc(P, me, x, side); if (P.club && P.club.v && P.club.v.k === 'brief') return `<div class="brieflock"><div class="bl-msg">🔒 Lee tu expediente con calma. Las misiones se activan en cuanto empiece la primera convocatoria.</div>${h}</div>`; return h; }; }
+
+// =====================================================================
+// INTERFAZ DEL MÓVIL, ORDENADA: la misión primero; lo demás en una fila de
+// iconos que abre hojas desde abajo; los avisos, en un buzón con campana.
+// =====================================================================
+const ACTIONABLE = k => k !== 'note';
+{ const _al = alertsH; alertsH = function(P, me){ const c = me.club; const c2 = Object.assign({}, c, {inbox: (c.inbox || []).filter(i => ACTIONABLE(i.k)), clues: [], isInf: false}); return _al(P, Object.assign({}, me, {club: c2})); }; }
+function idCardH(me){ if (!me.role && !me.rival) return '<p class="muted">Todavía no tienes papel secreto.</p>';
+  return `${me.role ? `<p class="idr">${me.role.ic} <b>${esc(me.role.n)}</b>${me.role.done ? ' · objetivo cumplido ✓' : ''}</p><p><b>Ventaja:</b> ${esc(me.role.v)}</p><p><b>Objetivo (+250 XP):</b> ${esc(me.role.o)}</p>` : ''}${me.rival ? `<p><b>⚔️ Rival secreto:</b> ${esc(me.rival.name)}. Si acabas por encima, +200 XP. Ahora mismo <b class="${me.rival.ahead ? 'up' : 'down'}">${me.rival.ahead ? 'vas por delante' : 'vas por detrás'}</b>.</p>` : ''}<p class="muted">Nadie más lo sabe. Se revela en la ceremonia.</p>`; }
+const huntN = P => { const I = P.intr; return I ? ['ag', 'ven'].reduce((n, k) => n + (I[k] ? I[k].clues.length + (I[k].caught ? 1 : 0) + 1 : 0), 0) : 0; };
+function chipsH(P, me){ const c = me.club; const out = []; const X = me.iam;
+  // un único botón neutro, igual para todos: nadie puede adivinar el papel de otro mirando su móvil
+  if (X || me.role || me.rival) out.push(`<button class="ch2 sec" data-sheet="sec">🔒 Mi secreto</button>`);
+  const I = P.intr; const other = I && (X ? (X.k === 'ag' ? I.ven : I.ag) : (I.ag || I.ven)); if (other){ const n = huntN(P) + (c.clues || []).length; out.push(`<button class="ch2 intr" data-sheet="hunt">👁️ Intrusos${n > (PH.huntSeen || 0) ? '<i class="dot"></i>' : ''}</button>`); }
+  if (P.cas) out.push(`<button class="ch2 cas" data-sheet="cas">🎰 Casino abierto</button>`);
+  return out.length ? `<div class="chips2">${out.join('')}</div>` : ''; }
+const SHEETS = {sec: 'Tu secreto', iam: 'Tu operación secreta', rol: 'Tu identidad secreta', hunt: 'Intrusos en la Corporación', cas: 'El casino de la Trastienda', inbox: 'Tus avisos'};
+function sheetBody(P, me, k){
+  if (k === 'sec') return (me.iam ? iamH(P, me) : '') + ((me.role || me.rival) ? `<div class="idcard2">${idCardH(me)}</div>` : '');
+  if (k === 'iam') return me.iam ? iamH(P, me) : '';
+  if (k === 'rol') return idCardH(me);
+  if (k === 'hunt'){ PH.huntSeen = huntN(P) + (me.club.clues || []).length; return huntH(P, me) || '<p class="muted">Todavía no se sabe nada de ningún intruso.</p>'; }
+  if (k === 'cas') return P.cas ? casBannerH(P, me) + '<p class="muted">El código está en la pantalla del casino, en la Trastienda.</p>' : '<p class="muted">El casino está cerrado ahora mismo.</p>';
+  if (k === 'inbox'){ const L = (me.club.inbox || []).filter(i => !ACTIONABLE(i.k)); return L.length ? L.map(inboxH).join('') : '<p class="muted">No tienes avisos nuevos.</p>'; }
+  return ''; }
+function sheetH(P, me){ const k = PH.sheet; if (!k || !SHEETS[k]) return ''; const b = sheetBody(P, me, k); if (!b){ PH.sheet = null; return ''; }
+  return `<div class="sheet-bg" data-sheet="0"></div><div class="sheet s-${k}"><div class="sh-h"><b>${SHEETS[k]}</b><button class="sh-x" data-sheet="0" aria-label="Cerrar">×</button></div><div class="sh-b">${b}</div></div>`; }
+{ const _ph2 = pathH; pathH = function(P, me){ const h = _ph2(P, me); if (!P.club || !P.club.on) return h; return chipsH(P, me) + h; }; }
+{ const _ex = expH; expH = function(P, me){ return _ex(P, me) + sheetH(P, me); }; }
+// cabecera: campana con los avisos
+{ const _nh2 = nocheHead; nocheHead = function(me, P){ let h = _nh2(me, P); const n = ((me.club && me.club.inbox) || []).filter(i => !ACTIONABLE(i.k)).length;
+    return h.replace('<div class="phh-s">', `<div class="phh-s"><button class="bell ${n ? 'on' : ''}" data-sheet="inbox" aria-label="Avisos">🔔${n ? `<em>${n}</em>` : ''}</button>`); }; }
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-sheet]'); if (!t) return; e.preventDefault();
+  const k = t.dataset.sheet; PH.sheet = k === '0' ? null : (PH.sheet === k ? null : k); PH.lastHTML = ''; phRender(); });
+
+// los avisos emergentes que delatarían un secreto se vuelven neutros
+const SECRET_FLASH = /🕶️ Prueba|🔥 Golpe|🕶️ El Ojo sabe|Objetivo de tu rol|🕶️ Operación|Venganza preparada|El Tahúr no pierde|Paparazzi|Has llamado a la policía\. Tú te libras|robado \d+ fichas|Tu operación|El próximo señalado será|Mensaje enviado|Foto enviada a tus superiores/;
+{ const _fl = flash; flash = function(S, pid, t, ok = true){ if (SECRET_FLASH.test(String(t)) && !/¡Te han robado/.test(String(t))) t = '🔒 Tu secreto avanza. Míralo en «Mi secreto»'; return _fl(S, pid, t, ok); }; }
+{ const _ch3 = clubH; clubH = function(P, me, tOn){ let h = _ch3(P, me, tOn); return h.replace(/<div class="idcard">[\s\S]*?<p class="muted">Nadie más lo sabe\. Se revela en la ceremonia\.<\/p><\/div>/, '<button class="btn wide" data-sheet="sec">🔒 Ver mi identidad secreta</button>'); }; }
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
