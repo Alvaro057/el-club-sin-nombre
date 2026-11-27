@@ -1106,6 +1106,28 @@ body:has(#juice.on) #toast{opacity:0!important}
 .pfin{text-align:center}.pfin h2{font-family:var(--disp);color:var(--gold2);margin:14px 0 6px}.pfin p{margin:8px 0 18px;opacity:.85}
 .pf-ring{display:grid;place-items:center;margin:18px auto 4px}.pf-prev{width:200px;height:200px;border-radius:50%;margin:18px auto 6px;background:center/cover;box-shadow:0 0 0 4px var(--gold2),0 0 40px rgba(230,205,146,.4);animation:juPop .5s cubic-bezier(.2,1.6,.4,1) both}
 .pfin .btn+.btn{margin-top:10px}
+
+/* redada y reto rápido */
+#evov{position:fixed;inset:0;z-index:60;display:none;place-items:center;pointer-events:none}#evov.on{display:grid}
+.evo{text-align:center;padding:5vh 6vw;border-radius:3vh;max-width:80vw;color:#fff}
+.evo.raid{background:rgba(20,4,6,.92);box-shadow:0 0 0 .6vh #b3172b,0 0 12vh rgba(255,30,50,.55);animation:raidPulse 1s ease-in-out infinite}
+.evo.raid.rev{animation:none;box-shadow:0 0 0 .4vh var(--gold2)}
+@keyframes raidPulse{0%,100%{box-shadow:0 0 0 .6vh #b3172b,0 0 12vh rgba(255,30,50,.55)}50%{box-shadow:0 0 0 .6vh #1d4ed8,0 0 12vh rgba(40,90,255,.55)}}
+.evo-l{height:1.2vh;margin:-5vh -6vw 3vh;border-radius:3vh 3vh 0 0;background:linear-gradient(90deg,#d61f35 0 50%,#1f5bff 50% 100%);background-size:200% 100%;animation:raidBar .5s steps(2) infinite}
+@keyframes raidBar{to{background-position:100% 0}}
+.evo h1{font-family:var(--disp);font-size:9vh;margin:0 0 2vh;line-height:1}.evo p{font-size:3vh;margin:1vh 0;opacity:.92}
+.evo-t{margin:2vh 0}.evo-t b{font-family:var(--disp);font-size:12vh;color:#ffd166}.evo-t small{display:block;font-size:2.2vh;opacity:.7}
+.evo-n{font-size:2.4vh!important;opacity:.8}
+.evo.quick{background:rgba(10,12,8,.94);box-shadow:0 0 0 .5vh var(--gold2),0 0 10vh rgba(230,205,146,.4)}.evo.quick small{font-size:2.4vh;color:var(--gold2);letter-spacing:.08em}
+.evo.quick h1{font-size:7vh;margin-top:2vh}
+.v-cas #evov .evo,.v-book #evov .evo{max-width:90vw}
+.evph{text-align:center}.evph h1{font-family:var(--disp);font-size:40px;margin:10px 0}.evph.raid{border:2px solid #d61f35;border-radius:18px;padding:18px;background:linear-gradient(160deg,rgba(214,31,53,.18),rgba(31,91,255,.12))}
+.evph.raid .evo-l{margin:-18px -18px 14px;height:8px;border-radius:16px 16px 0 0}
+.evph.quick small{color:var(--gold2);font-weight:600}.evph.quick h1{font-size:30px}
+.idchip{display:flex;flex-wrap:wrap;gap:6px 12px;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:0 0 12px;color:var(--cream);font-size:13px}
+.idchip b.up{color:var(--ok)}.idchip b.down{color:var(--ko)}
+.idcard{border:1px solid var(--gold);border-radius:14px;padding:14px;margin:0 0 14px;background:linear-gradient(160deg,rgba(201,164,92,.12),transparent)}.idcard>b{font-family:var(--disp);color:var(--gold2)}.idcard p{margin:8px 0;font-size:14px}.idcard .idr{font-size:18px}
+.mk2{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}.mk2 small{display:block;opacity:.75}.mk2 .btn{align-self:flex-start}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -4317,7 +4339,7 @@ async function phConnect(tok, join){
 
 // ---------- pantallas del mando ----------
 function phHead(me, P){ return `<header class="phh">${avH(me, 'md')}<div class="phh-n"><b>${esc(me.name)}</b>${me.host ? '<span class="crown">anfitrión</span>' : ''}</div><div class="phh-s">${P.gm === 'casino' ? '' : P.gm === 'lobos' ? '' : `<span class="pts"><b>${me.pts}</b>pts</span>`}${P.gm === 'lobos' ? '' : `<span class="fch ${P.gm === 'casino' ? 'big' : ''}"><b>${me.fichas}</b><i class="coin"></i></span>`}${me.host && P.phase !== 'lobby' ? '<button class="menub" data-menu="1" aria-label="Menú del anfitrión">⋯</button>' : ''}</div></header>`; }
-function phMenu(P){ if (!PH.menu) return ''; return `<div class="hmenu"><div class="hm-in"><h3>Control de la partida</h3>${PH.me && PH.me.club && PH.me.club.isPres && P.phase !== 'final' ? '<button class="btn gold wide" data-desp="1">🎩 Despacho del Presidente</button>' : ''}<button class="btn wide" data-hop="${P.paused ? 'resume' : 'pause'}">${P.paused ? 'Reanudar' : 'Pausar'}</button><button class="btn wide" data-hop="skip">Saltar esta prueba</button><button class="btn wide" data-hop="inter">${P.inter ? 'Seguir después del intermedio' : '🍸 Intermedio'}</button>${P.gm === 'noche' ? `<button class="btn wide" data-hop="nblock">⏭ Siguiente momento de la noche</button><button class="btn wide" data-hop="nconv">📣 Convocar minijuegos ahora</button><details class="hm-ev"><summary>⚡ Lanzar un acontecimiento</summary>${[['pres', '📜 Mensaje del Presidente'], ['offer', '🖋️ Ofertas irrechazables'], ['invite', '✉️ Invitación exclusiva'], ['bolsa', '📉 La caída de la bolsa'], ['senal', '⚖️ Miembro señalado'], ['infil', '🕵️ Ronda de infiltrado'], ['clue', '🔍 Pista pública'], ['trib', '🏛️ Tribunal'], ['purga', '🩸 La purga']].map(([k, t]) => `<button class="btn wide" data-hop="nev" data-ev="${k}">${t}</button>`).join('')}</details><button class="btn wide ghost" data-hop="ncere">👁️ Ir a la ceremonia final</button>` : ''}<button class="btn wide ghost" data-hop="end">Terminar la partida</button><button class="lnk" data-menu="0">Cerrar</button></div></div>`; }
+function phMenu(P){ if (!PH.menu) return ''; return `<div class="hmenu"><div class="hm-in"><h3>Control de la partida</h3>${PH.me && PH.me.club && PH.me.club.isPres && P.phase !== 'final' ? '<button class="btn gold wide" data-desp="1">🎩 Despacho del Presidente</button>' : ''}<button class="btn wide" data-hop="${P.paused ? 'resume' : 'pause'}">${P.paused ? 'Reanudar' : 'Pausar'}</button><button class="btn wide" data-hop="skip">Saltar esta prueba</button><button class="btn wide" data-hop="inter">${P.inter ? 'Seguir después del intermedio' : '🍸 Intermedio'}</button>${P.gm === 'noche' ? `<button class="btn wide" data-hop="nblock">⏭ Siguiente momento de la noche</button><button class="btn wide" data-hop="nconv">📣 Convocar minijuegos ahora</button><button class="btn wide gold" data-hop="quick">🎉 Reto rápido ahora</button><details class="hm-ev"><summary>⚡ Lanzar un acontecimiento</summary>${[['pres', '📜 Mensaje del Presidente'], ['offer', '🖋️ Ofertas irrechazables'], ['invite', '✉️ Invitación exclusiva'], ['bolsa', '📉 La caída de la bolsa'], ['senal', '⚖️ Miembro señalado'], ['infil', '🕵️ Ronda de infiltrado'], ['clue', '🔍 Pista pública'], ['trib', '🏛️ Tribunal'], ['purga', '🩸 La purga'], ['redada', '🚨 Redada policial']].map(([k, t]) => `<button class="btn wide" data-hop="nev" data-ev="${k}">${t}</button>`).join('')}</details><button class="btn wide ghost" data-hop="ncere">👁️ Ir a la ceremonia final</button>` : ''}<button class="btn wide ghost" data-hop="end">Terminar la partida</button><button class="lnk" data-menu="0">Cerrar</button></div></div>`; }
 function phLobby(P, me){
   const taken = new Set(P.players.filter(p => p.pid !== me.pid).map(p => p.av)); const need = P.gm === 'lobos' ? 5 : 2;
   return `<div class="pc center"><div class="bigav">${avH(me, 'xxl')}</div><h2>Bienvenido al club</h2><p class="muted">Mira la tele: ya ocupas tu sitio en la mesa.</p>
@@ -4988,8 +5010,8 @@ function bookCode(room, t){ const m = Math.floor(t / BOOK_MIN); let h = 21661362
     if ([0, -BOOK_MIN, BOOK_MIN].some(d => k === bookCode(S.room, now + d))){ C.trasUsed ||= {}; const u = k + ':' + pid; if (C.trasUsed[u]){ flash(S, pid, 'Ya has firmado con este código. Espera al siguiente minuto.', false); return false; } C.trasUsed[u] = pid; cm(S, pid).trasAt = now; ok = true; }
     else if (/^T\d{4}$/.test(k) && !TRAS_CODES.includes(k)){ flash(S, pid, 'Ese código ya no vale: cambia cada minuto. Míralo en el libro de firmas de la Trastienda.', false); return false; }
     else ok = _tu(S, pid, code);
-    if (ok) bookLog(S, C.bookCtx); return ok; }; }
-function bookLog(S, a){ const C = S.club; C.book ||= []; const w = a && a.a === 'tras' ? a.what : 'room';
+    if (ok){ const mm = cm(S, pid); if (mm) mm.signs = (mm.signs || 0) + 1; bookLog(S, C.bookCtx, pid); } return ok; }; }
+function bookLog(S, a, pid){ const C = S.club; C.book ||= []; const w = a && a.a === 'tras' ? a.what : 'room';
   const t = w === 'sign' ? 'Alguien ha firmado un trato con el Presidente' : w === 'enc' ? 'Alguien ha entrado en la Trastienda' : w === 'chivato' ? 'Alguien ha dejado un chivatazo en el buzón' : w === 'room' ? 'Alguien ha dejado su marca en el libro' : 'Alguien ha entrado en la Trastienda';
   C.book.unshift({at: NOW(), t}); C.book = C.book.slice(0, 30); }
 { const _ca = clubAct; clubAct = function(S, pid, a){ if (S.club) S.club.bookCtx = a; try { return _ca(S, pid, a); } finally { if (S.club) S.club.bookCtx = null; } }; }
@@ -5120,7 +5142,7 @@ if (typeof Engine !== 'undefined'){ const _pub = Engine.prototype.publish; Engin
     if (this.pfSent !== (S.pfRev || 0) || force){ this.pfSent = S.pfRev || 0; try { this.pub.setKey('avs', {rev: this.pfSent, m: S.pf || {}}); } catch {} if (typeof document !== 'undefined') avpApply(S.pf); } return r; }; }
 // ---- móviles y pantallas: reciben las fotos ----
 function avpListen(ch){ if (!ch || ch._avp) return; ch._avp = true; ch.onKey('avs', v => { if (!v) return; avpApply(v.m); if (document.body.classList.contains('v-ph')){ PH.lastHTML = ''; try { phRender(); } catch {} } else { try { CV.html = ''; BK.html = ''; } catch {} } }); }
-if (typeof setInterval !== 'undefined' && typeof document !== 'undefined') setInterval(() => { try { if (PH.pubChan) avpListen(PH.pubChan); if (window.__HUB && PH.ctx && !document.body.classList.contains('v-tv') && !PH.pubChan){ const ch = window.__HUB.chans[roomPub(PH.ctx.room)]; if (ch) avpListen(ch); } } catch {} }, 700);
+if (typeof document !== 'undefined' && typeof document.querySelector === 'function' && document.querySelector('body')) setInterval(() => { try { if (PH.pubChan) avpListen(PH.pubChan); if (window.__HUB && PH.ctx && !document.body.classList.contains('v-tv') && !PH.pubChan){ const ch = window.__HUB.chans[roomPub(PH.ctx.room)]; if (ch) avpListen(ch); } } catch {} }, 700);
 // ---- móvil: el selfie obligatorio ----
 const PF = {img: '', busy: false};
 function pfPick(){ let inp = $('#pfin'); if (!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'pfin'; inp.style.display = 'none'; document.body.appendChild(inp); }
@@ -5137,6 +5159,154 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
   if (d === 'shot') return pfPick();
   if (d === 'skip'){ PH.pfSkip = true; PH.lastHTML = ''; return phRender(); }
   if (d === 'send' && PF.img && !PF.busy){ PF.busy = true; phSend({t: 'pfoto', img: PF.img}); PH.lastHTML = ''; phRender(); setTimeout(() => { PF.busy = false; if (PH.me && PH.me.hasPf) PF.img = ''; else toast('No ha llegado la foto. Pulsa otra vez «Usar esta foto».'); PH.lastHTML = ''; phRender(); }, 4000); } });
+
+// =====================================================================
+// EXTRAS: redada policial, roles secretos, rival secreto, servicios del
+// mercado negro y el reto rápido del anfitrión.
+// =====================================================================
+const RAID_MS = 90000;
+function raidOk(S){ const C = S.club; return !!(C && C.on && S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k) && !C.raid && !C.quick); }
+function sirena(){ try { const c = ac(); const o = c.createOscillator(), g = c.createGain(); o.type = 'sawtooth'; g.gain.value = .0001; o.connect(g); g.connect(out()); const t = c.currentTime;
+    for (let i = 0; i < 6; i++){ o.frequency.setValueAtTime(620, t + i * .7); o.frequency.linearRampToValueAtTime(980, t + i * .7 + .35); o.frequency.linearRampToValueAtTime(620, t + i * .7 + .7); }
+    g.gain.linearRampToValueAtTime(.09, t + .1); g.gain.setValueAtTime(.09, t + 4); g.gain.linearRampToValueAtTime(.0001, t + 4.3); o.start(t); o.stop(t + 4.4); } catch {} }
+
+// ---------- la redada ----------
+function raidStart(S, by){ const C = S.club; const v = vnow(S); C.raid = {t0: v, t1: v + RAID_MS, arr: [], by: by || null, st: 'on'}; C.raidN = (C.raidN || 0) + 1; C.raidLast = NOW();
+  feed(S, by ? 'Alguien ha llamado a la policía' : '¡Redada policial en el club!', '🚨');
+  memberIds(S).forEach(p => { if (S.players[p].bot && p !== by) C.raid.botAt = C.raid.botAt || {}, C.raid.botAt[p] = v + 8000 + Math.random() * 75000; }); }
+function raidArrive(S, pid, code){ const C = S.club, R = C.raid; if (!R || R.st !== 'on') return false; if (R.arr.includes(pid)) return true;
+  const k = trasNorm(code); const now = NOW(); if (![0, -BOOK_MIN, BOOK_MIN].some(d => k === bookCode(S.room, now + d)) && !TRAS_CODES.includes(k)){ flash(S, pid, 'Ese no es el código del libro de firmas. Está en la Trastienda.', false); return true; }
+  R.arr.push(pid); flash(S, pid, `🚨 A salvo: has llegado el ${R.arr.length}º`); return true; }
+function raidEnd(S){ const C = S.club, R = C.raid; const v = vnow(S); const on = memberIds(S).filter(p => (isOn(S, p) || S.players[p].bot) && p !== R.by && !cm(S, p).fallen && p !== presPid(S));
+  const miss = on.filter(p => !R.arr.includes(p)); const first = R.arr.filter(p => p !== R.by).slice(0, 3); const last = !miss.length && R.arr.length > 3 ? [R.arr[R.arr.length - 1]] : [];
+  first.forEach(p => { giveXP(S, p, 60, 'Redada: de los primeros en esconderse'); }); miss.forEach(p => { giveXP(S, p, -100, 'Redada: te pilló la policía'); flash(S, p, '🚨 Te ha pillado la policía: −100 XP', false); }); last.forEach(p => { giveXP(S, p, -50, 'Redada: el último en llegar'); flash(S, p, '🚨 Llegaste el último: −50 XP', false); });
+  R.st = 'rev'; R.res = {first, miss: miss.concat(last)}; R.t1 = v + 12000; feed(S, miss.length ? `La policía ha pillado a ${miss.length}` : 'Nadie ha caído en la redada', '🚨'); }
+
+// ---------- el reto rápido (modo fiesta del anfitrión) ----------
+const QUICK = ['Choca la mano con tres personas', 'Toca algo de madera… que no sea una mesa', 'Brinda con alguien con quien aún no hayas hablado', 'Busca a alguien que lleve tu mismo color de ropa', 'Consigue que alguien te dé un abrazo', 'Haced la ola: al menos cuatro personas a la vez', 'Siéntate en el suelo. ¡Ya!', 'Di en voz alta el nombre de tres miembros del club', 'Hazte un selfie con la persona más alta del salón', 'Pon tu mejor cara de póker delante de alguien durante 5 segundos'];
+function quickStart(S){ const C = S.club; const v = vnow(S); C.quickUsed ||= []; let free = QUICK.map((_, i) => i).filter(i => !C.quickUsed.includes(i)); if (!free.length){ C.quickUsed = []; free = QUICK.map((_, i) => i); } const i = pick(free); C.quickUsed.push(i);
+  C.quick = {i, t0: v, t1: v + 60000, done: [], st: 'on'}; feed(S, 'Reto rápido: ' + QUICK[i], '🎉');
+  memberIds(S).forEach(p => { if (S.players[p].bot) (C.quick.botAt ||= {})[p] = v + 4000 + Math.random() * 50000; }); }
+function quickDone(S, pid){ const Q = S.club.quick; if (!Q || Q.st !== 'on' || Q.done.includes(pid)) return true; Q.done.push(pid); const n = Q.done.length; if (n <= 3){ giveXP(S, pid, 50, 'Reto rápido'); flash(S, pid, `🎉 ¡${n}º en el reto! +50 XP`); } else flash(S, pid, '🎉 Reto hecho. Esta vez no llegas al premio'); return true; }
+
+// ---------- roles secretos y rival ----------
+const ROLES = [
+  {k: 'cotilla', n: 'La Cotilla', ic: '👁️', v: 'El libro de firmas te chiva: te llegan con nombre las 4 primeras firmas que se hagan desde ahora.', o: 'Firma 3 veces en el libro de la Trastienda.', ok: (S, m) => (m.signs || 0) >= 3},
+  {k: 'tahur', n: 'El Tahúr', ic: '🃏', v: 'En el casino, la primera mano que pierdas en cada apertura no te cuesta nada.', o: 'Llega a tener 30 fichas.', ok: (S, m, pid) => S.players[pid].fichas >= 30},
+  {k: 'detective', n: 'El Detective', ic: '🔍', v: 'Cada vez que entra un infiltrado, recibes una pista gratis.', o: 'Vota bien al infiltrado en un Tribunal.', ok: (S, m) => (m.st.tribOk || 0) >= 1},
+  {k: 'diplo', n: 'El Diplomático', ic: '🕊️', v: 'Tu voto en el Tribunal cuenta doble.', o: 'Sella dos alianzas.', ok: (S, m, pid) => Object.values(S.club.alli || {}).filter(A => A.st === 'on' && (A.a === pid || A.b === pid)).length >= 2},
+  {k: 'rrpp', n: 'El Relaciones Públicas', ic: '🥂', v: 'Ganas 30 XP extra por cada persona nueva que conozcas.', o: 'Conoce a 10 miembros del club.', ok: (S, m) => Object.keys(m.st.met).length >= Math.min(10, memberIds(S).length - 1)},
+  {k: 'super', n: 'El Superviviente', ic: '🛡️', v: 'La purga no puede tocarte.', o: 'Llega a La Élite.', ok: (S, m) => m.rank >= 4},
+  {k: 'papa', n: 'El Paparazzi', ic: '📸', v: 'Tus misiones de foto dan el doble de XP.', o: 'Sube 4 fotos al álbum.', ok: (S, m) => (m.st.fotos || 0) >= 4},
+];
+const roleOf = (S, pid) => { const m = cm(S, pid); return m && m.role ? ROLES.find(R => R.k === m.role.k) : null; };
+function rolesAssign(S){ const C = S.club; const PR = presPid(S); const ids = memberIds(S).filter(p => p !== PR && !cm(S, p).role); if (!ids.length) return;
+  const used = memberIds(S).map(p => cm(S, p).role && cm(S, p).role.k).filter(Boolean); let pool = shuffle(ROLES.map(R => R.k).filter(k => !used.includes(k)));
+  ids.forEach(p => { if (!pool.length) pool = shuffle(ROLES.map(R => R.k)); const k = pool.shift(); const m = cm(S, p); m.role = {k, done: false, leaks: 0}; if (k === 'super') m.shield = true; });
+  // rivales: cada uno el suyo, sin que nadie sea su propio rival
+  const all = memberIds(S).filter(p => p !== PR); const need = all.filter(p => !cm(S, p).rival);
+  if (need.length){ const sh = shuffle(all); need.forEach(p => { const cand = sh.filter(q => q !== p); cm(S, p).rival = cand.length ? cand[(all.indexOf(p) + 1) % cand.length] : null; }); }
+  ids.forEach(p => { const m = cm(S, p), R = roleOf(S, p); const rv = m.rival && S.players[m.rival] ? S.players[m.rival].name : null;
+    pushInbox(S, p, {k: 'note', t: `${R.ic} Tu rol secreto: ${R.n}`, d: `Ventaja: ${R.v} Objetivo: ${R.o} (+250 XP).${rv ? ` Y tienes un rival secreto: ${rv}. Si acabas la noche por encima, +200 XP.` : ''} Nadie más lo sabe.`}); }); }
+function rolesTick(S){ let ch = false; memberIds(S).forEach(p => { const m = cm(S, p), R = roleOf(S, p); if (!R || m.role.done) return; if (R.ok(S, m, p)){ m.role.done = true; giveXP(S, p, 250, `Objetivo de ${R.n}`); flash(S, p, `${R.ic} Objetivo de tu rol cumplido: +250 XP`); ch = true; } }); return ch; }
+
+// ---------- enganches con el motor ----------
+{ const _ns = nocheStart; nocheStart = function(S){ _ns(S); try { rolesAssign(S); } catch (e) { console.warn(e); } }; }
+{ const _nbk = nextBlock; nextBlock = function(S){ _nbk(S); const C = S.club; if (!C || !C.v) return; if (C.v.k === 'ops'){ const D = C.dir; const left = D.blocks.slice(D.bi + 1).filter(b => b.k === 'ops').length; const dur = C.v.t1 - C.v.t0;
+    C.raidAt = (Math.random() < .5 || (!C.raidN && left === 0)) ? C.v.t0 + dur * (.3 + Math.random() * .5) : 0; } else if (C.v.k !== 'inter') C.raidAt = 0; }; }
+{ const _ct2 = clubTick; clubTick = function(S){ let ch = _ct2(S); const C = S.club; if (!C || !C.on) return ch; const v = vnow(S);
+    if (C.raidAt && v >= C.raidAt && raidOk(S)){ C.raidAt = 0; raidStart(S, null); ch = true; }
+    const R = C.raid; if (R){ if (R.st === 'on'){ Object.entries(R.botAt || {}).forEach(([p, t]) => { if (v >= t && !R.arr.includes(p)){ R.arr.push(p); ch = true; } });
+        const need = memberIds(S).filter(p => isOn(S, p) && !S.players[p].bot && p !== R.by && p !== presPid(S) && !cm(S, p).fallen); if (v >= R.t1 || (need.length && need.every(p => R.arr.includes(p)) && v - R.t0 > 5000)){ raidEnd(S); ch = true; } }
+      else if (v >= R.t1){ C.raid = null; ch = true; } }
+    const Q = C.quick; if (Q){ if (Q.st === 'on'){ Object.entries(Q.botAt || {}).forEach(([p, t]) => { if (v >= t && !Q.done.includes(p)){ quickDone(S, p); ch = true; } }); if (v >= Q.t1){ Q.st = 'rev'; Q.t1 = v + 7000; ch = true; } } else if (v >= Q.t1){ C.quick = null; ch = true; } }
+    if (Math.floor(v / 2000) !== C.rtk){ C.rtk = Math.floor(v / 2000); if (rolesTick(S)) ch = true; if (memberIds(S).some(p => !cm(S, p).role && p !== presPid(S) && cm(S, p).qDone)) rolesAssign(S); }
+    return ch; }; }
+{ const _ca2 = clubAct; clubAct = function(S, pid, a){ const C = S.club;
+    if (a.a === 'raid') return C && C.on ? raidArrive(S, pid, a.p) : false;
+    if (a.a === 'quick') return C && C.on ? quickDone(S, pid) : false;
+    if (a.a === 'buy2') return buy2(S, pid, a);
+    return _ca2(S, pid, a); }; }
+{ const _hc = hostCmd; hostCmd = function(S, op, a = {}){ if (op === 'quick'){ if (!S.club || !S.club.on || S.phase !== 'club' || S.club.quick || S.club.raid) return false; quickStart(S); return true; }
+    if (op === 'nev' && a.ev === 'redada'){ if (!raidOk(S)) return false; raidStart(S, null); return true; } return _hc(S, op, a); }; }
+// ventajas de los roles
+{ const _bl = bookLog; bookLog = function(S, a, pid){ _bl(S, a, pid); if (!pid) return; const nm = S.players[pid] ? S.players[pid].name : '?';
+    memberIds(S).forEach(p => { const m = cm(S, p); if (p === pid || !m.role || m.role.k !== 'cotilla' || m.role.leaks >= 4) return; m.role.leaks++; pushInbox(S, p, {k: 'note', t: '👁️ El libro te chiva', d: `Acaba de firmar en el libro: ${nm}. (${m.role.leaks} de 4)`}); }); }; }
+{ const _cmh = casMisHand; casMisHand = function(S, g){ _cmh(S, g); const X = S.cas; if (!X) return; X.tah ||= {}; Object.entries(casNet(g)).forEach(([p, d]) => { const R = roleOf(S, p); if (!R || R.k !== 'tahur' || d >= 0 || X.tah[p]) return; X.tah[p] = 1; addFichas(S, p, -d); flash(S, p, `🃏 El Tahúr no pierde la primera: recuperas ${-d} fichas`); }); }; }
+{ const _is2 = infStart; infStart = function(S){ const before = S.club.inf.pid; _is2(S); const I = S.club.inf; if (!I.pid || I.pid === before) return;
+    memberIds(S).forEach(p => { const R = roleOf(S, p); if (!R || R.k !== 'detective' || p === I.pid) return; const c = nextClue(S, p); if (c == null) return; (cm(S, p).clues ||= []).push(c); pushInbox(S, p, {k: 'note', t: '🔍 Pista del Detective', d: 'El infiltrado ' + c + '.'}); }); }; }
+{ const _rv = resolveVote; resolveVote = function(S, V){ if (V.k === 'trib') Object.keys(V.votes).forEach(p => { const R = roleOf(S, p); if (R && R.k === 'diplo') cm(S, p).dblVote = true; }); return _rv(S, V); }; }
+{ const _mt = meet; meet = function(S, a, b){ const first = _mt(S, a, b); if (first) [a, b].forEach(p => { const R = roleOf(S, p); const q = p === a ? b : a; if (R && R.k === 'rrpp' && (p === a || !cm(S, p).st.met[q] || true)) giveXP(S, p, 30, 'Relaciones públicas'); }); return first; }; }
+{ const _md2 = misDone; misDone = function(S, pid, mis, extra = ''){ if (mis && mis.st !== 'done' && mis.need === 'photo' && mis.xpOverride == null){ const R = roleOf(S, pid); if (R && R.k === 'papa'){ mis.xpOverride = mis.xp * 2; extra = (extra ? extra + ' · ' : '') + '📸 Paparazzi: XP doble'; } } return _md2(S, pid, mis, extra); }; }
+// la ceremonia: rivales y revelación de roles
+{ const _cs = cereStart; cereStart = function(S, B){ try { memberIds(S).forEach(p => { const m = cm(S, p); if (!m.rival || m.rivalDone || !cm(S, m.rival)) return; m.rivalDone = true; if (clubScore(S, p) > clubScore(S, m.rival)){ giveXP(S, p, 200, 'Has superado a tu rival'); flash(S, p, `⚔️ Has superado a tu rival, ${S.players[m.rival].name}: +200 XP`); } });
+      const L = memberIds(S).filter(p => roleOf(S, p)).map(p => `${S.players[p].name}: ${roleOf(S, p).n}${cm(S, p).role.done ? ' ✓' : ''}`);
+      if (L.length){ annc(S, {k: 'msg', ic: '🎭', h: 'Los roles secretos de la noche', p: L.join(' · '), say: 'Antes de la ceremonia, el club revela los roles secretos de la noche.', ms: 14000}); feed(S, 'Se revelan los roles secretos', '🎭'); } } catch (e) { console.warn(e); }
+    return _cs(S, B); }; }
+
+// ---------- el mercado negro: servicios especiales ----------
+const RETOS_MN = ['cante el estribillo de una canción', 'haga un brindis improvisado por el club', 'imite a alguien de la sala', 'cuente su peor cita', 'baile durante 15 segundos', 'diga un piropo a quien tenga a su derecha', 'cuente un secreto inofensivo', 'haga su mejor imitación de un famoso'];
+const MK2 = {espiar: {n: 'Mirar un expediente', c: 8, d: 'Ves el rango y la misión actual de alguien.'}, msg: {n: 'Mensaje anónimo en la tele', c: 3, d: 'Escribe una frase corta y saldrá en la tele sin tu nombre.'}, reto: {n: 'Encargar un reto', c: 5, d: 'La tele anuncia que alguien ha pagado para que esa persona haga un reto. Ahora.'}, redada: {n: 'Llamar a la policía', c: 10, d: 'Provoca una redada: todos a la Trastienda. Tú te libras. Solo en Operaciones o en el Intermedio.'}};
+function buy2(S, pid, a){ const C = S.club; if (!C || !C.on) return false; const it = MK2[a.k]; const me = S.players[pid]; if (!it || !me) return false;
+  if (!(C.unl && C.unl.fichas)){ flash(S, pid, 'El mercado negro todavía no ha abierto', false); return true; }
+  if (me.fichas < it.c){ flash(S, pid, 'No tienes fichas suficientes', false); return true; }
+  const nm = p => S.players[p] ? S.players[p].name : '';
+  if (a.k === 'espiar'){ const m = cm(S, a.to); if (!m || a.to === pid) return false; const x = activeMis(S, a.to); me.fichas -= it.c;
+    pushInbox(S, pid, {k: 'note', t: `🕵️ El expediente de ${nm(a.to)}`, d: `Rango: ${RANKS[m.rank].n}. Misión actual: ${x ? x.t : 'ninguna'}.${m.side ? ' Encargo suelto: ' + m.side.t + '.' : ''}`}); flash(S, pid, 'Expediente abierto: míralo en tu camino'); return true; }
+  if (a.k === 'msg'){ const t = String(a.txt || '').replace(/\s+/g, ' ').trim().slice(0, 90); if (t.length < 3){ flash(S, pid, 'Escribe el mensaje', false); return true; } if (C.lastMsg && NOW() - C.lastMsg < 60000){ flash(S, pid, 'Hay otro mensaje en cola. Prueba en un minuto', false); return true; }
+    C.lastMsg = NOW(); me.fichas -= it.c; annc(S, {k: 'msg', ic: '✉️', h: 'Mensaje anónimo', p: `«${t}»`, say: 'Un mensaje anónimo para el club.', ms: 9000}); feed(S, 'Alguien ha mandado un mensaje anónimo', '✉️'); flash(S, pid, 'Mensaje enviado a la tele'); return true; }
+  if (a.k === 'reto'){ if (!cm(S, a.to) || a.to === pid) return false; const r = RETOS_MN[+a.r] || RETOS_MN[0]; if (C.lastReto && NOW() - C.lastReto < 60000){ flash(S, pid, 'Hay otro reto en marcha. Prueba en un minuto', false); return true; }
+    if (!(S.phase === 'club')){ flash(S, pid, 'Los retos solo se anuncian fuera de los minijuegos', false); return true; }
+    C.lastReto = NOW(); me.fichas -= it.c; annc(S, {k: 'msg', ic: '🎭', h: 'Un encargo anónimo', p: `Alguien ha pagado para que ${nm(a.to)} ${r}. ¡Ahora!`, say: `Alguien ha pagado para que ${nm(a.to)} ${r}. Ahora.`, ms: 11000}); feed(S, `Reto encargado para ${nm(a.to)}`, '🎭'); flash(S, pid, 'Reto encargado'); return true; }
+  if (a.k === 'redada'){ if (!raidOk(S)){ flash(S, pid, 'Ahora no se puede: solo en Operaciones o en el Intermedio, sin otros eventos en marcha', false); return true; } if (C.raidLast && NOW() - C.raidLast < 8 * 60000){ flash(S, pid, 'La policía acaba de irse. Espera unos minutos', false); return true; }
+    me.fichas -= it.c; raidStart(S, pid); flash(S, pid, '🚨 Has llamado a la policía. Tú te libras.'); return true; }
+  return false; }
+
+// ---------- lo que ven la tele y los móviles ----------
+{ const _pv2 = pubView; pubView = function(S){ const P = _pv2(S); const C = S.club; if (C){ const nm = p => S.players[p] ? S.players[p].name : '';
+    if (C.raid) P.raid = {st: C.raid.st, t0: C.raid.t0, t1: C.raid.t1, n: C.raid.arr.length, arr: C.raid.arr.slice(0, 12).map(nm), res: C.raid.res ? {first: C.raid.res.first.map(nm), miss: C.raid.res.miss.map(nm)} : null, bought: !!C.raid.by};
+    if (C.quick) P.quick = {st: C.quick.st, t: QUICK[C.quick.i], t0: C.quick.t0, t1: C.quick.t1, done: C.quick.done.slice(0, 3).map(nm), n: C.quick.done.length}; } return P; }; }
+{ const _mv5 = meView; meView = function(S, pid){ const M = _mv5(S, pid); const C = S.club; const m = C && C.m && cm(S, pid); if (!M || M.gone || !m) return M;
+    const R = roleOf(S, pid); if (R) M.role = {n: R.n, ic: R.ic, v: R.v, o: R.o, done: m.role.done};
+    if (m.rival && S.players[m.rival]) M.rival = {name: S.players[m.rival].name, ahead: clubScore(S, pid) >= clubScore(S, m.rival)};
+    if (C.raid) M.raidIn = C.raid.arr.includes(pid) || C.raid.by === pid || presPid(S) === pid; if (C.quick) M.quickIn = C.quick.done.includes(pid); return M; }; }
+// tele: superposición de la redada y del reto
+function evOvH(P){ const R = P.raid, Q = P.quick;
+  if (R) return R.st === 'on' ? `<div class="evo raid"><div class="evo-l"></div><h1>¡Redada policial!</h1><p>${R.bought ? 'Alguien ha llamado a la policía. ' : ''}Todos a la Trastienda: escribid en el móvil el código del libro de firmas.</p><div class="evo-t"><b data-ends="${R.t1}"></b><small>segundos</small></div><p class="evo-n">A salvo: ${R.n}${R.arr.length ? ' · ' + R.arr.map(esc).join(', ') : ''}</p></div>`
+    : `<div class="evo raid rev"><h1>Se va la policía</h1>${R.res.miss.length ? `<p>Pillados: <b>${R.res.miss.map(esc).join(', ')}</b> (pierden XP)</p>` : '<p>Nadie ha caído esta vez.</p>'}${R.res.first.length ? `<p>Los más rápidos: ${R.res.first.map(esc).join(', ')} (+60 XP)</p>` : ''}</div>`;
+  if (Q) return Q.st === 'on' ? `<div class="evo quick"><small>Reto rápido · los 3 primeros ganan 50 XP</small><h1>${esc(Q.t)}</h1><div class="evo-t"><b data-ends="${Q.t1}"></b><small>segundos</small></div><p class="evo-n">${Q.done.length ? 'Ya lo han hecho: ' + Q.done.map(esc).join(', ') : 'Cuando lo hagas, pulsa «¡Hecho!» en el móvil'}</p></div>`
+    : `<div class="evo quick rev"><h1>¡Tiempo!</h1><p>${Q.done.length ? 'Ganan: ' + Q.done.map(esc).join(', ') : 'Nadie lo ha conseguido'}</p></div>`;
+  return ''; }
+function evOvTick(P){ let el = $('#evov'); if (!el && document.body){ el = document.createElement('div'); el.id = 'evov'; document.body.appendChild(el); } if (!el) return; const h = P ? evOvH(P) : '';
+  if (h !== el._h){ el._h = h; el.innerHTML = h; el.classList.toggle('on', !!h); }
+  const key = P && P.raid && P.raid.st === 'on' ? 'r' + P.raid.t0 : ''; if (key && key !== el._k){ el._k = key; sirena(); try { MUSIC.duck && MUSIC.duck(true); setTimeout(() => MUSIC.duck(false), 5000); } catch {} if (document.body.classList.contains('v-tv')) setTimeout(() => say('¡Redada! ¡Todos a la Trastienda!', null, EPIC), 1200); }
+  const qk = P && P.quick && P.quick.st === 'on' ? 'q' + P.quick.t0 : ''; if (qk && qk !== el._q){ el._q = qk; try { SFX.bell(2); } catch {} if (document.body.classList.contains('v-tv')) setTimeout(() => say('Reto rápido. ' + P.quick.t, null, EPIC), 900); } }
+{ const _it3 = interTick; interTick = function(P){ _it3(P); evOvTick(P); }; }
+{ const _csr = casScreenRender; casScreenRender = function(){ _csr(); evOvTick(PH.pub); }; }
+{ const _bsr = bookScreenRender; bookScreenRender = function(){ _bsr(); const P = PH.pub; evOvTick(P && P.raid ? P : null); }; }
+// móvil
+function raidPhH(P, me){ const R = P.raid; if (me.raidIn) return null;
+  return `<div class="pc evph raid"><div class="evo-l"></div><h1>¡Redada!</h1><p>Corre a la Trastienda y escribe el código del libro de firmas antes de que acabe el tiempo. Si te pillan, pierdes 100 XP.</p>${barH(R.t0 - (P.vOff || 0) + (P.vOff || 0), R.t1)}<div class="codein"><input class="field" id="raidc" autocapitalize="characters" autocomplete="off" placeholder="T0000"><button class="btn gold" data-raid="1">¡A salvo!</button></div></div>`; }
+{ const _nb3 = nocheBody; nocheBody = function(P, me, v){ const c = me.club; const inGame = ['wheel', 'intro', 'rules', 'count', 'play', 'res', 'rank'].includes(P.phase);
+    if (c && c.qDone && !inGame && !c.vote){ if (P.raid && P.raid.st === 'on'){ const h = raidPhH(P, me); if (h) return h; }
+      if (P.quick && P.quick.st === 'on' && !me.quickIn) return `<div class="pc evph quick"><small>Reto rápido · los 3 primeros: +50 XP</small><h1>${esc(P.quick.t)}</h1>${barH(P.quick.t0, P.quick.t1)}<button class="btn gold wide huge" data-quick="1">¡Hecho!</button><p class="muted">Sin trampas: el club lo está mirando.</p></div>`; }
+    let r = _nb3(P, me, v); if (r == null || !c || !c.qDone || c.vote || inGame) return r;
+    if (me.role || me.rival){ const chip = `<button class="idchip" data-gorole="1">${me.role ? `<span>${me.role.ic} ${esc(me.role.n)}${me.role.done ? ' ✓' : ''}</span>` : ''}${me.rival ? `<span>⚔️ Rival: ${esc(me.rival.name)} · <b class="${me.rival.ahead ? 'up' : 'down'}">${me.rival.ahead ? 'vas por delante' : 'vas por detrás'}</b></span>` : ''}</button>`;
+      if ((PH.tab || 'path') === 'path') r = chip + r; } return r; }; }
+{ const _ch = clubH; clubH = function(P, me, tOn){ let h = _ch(P, me, tOn); if (me.role || me.rival) h = `<div class="idcard"><b>Tu identidad secreta</b>${me.role ? `<p class="idr">${me.role.ic} <b>${esc(me.role.n)}</b>${me.role.done ? ' · objetivo cumplido ✓' : ''}</p><p><b>Ventaja:</b> ${esc(me.role.v)}</p><p><b>Objetivo (+250 XP):</b> ${esc(me.role.o)}</p>` : ''}${me.rival ? `<p><b>Rival secreto:</b> ${esc(me.rival.name)}. Si acabas por encima, +200 XP. Ahora mismo ${me.rival.ahead ? 'vas por delante' : 'vas por detrás'}.</p>` : ''}<p class="muted">Nadie más lo sabe. Se revela en la ceremonia.</p></div>` + h; return h; }; }
+{ const _fh = fichasH; fichasH = function(P, me){ const h = _fh(P, me); const ms = (P.club ? P.club.members : []).filter(m => m.pid !== me.pid).map(m => `<option value="${m.pid}">${esc(pOf(P, m.pid).name)}</option>`).join('');
+    const it = (k, body) => `<div class="mk2"><div><b>${MK2[k].n}</b><small>${MK2[k].d}</small></div>${body}<button class="btn gold" data-buy2="${k}">${MK2[k].c} fichas</button></div>`;
+    const sec = it('espiar', `<select class="field" id="b2_espiar">${ms}</select>`) + it('msg', `<input class="field" id="b2_msg" maxlength="90" placeholder="Tu mensaje anónimo">`) + it('reto', `<select class="field" id="b2_reto_to">${ms}</select><select class="field" id="b2_reto_r">${RETOS_MN.map((r, i) => `<option value="${i}">…${esc(r)}</option>`).join('')}</select>`) + it('redada', '');
+    return h + secH('mk2', 'Servicios especiales', sec); }; }
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return;
+  const t = e.target.closest('[data-raid],[data-quick],[data-buy2],[data-gorole]'); if (!t) return; const d = t.dataset;
+  if (d.raid){ const i = $('#raidc'); const v = (i && i.value || '').trim(); if (!v) return toast('Escribe el código del libro de firmas'); phSend({t: 'club', a: 'raid', p: v}); i.value = ''; return; }
+  if (d.quick){ phSend({t: 'club', a: 'quick'}); try { navigator.vibrate && navigator.vibrate(40); } catch {} return; }
+  if (d.gorole){ PH.tab = 'club'; PH.lastHTML = ''; return phRender(); }
+  if (d.buy2){ const k = d.buy2; const a = {t: 'club', a: 'buy2', k};
+    if (k === 'espiar') a.to = $('#b2_espiar').value; if (k === 'msg'){ a.txt = $('#b2_msg').value; if (!a.txt.trim()) return toast('Escribe el mensaje'); $('#b2_msg').value = ''; } if (k === 'reto'){ a.to = $('#b2_reto_to').value; a.r = $('#b2_reto_r').value; }
+    if (k === 'redada' && !PH.redConf){ PH.redConf = true; setTimeout(() => PH.redConf = false, 3000); return toast('Pulsa otra vez para llamar a la policía (10 fichas)'); }
+    phSend(a); } });
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
