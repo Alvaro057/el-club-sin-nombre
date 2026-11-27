@@ -1128,6 +1128,21 @@ body:has(#juice.on) #toast{opacity:0!important}
 .idchip b.up{color:var(--ok)}.idchip b.down{color:var(--ko)}
 .idcard{border:1px solid var(--gold);border-radius:14px;padding:14px;margin:0 0 14px;background:linear-gradient(160deg,rgba(201,164,92,.12),transparent)}.idcard>b{font-family:var(--disp);color:var(--gold2)}.idcard p{margin:8px 0;font-size:14px}.idcard .idr{font-size:18px}
 .mk2{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}.mk2 small{display:block;opacity:.75}.mk2 .btn{align-self:flex-start}
+
+/* el Ojo */
+.ojo-svg{width:100%;height:auto;overflow:visible}.ojo-iris{animation:ojoLook 7s ease-in-out infinite;transform-origin:100px 60px}.ojo-blink{transform-origin:100px 60px;animation:ojoBlink 5.5s infinite}
+@keyframes ojoLook{0%,18%{transform:translateX(0)}25%,40%{transform:translateX(-20px)}48%,62%{transform:translateX(18px)}70%,100%{transform:translateX(0)}}
+@keyframes ojoBlink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1.05)}}
+#ojo{position:fixed;left:50%;top:3vh;transform:translate(-50%,-140%);z-index:70;width:min(60vw,900px);text-align:center;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s;opacity:0;pointer-events:none}
+#ojo.on{transform:translate(-50%,0);opacity:1}#ojo .ojo-svg{width:16vh;filter:drop-shadow(0 0 3vh rgba(201,164,92,.55))}
+#ojo p{margin:1vh auto 0;font-family:var(--serif);font-style:italic;font-size:3vh;color:#f3e7c8;background:rgba(5,4,3,.82);padding:1vh 2.4vw;border-radius:1.4vh;display:inline-block;box-shadow:0 0 0 1px rgba(201,164,92,.35)}
+.isc-eye{width:44vh;margin:0 auto;filter:drop-shadow(0 0 6vh rgba(201,164,92,.5));animation:juIns 1.4s cubic-bezier(.2,1.2,.4,1) both}
+/* intrusos en el móvil */
+.iam{border-radius:14px;padding:14px;margin:0 0 12px}.iam.ag{border:1px solid #6d8cff;background:linear-gradient(160deg,rgba(40,70,160,.28),rgba(5,10,30,.5))}.iam.ven{border:1px solid #e0586b;background:linear-gradient(160deg,rgba(160,30,50,.3),rgba(30,5,10,.5))}
+.iam>b{font-family:var(--disp);font-size:17px}.iam p{font-size:14px;margin:8px 0}.iam ul{list-style:none;padding:0;margin:6px 0 10px;font-size:14px}.iam li{padding:4px 0;opacity:.85}.iam li.ok{color:var(--ok);opacity:1}
+.iam .vt{display:flex;gap:8px;margin:8px 0}.iam .vt .field{flex:1;min-width:0}.iam .vt .btn{white-space:nowrap}
+.hunt2 p{font-size:14px;margin:6px 0}
+.infbox .ib-r{margin:1vh 0}.infbox .ib-r ul{margin:.6vh 0 0 1.2vw;padding:0}.infbox .ib-c{color:var(--ok)}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -3597,7 +3612,7 @@ const trasNorm = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 // usa una tira: devuelve true si era válida y nadie la había usado
 function trasUse(S, pid, code){ const C = S.club; const k = trasNorm(code); if (!TRAS_CODES.includes(k)){ flash(S, pid, 'Ese código no es de la Trastienda. Está en el libro de firmas, dentro de la habitación.', false); return false; }
   C.trasUsed ||= {}; if (C.trasUsed[k]){ flash(S, pid, 'Esa tira ya se ha usado. Usa el código del libro de firmas.', false); return false; } C.trasUsed[k] = pid; cm(S, pid).trasAt = NOW(); return true; }
-const CARD_KINDS = {pista: ['🔍', 'Pista sobre el infiltrado'], fichas: ['🪙', 'Botín de fichas'], escudo: ['🛡️', 'Protección ante la purga'], voto: ['⚖️', 'Voto doble en el Tribunal'], sello: ['📜', 'Sello del Presidente'], trampa: ['💀', 'Trampa']};
+const CARD_KINDS = {pista: ['🔍', 'Pista sobre el infiltrado'], fichas: ['🪙', 'Botín de fichas'], escudo: ['🛡️', 'Protección ante la purga'], voto: ['⚖️', 'Voto doble en el Tribunal'], sello: ['📜', 'Sello del Ojo'], trampa: ['💀', 'Trampa']};
 // las tarjetas son siempre las mismas: se pueden imprimir días antes en cualquier ordenador
 const CARDS = (() => { let a = 20261212; const r = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   const W = ['CUERVO', 'ANTIFAZ', 'BURDEOS', 'CANDADO', 'GINEBRA', 'MONOCULO', 'PERLA', 'HUMO', 'SOMBRERO', 'GEMELOS', 'PITILLERA', 'SELLO', 'TERCIOPELO', 'BARAJA', 'LIGUERO', 'PLUMA', 'LLAVE', 'RUBI', 'BASTON', 'ABANICO', 'BOTONES', 'PAJARITA', 'ZAFIRO', 'GRAMOLA'];
@@ -3612,7 +3627,8 @@ const HIDE_TIPS = {salon: ['debajo de un cojín', 'detrás de un cuadro', 'dentr
 const cm = (S, pid) => S.club && S.club.m[pid];
 const memberIds = S => pidsAll(S).filter(p => cm(S, p) && !(S.club.noHost && S.players[p].host));
 // el Presidente en la sombra: el anfitrión, si juega y no lo ha desactivado
-const presPid = S => { const C = S.club; if (!C || C.presOff || C.noHost) return null; return pidsAll(S).find(p => S.players[p].host && cm(S, p)) || null; };
+// el Presidente en la sombra ya no existe: el anfitrión juega como uno más
+const presPid = S => { return null; const C = S.club; if (!C || C.presOff || C.noHost) return null; return pidsAll(S).find(p => S.players[p].host && cm(S, p)) || null; };
 const vnowC = S => vnow(S);
 function encCode(seed, min){ let h = (seed ^ Math.imul(min, 2654435761)) >>> 0; h = Math.imul(h ^ (h >>> 16), 2246822507) >>> 0; h = Math.imul(h ^ (h >>> 13), 3266489909) >>> 0; h = (h ^ (h >>> 16)) >>> 0; return 100 + h % 900; }
 const encNow = (seed, t) => encCode(seed, Math.floor(t / 60000));
@@ -3646,7 +3662,7 @@ const MIS_INFO = {
   pair: {cat: 'Contactos', ic: '👥', xp: 210}, anecdote: {cat: 'Investigación', ic: '📜', xp: 150}, fragment: {cat: 'Códigos', ic: '🧩', xp: 220}, duel: {cat: 'Riesgo', ic: '⚔️', xp: 160},
   trade: {cat: 'Mercado de favores', ic: '🤝', xp: 130}, alliance: {cat: 'Alianzas', ic: '🫱🏻‍🫲🏼', xp: 220}, influence: {cat: 'Influencia', ic: '🗳️', xp: 90}, risk: {cat: 'Riesgo', ic: '🎲', xp: 0},
   betpod: {cat: 'Riesgo', ic: '🪙', xp: 120}, podium: {cat: 'Habilidad', ic: '🏆', xp: 220}, win: {cat: 'Habilidad', ic: '🥇', xp: 260}, arma: {cat: 'Riesgo', ic: '🎭', xp: 190},
-  votes: {cat: 'Influencia', ic: '⭐', xp: 200}, room: {cat: 'La Trastienda', ic: '🚪', xp: 140}, hunt: {cat: 'Búsqueda', ic: '🗝️', xp: 160}, final: {cat: 'Círculo Interno', ic: '👁️', xp: 0}, order: {cat: 'Orden del Presidente', ic: '📜', xp: 120}, invite: {cat: 'Invitación exclusiva', ic: '✉️', xp: 260},
+  votes: {cat: 'Influencia', ic: '⭐', xp: 200}, room: {cat: 'La Trastienda', ic: '🚪', xp: 140}, hunt: {cat: 'Búsqueda', ic: '🗝️', xp: 160}, final: {cat: 'Círculo Interno', ic: '👁️', xp: 0}, order: {cat: 'Orden del Ojo', ic: '📜', xp: 120}, invite: {cat: 'Invitación exclusiva', ic: '✉️', xp: 260},
 };
 const FRAGS = [['MEDIA', 'NOCHE'], ['CONTRA', 'BANDO'], ['TERCIO', 'PELO'], ['CORTA', 'FUEGOS'], ['PASA', 'PORTES'], ['SALVO', 'CONDUCTO'], ['BOCA', 'MANGA'], ['CAZA', 'FORTUNAS'], ['SACA', 'CORCHOS'], ['GIRA', 'SOL']];
 const ARMAS = [['te diga «salud»', 'Le hizo decir «salud»'], ['acepte algo que le des en mano', 'Aceptó algo de su mano'], ['te diga la hora', 'Le dijo la hora'], ['brinde contigo', 'Brindó con su cazador'],
@@ -3721,7 +3737,7 @@ function annc(S, a){ a.id = S.club.nid++; S.club.ann.push(a); }
 // las secciones del expediente se abren poco a poco durante la noche
 function unlock(S, k){ const C = S.club; C.unl ||= {}; if (C.unl[k]) return; C.unl[k] = true;
   if (k === 'fichas'){ annc(S, {k: 'unl', ic: '🕯️', h: 'Se abre el mercado negro', p: 'Desde ahora podéis gastar fichas: pistas, protección, duelos y tratos. Mirad la pestaña «Fichas».', say: 'Se abre el mercado negro. Desde ahora, las fichas compran ventajas.'}); memberIds(S).forEach(p => flash(S, p, 'Se abre el mercado negro: nueva pestaña «Fichas»')); }
-  if (k === 'tras'){ annc(S, {k: 'unl', ic: '🚪', h: 'La Trastienda abre sus puertas', p: 'Dentro hay un libro de firmas. Allí se firman los tratos del Presidente.', say: 'La Trastienda abre sus puertas.'}); memberIds(S).forEach(p => flash(S, p, 'La Trastienda está abierta: mírala en la pestaña «Club»')); } }
+  if (k === 'tras'){ annc(S, {k: 'unl', ic: '🚪', h: 'La Trastienda abre sus puertas', p: 'Dentro hay un libro de firmas. Allí se firman los tratos del Ojo.', say: 'La Trastienda abre sus puertas.'}); memberIds(S).forEach(p => flash(S, p, 'La Trastienda está abierta: mírala en la pestaña «Club»')); } }
 const ACH = {
   first: ['Primer contacto', 'Tu primer encuentro registrado'], social: ['Animal social', 'Seis encuentros distintos'], detective: ['Detective', 'Tres investigaciones resueltas'], podio: ['Habitual del podio', 'Tres podios'],
   racha: ['Imparable', 'Dos minijuegos ganados'], tahur: ['Tahúr', 'Un duelo ganado'], aliado: ['Socio de confianza', 'Una alianza sellada'], nego: ['Negociador', 'Dos tratos cerrados'],
@@ -3771,7 +3787,7 @@ function useCode(S, pid, digits, mcode){ let owners = mcode ? memberIds(S).filte
     if (mis.ty === 'alliance'){ const t = owners[0]; if (t){ if (S.club.alli && Object.values(S.club.alli).some(a => a.a === pid && a.b === t && a.st === 'wait')) return flash(S, pid, 'Ya le has propuesto la alianza. Espera su respuesta.', false);
         meet(S, pid, t); const id = S.club.nid++; (S.club.alli ||= {})[id] = {a: pid, b: t, st: 'wait', bonus: 0}; pushInbox(S, t, {k: 'alli', t: 'Propuesta de alianza', d: `${S.players[pid].name} te propone una alianza: cuando uno de los dos suba al podio, el otro también gana experiencia.`, aid: id}); return flash(S, pid, `Propuesta enviada a ${S.players[t].name}. Tiene que aceptarla.`); } }
   }
-  const O = S.club.order; if (O && O.ty === 'meet' && !O.done[pid] && NOW() < O.until){ const t = owners.find(p => !(O.met[pid] || []).includes(p)); if (t){ meet(S, pid, t); (O.met[pid] ||= []).push(t); if (O.met[pid].length >= O.n){ O.done[pid] = 1; giveXP(S, pid, 150, 'Orden del Presidente'); return flash(S, pid, '✔ Orden del Presidente cumplida · +150 XP'); } return flash(S, pid, `Encuentro ${O.met[pid].length} de ${O.n} registrado`); } }
+  const O = S.club.order; if (O && O.ty === 'meet' && !O.done[pid] && NOW() < O.until){ const t = owners.find(p => !(O.met[pid] || []).includes(p)); if (t){ meet(S, pid, t); (O.met[pid] ||= []).push(t); if (O.met[pid].length >= O.n){ O.done[pid] = 1; giveXP(S, pid, 150, 'Orden del Ojo'); return flash(S, pid, '✔ Orden del Ojo cumplida · +150 XP'); } return flash(S, pid, `Encuentro ${O.met[pid].length} de ${O.n} registrado`); } }
   const t = owners[0]; const first = meet(S, pid, t); if (first){ giveXP(S, pid, 25, 'Encuentro con ' + S.players[t].name); return flash(S, pid, `Encuentro registrado con ${S.players[t].name} · +25 XP`); }
   flash(S, pid, `Ya habías registrado a ${S.players[t].name}. Ninguna misión lo necesita ahora.`, false); }
 
@@ -3825,7 +3841,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
       if (K.k === 'pista'){ const c = C.inf.pid && C.inf.pid !== pid ? nextClue(S, pid) : null; if (c != null){ (m.clues ||= []).push(c); pushInbox(S, pid, {k: 'note', t: '🔍 Pista escondida', d: 'El infiltrado ' + c + '.'}); msg += ': mira tus pistas'; } else { m.sealed = (m.sealed || 0) + 1; msg += ': un sobre sellado que se abrirá con la próxima operación especial'; } }
       if (K.k === 'escudo'){ m.shield = true; msg += ': te salva una vez de la purga'; }
       if (K.k === 'voto'){ m.dblVote = true; msg += ': tu próximo voto en el Tribunal vale doble'; }
-      if (K.k === 'sello'){ giveXP(S, pid, 150, 'Sello del Presidente'); givePrest(S, pid, 1, 'Sello del Presidente'); msg += ': +230 XP'; }
+      if (K.k === 'sello'){ giveXP(S, pid, 150, 'Sello del Ojo'); givePrest(S, pid, 1, 'Sello del Ojo'); msg += ': +230 XP'; }
       if (K.k === 'trampa'){ S.players[pid].fichas = Math.max(0, S.players[pid].fichas - 3); msg = '💀 Era una trampa: pierdes 3 fichas. Nadie lo sabrá… salvo tú.'; }
       flash(S, pid, msg, K.k !== 'trampa'); giveXP(S, pid, K.k === 'trampa' ? 0 : 40, 'Tarjeta encontrada'); feed(S, `Alguien ha encontrado algo en ${SPACES[K.where]}`, '🗝️');
       [activeMis(S, pid), m.side].forEach(x => { if (x && x.st === 'active' && x.ty === 'hunt' && x.where === K.where) misDone(S, pid, x); }); if (m.st.cards >= 3) ach(S, pid, 'cazador'); return true; }
@@ -3842,7 +3858,7 @@ function clubAct(S, pid, a){ const C = S.club; if (!C) return false; const m = c
       if (a.do === 'pay'){ const B_ = C.bounty; if (!B_ || !cm(S, a.to) || a.to === pid) return false; giveFichas(S, a.to, B_.n); C.bounty = null; annc(S, {k: 'msg', ic: '💰', h: 'Recompensa cobrada', p: `${nm(a.to)} se lleva ${B_.n} fichas del Presidente.`, say: `La recompensa del Presidente es para ${nm(a.to)}.`, ms: 8000}); return true; }
       if (a.do === 'drop'){ C.bounty = null; flash(S, pid, 'Recompensa retirada'); return true; }
       if (a.do === 'favor'){ if (!cm(S, a.to) || a.to === pid) return false; if (P_.favors >= 3){ flash(S, pid, 'Ya has concedido tus tres favores de la noche', false); return true; } P_.favors++; givePrest(S, a.to, 1, 'Favor del Presidente'); annc(S, {k: 'msg', ic: '🎩', h: 'El favor del Presidente', p: `El Presidente concede su favor a ${nm(a.to)}: +80 XP.`, say: `El Presidente concede su favor a ${nm(a.to)}.`, ms: 8000}); return true; }
-      if (a.do === 'offer'){ if (!cm(S, a.to) || a.to === pid) return false; if (NOW() - P_.offAt < 240000){ flash(S, pid, 'Espera unos minutos para la próxima oferta', false); return true; } P_.offAt = NOW(); const id = C.nid++; const i = Math.max(0, Math.min(OFFERS.length - 1, +a.i || 0)); C.offers[id] = {pid: a.to, i, st: 'wait'}; pushInbox(S, a.to, {k: 'offer', t: '🖋️ Una oferta irrechazable', d: 'El Presidente te ofrece, solo a ti: ' + OFFERS[i].t + '. Para aceptar, ve a la Trastienda, arranca una tira del libro de firmas y escribe su código. Tienes 10 minutos.', oid: id}); flash(S, pid, `🖋️ Oferta enviada a ${nm(a.to)}`); return true; }
+      if (a.do === 'offer'){ if (!cm(S, a.to) || a.to === pid) return false; if (NOW() - P_.offAt < 240000){ flash(S, pid, 'Espera unos minutos para la próxima oferta', false); return true; } P_.offAt = NOW(); const id = C.nid++; const i = Math.max(0, Math.min(OFFERS.length - 1, +a.i || 0)); C.offers[id] = {pid: a.to, i, st: 'wait'}; pushInbox(S, a.to, {k: 'offer', t: '🖋️ Una oferta irrechazable', d: 'El Ojo te ofrece, solo a ti: ' + OFFERS[i].t + '. Para aceptar, ve a la Trastienda, arranca una tira del libro de firmas y escribe su código. Tienes 10 minutos.', oid: id}); flash(S, pid, `🖋️ Oferta enviada a ${nm(a.to)}`); return true; }
       if (a.do === 'senal'){ if (!cm(S, a.to) || a.to === pid) return false; C.nextAcc = a.to; flash(S, pid, `⚖️ ${nm(a.to)} será el próximo miembro señalado`); return true; }
       if (a.do === 'infil'){ if (!cm(S, a.to) || a.to === pid || C.inf.past.includes(a.to)){ flash(S, pid, 'Esa persona no puede ser el próximo infiltrado', false); return true; } C.inf.next = a.to; flash(S, pid, `🕵️ ${nm(a.to)} será el próximo infiltrado`); return true; }
       return false; }
@@ -3867,10 +3883,10 @@ const OFFERS = [
   {t: '+250 XP… a cambio de 5 fichas', apply: (S, pid) => { S.players[pid].fichas = Math.max(0, S.players[pid].fichas - 5); giveXP(S, pid, 250, 'Oferta irrechazable'); }},
   {t: '+160 XP… a cambio de quedar sin protección y perder 4 fichas', apply: (S, pid) => { cm(S, pid).shield = false; S.players[pid].fichas = Math.max(0, S.players[pid].fichas - 4); givePrest(S, pid, 2, 'Oferta irrechazable'); }},
 ];
-function offerApply(S, pid, O){ OFFERS[O.i].apply(S, pid); flash(S, pid, 'Trato hecho con el Presidente'); feed(S, 'Alguien ha aceptado una oferta irrechazable…', '🖋️'); }
+function offerApply(S, pid, O){ OFFERS[O.i].apply(S, pid); flash(S, pid, 'Trato hecho con el Ojo'); feed(S, 'Alguien ha aceptado una oferta irrechazable…', '🖋️'); }
 function eventOffer(S){ unlock(S, 'tras'); const ps = shuffle(memberIds(S).filter(p => isOn(S, p))).slice(0, Math.max(1, Math.ceil(memberIds(S).length / 5)));
-  ps.forEach(pid => { const id = S.club.nid++; const i = rnd(OFFERS.length); S.club.offers[id] = {pid, i, st: 'wait'}; pushInbox(S, pid, {k: 'offer', t: '🖋️ Una oferta irrechazable', d: 'El Presidente te ofrece, solo a ti: ' + OFFERS[i].t + '. Para aceptar, ve a la Trastienda, arranca una tira del libro de firmas y escribe su código. Tienes 10 minutos.', oid: id, until: NOW() + 10 * 60000}); });
-  annc(S, {k: 'msg', ic: '🖋️', h: 'Ofertas irrechazables', p: 'Algunos miembros acaban de recibir una propuesta privada del Presidente. Nadie sabe quiénes.', say: 'Algunos miembros acaban de recibir una oferta del Presidente. Una oferta… irrechazable.'}); }
+  ps.forEach(pid => { const id = S.club.nid++; const i = rnd(OFFERS.length); S.club.offers[id] = {pid, i, st: 'wait'}; pushInbox(S, pid, {k: 'offer', t: '🖋️ Una oferta irrechazable', d: 'El Ojo te ofrece, solo a ti: ' + OFFERS[i].t + '. Para aceptar, ve a la Trastienda, arranca una tira del libro de firmas y escribe su código. Tienes 10 minutos.', oid: id, until: NOW() + 10 * 60000}); });
+  annc(S, {k: 'msg', ic: '🖋️', h: 'Ofertas irrechazables', p: 'Algunos miembros acaban de recibir una propuesta privada del Ojo. Nadie sabe quiénes.', say: 'Algunos miembros acaban de recibir una oferta del Ojo. Una oferta… irrechazable.'}); }
 // la invitación exclusiva: tres miembros, una contraseña en tres trozos
 function eventInvite(S){ const ps = shuffle(memberIds(S).filter(p => isOn(S, p))).slice(0, 3); if (ps.length < 2) return; const word = pick(['CLANDESTINO', 'TERCIOPELO', 'CONTRABANDO', 'MEDIANOCHE', 'ANTIFAZ']);
   const k = ps.length; const sz = Math.ceil(word.length / k); const parts = ps.map((_, i) => word.slice(i * sz, (i + 1) * sz));
@@ -3880,7 +3896,7 @@ function eventInvite(S){ const ps = shuffle(memberIds(S).filter(p => isOn(S, p))
   annc(S, {k: 'msg', ic: '✉️', h: 'La invitación exclusiva', p: 'Unos pocos miembros acaban de recibir una operación secreta. Necesitarán colaborar.', say: 'Algunos miembros han recibido una invitación exclusiva. Tendrán que colaborar.'}); }
 // el mensaje del Presidente: una orden colectiva
 function eventPresident(S){ const n = memberIds(S).length >= 6 ? 3 : 2; S.club.order = {ty: 'meet', n, until: NOW() + 7 * 60000, done: {}, met: {}};
-  annc(S, {k: 'msg', ic: '📜', h: 'Comunicado del Presidente', p: `Orden para todos los miembros: registrad ${n} encuentros con personas distintas en los próximos 7 minutos. Quien no obedezca, no cobra.`, say: `Comunicado oficial del Presidente. Todos los miembros deberán registrar ${n} encuentros en los próximos siete minutos. El club recompensa la obediencia.`, ms: 14000}); }
+  annc(S, {k: 'msg', ic: '📜', h: 'Comunicado del Ojo', p: `Orden para todos los miembros: registrad ${n} encuentros con personas distintas en los próximos 7 minutos. Quien no obedezca, no cobra.`, say: `El Ojo os da una orden. Todos los aspirantes deberán registrar ${n} encuentros en los próximos siete minutos. La Corporación recompensa la obediencia.`, ms: 14000}); }
 
 // ---------- el infiltrado ----------
 function infStart(S){ unlock(S, 'tras'); const I = S.club.inf; const PR = presPid(S); const cand = memberIds(S).filter(p => isOn(S, p) && !I.past.includes(p) && p !== PR); const pool = cand.length ? cand : memberIds(S);
@@ -3901,31 +3917,31 @@ function infPublicClue(S){ const I = S.club.inf; if (!I.pid || I.pubN >= I.clues
 // ---------- el director de la noche ----------
 // ---------- la escena de introducción ----------
 const INTRO = [
-  {v: 'city', h: 'Madrid, 1926', say: 'Madrid. Invierno de mil novecientos veintiséis. En un sótano sin rótulo, siete desconocidos se reúnen a la luz de una sola vela. No dan sus nombres. No dejan rastro.'},
-  {v: 'logo', h: 'El juramento', say: 'Esa noche fundan una sociedad que no figura en ningún registro. No le ponen nombre, porque lo que no tiene nombre no se puede delatar. Así nació el Club Sin Nombre.'},
-  {v: 'years', h: 'Cien años de secretos', say: 'Desde entonces, el club ha movido hilos que nadie ve. Banqueros, artistas, ministros… Todos empezaron igual: siendo nadie.'},
-  {v: 'chair', h: 'La silla vacía', say: 'En lo más alto del club está el Círculo Interno. Y cada cierto tiempo, una de sus sillas queda vacía. Esta noche, esa silla espera dueño.'},
-  {v: 'guests', h: 'Los convocados', say: 'Por eso estáis aquí. Todos los que estáis en esta sala habéis recibido la llamada. Ninguno sabe por qué ha sido elegido. Esta noche, todos sois desconocidos.'},
-  {v: 'ranks', h: 'El camino', say: 'Para llegar a la silla hay que subir. Desconocido. Aspirante. Iniciado. Confidente. Élite. Cada peldaño se gana hablando, investigando y cerrando tratos. Nadie asciende solo.'},
-  {v: 'phone', h: 'El expediente', say: 'El club os ha abierto un expediente. Lo lleváis en el bolsillo. Ahí están vuestras misiones, y nadie más puede verlas.'},
-  {v: 'code', h: 'La contraseña', say: 'Cada miembro tiene una contraseña que cambia cada minuto. Solo se entrega cara a cara. Si alguien os la pide, es que os está buscando.'},
-  {v: 'house', h: 'La casa', say: 'El club se reúne en tres estancias: el Salón, la Cocina y la Trastienda. Y no todo lo que hay en ellas está a la vista.'},
-  {v: 'tv', h: 'La campana', say: 'Cuando suene la campana, todos ante la tele. Aquí se celebran las pruebas del club. Quien gana, asciende.'},
-  {v: 'pres', h: 'El Presidente', pres: true, say: 'Nadie conoce el rostro del Presidente. Esta noche está entre vosotros. Os observa, os pone a prueba… y quizá esté sentado a vuestro lado.'},
-  {v: 'danger', h: 'El traidor', say: 'Pero cuidado. No todos los que han cruzado esa puerta son quienes dicen ser. Hay alguien entre vosotros que trabaja para otros. El club lo descubrirá… o lo pagará.'},
-  {v: 'purga', h: 'La primera regla', say: 'Y recordad la primera regla del club: la invitación no garantiza la permanencia.'},
-  {v: 'candle', h: 'Que empiece la noche', say: 'Solo uno ocupará la silla vacía. Miembros del club… que empiece la noche.'},
+  {v: 'city', h: 'Madrid, 1926', say: 'Madrid. Mil novecientos veintiséis. Siete hombres firman, a la luz de una sola vela, un pacto que no figura en ningún registro. Esa noche nace una corporación sin nombre.'},
+  {v: 'logo', h: 'La Corporación', say: 'La llaman el Club Sin Nombre. Pero no es un club. Es una corporación que lleva cien años moviendo dinero, favores y destinos… sin que nadie lo sepa.'},
+  {v: 'years', h: 'Cien años de poder', say: 'Bancos. Ministerios. Periódicos. Todo lo que importa en este país ha pasado alguna vez por nuestras manos.'},
+  {v: 'eye', h: 'El Ojo', say: 'Yo soy el Ojo de la Corporación. Nadie conoce mi rostro. Lo veo todo. Lo oigo todo. Y no olvido nada.'},
+  {v: 'chair', h: 'La silla vacía', say: 'En lo más alto está el Círculo Interno: los que de verdad mandan. Esta noche, una de sus sillas ha quedado vacía.'},
+  {v: 'guests', h: 'Los aspirantes', say: 'Por eso estáis aquí. Os he elegido uno a uno. Y sé de vosotros más de lo que imagináis.'},
+  {v: 'ranks', h: 'El ascenso', say: 'Para llegar a esa silla hay que subir. Desconocido. Aspirante. Iniciado. Confidente. Élite. El poder no se regala. Se arrebata.'},
+  {v: 'phone', h: 'El expediente', say: 'Cada uno lleva en el bolsillo su expediente. Ahí están vuestras órdenes. Nadie más puede verlas… salvo yo.'},
+  {v: 'code', h: 'La contraseña', say: 'Cada aspirante tiene una contraseña que cambia cada minuto. Solo se entrega cara a cara. Si alguien os la pide, es que os está buscando.'},
+  {v: 'house', h: 'Las estancias', say: 'La Corporación se reúne en tres estancias: el Salón, la Cocina y la Trastienda. Y no todo lo que hay en ellas está a la vista.'},
+  {v: 'tv', h: 'La campana', say: 'Cuando suene la campana, todos ante la pantalla. Aquí se celebran las pruebas. Quien gana, asciende.'},
+  {v: 'danger', h: 'Vuestro papel', say: 'Cada uno de vosotros tiene además un papel secreto… y un rival. No se lo contéis a nadie. Aquí, la confianza es un lujo.'},
+  {v: 'purga', h: 'La primera regla', say: 'Y recordad la primera regla de la Corporación: la invitación no garantiza la permanencia.'},
+  {v: 'candle', h: 'Que empiece la noche', say: 'Solo uno ocupará la silla vacía. Yo estaré mirando. Que empiece la noche.'},
 ];
 const introSay = (S, i) => INTRO[i].say.replace('{n}', memberIds(S).length);
 const introMs = (S, i) => Math.round(estSpeak(introSay(S, i)) / EPIC_RATE) + (i === 0 ? 3500 : 2200);
 const EPIC_RATE = .86;
 const NIGHT = () => [
   {k: 'intro', n: 'La escena de introducción'}, {k: 'brief', n: 'Vuestro expediente'},
-  {k: 'conv', n: 'Primera convocatoria'}, {k: 'ops', n: 'Operaciones clandestinas', ev: 'offer'}, {k: 'conv', n: 'Segunda convocatoria', force: ['subasta']}, {k: 'pres'},
-  {k: 'ops', n: 'Operaciones', infil: true, ev: 'invite'}, {k: 'conv', n: 'La caída de la bolsa', casino: true}, {k: 'trib'}, {k: 'inter'},
-  {k: 'conv', n: 'Tercera convocatoria', infil: true}, {k: 'senal'}, {k: 'ops', n: 'Operaciones', ev: 'offer'}, {k: 'trib'}, {k: 'purga'}, {k: 'conv', n: 'Última convocatoria', last: true}, {k: 'cere'},
+  {k: 'conv', n: 'Primera convocatoria'}, {k: 'ops', n: 'Operaciones clandestinas', ev: 'offer'}, {k: 'conv', n: 'Segunda convocatoria'}, {k: 'pres', n: 'El Ojo habla'},
+  {k: 'ops', n: 'Operaciones', ev: 'invite'}, {k: 'conv', n: 'La caída de la bolsa', casino: true}, {k: 'trib'}, {k: 'inter'},
+  {k: 'conv', n: 'Tercera convocatoria', ven: true}, {k: 'senal'}, {k: 'ops', n: 'Operaciones', ev: 'offer'}, {k: 'trib'}, {k: 'purga'}, {k: 'conv', n: 'Última convocatoria', last: true}, {k: 'cere'},
 ];
-const BLOCK_NAMES = {intro: 'La escena de introducción', brief: 'Vuestro expediente', conv: 'Convocatoria', ops: 'Operaciones', pres: 'Mensaje del Presidente', trib: 'El Tribunal', inter: 'Intermedio', senal: 'El miembro señalado', purga: 'La purga', cere: 'Ceremonia final'};
+const BLOCK_NAMES = {intro: 'La escena de introducción', brief: 'Vuestro expediente', conv: 'Convocatoria', ops: 'Operaciones', pres: 'El Ojo habla', trib: 'El Tribunal', inter: 'Intermedio', senal: 'El miembro señalado', purga: 'La purga', cere: 'Ceremonia final'};
 const blockName = B => B ? (B.n || BLOCK_NAMES[B.k]) : '';
 function nocheStart(S){ const C = clubInit(S); C.on = true; C.dir = {bi: -1, blocks: NIGHT()}; pidsAll(S).forEach(p => { const m = clubMember(S, p); S.players[p].pts = 0; S.players[p].fichas = 8; S.players[p].wins = 0; S.players[p].stats = {}; m.side = null; m.sideAt = 0; m.inbox = []; if (m.qDone) buildPath(S, p); });
   S.hist = []; S.gres = null; S.award = null; S.prevRank = rankOrder(S); feed(S, 'Se abren las puertas del club', '🚪'); nextBlock(S); }
@@ -3975,7 +3991,7 @@ function cereStart(S, B){ const C = S.club; const v = vnowC(S); const ids = memb
   const awards = [
     ['🤝', 'El más sociable', 'Más contactos', best(p => Object.keys(cm(S, p).st.met).length, p => p !== PR)], ['📈', 'El más ambicioso', 'Más experiencia', best(p => cm(S, p).xp)], ['🪙', 'El banquero', 'Más fichas', best(p => S.players[p].fichas)],
     ['🏆', 'El mejor competidor', 'Más minijuegos ganados y podios', best(p => cm(S, p).st.wins * 3 + cm(S, p).st.pods)], ['♟️', 'El mejor estratega', 'Duelos, tratos y apuestas', best(p => cm(S, p).st.duelW * 3 + cm(S, p).st.trades * 2 + cm(S, p).st.betW * 2)],
-    ['🕵️', 'El mejor infiltrado', 'Engañó al Tribunal', best(p => cm(S, p).st.fooled * 5 + cm(S, p).st.tribOk)], ['🧭', 'El más activo', 'Más misiones cumplidas', best(p => cm(S, p).st.miss, p => p !== PR)],
+    ['🕵️', 'El mejor intruso', 'Engañó al Tribunal', best(p => cm(S, p).st.fooled * 5 + cm(S, p).st.tribOk)], ['🧭', 'El más activo', 'Más misiones cumplidas', best(p => cm(S, p).st.miss, p => p !== PR)],
   ].filter(a => a[3]);
   const elig = ids.filter(p => !cm(S, p).fallen && p !== PR).sort((a, b) => cm(S, b).rank - cm(S, a).rank || clubScore(S, b) - clubScore(S, a)); const fin = elig.slice(0, Math.min(3, elig.length));
   S.phase = 'club'; C.v = {k: 'cere', B, st: 'awards', t0: v, ai: 0, pres: PR, pvotes: {}, awards: awards.map(a => ({ic: a[0], t: a[1], s: a[2], pid: a[3]})), fin, t1: v + 8000, votes: {}, voters: ids, cands: fin, self: false}; S.ends = C.v.t1; }
@@ -4075,7 +4091,7 @@ function clubPub(S){ const C = S.club; if (!C) return null; const V = C.v; const
     else if (V.k === 'intro') pub.v = Object.assign(base, {si: V.si, sn: INTRO.length, sc: INTRO[V.si].v, h: INTRO[V.si].h, say: introSay(S, V.si)});
     else if (V.k === 'ops' || V.k === 'inter' || V.k === 'pres' || V.k === 'brief') pub.v = Object.assign(base, {n: blockName(V.B)});
     else if (V.k === 'purga') pub.v = Object.assign(base, {out: V.out, saved: V.saved});
-    else if (V.k === 'trib' || V.k === 'senal') pub.v = Object.assign(base, {acc: V.acc, accTxt: V.accTxt, accRaw: V.accRaw, cands: V.cands, voted: Object.keys(V.votes), voters: V.voters, tally: V.st === 'rev' ? V.tally : null, caught: V.st === 'rev' ? V.caught : null, inf: V.st === 'rev' ? V.inf : null, cond: V.st === 'rev' ? V.cond : null, clues: V.k === 'trib' ? C.inf.clues.slice(0, C.inf.pubN) : null});
+    else if (V.k === 'trib' || V.k === 'senal') pub.v = Object.assign(base, {acc: V.acc, accTxt: V.accTxt, accRaw: V.accRaw, cands: V.cands, voted: Object.keys(V.votes), voters: V.voters, tally: V.st === 'rev' ? V.tally : null, caught: V.st === 'rev' ? V.caught : null, inf: V.st === 'rev' ? V.inf : null, cond: V.st === 'rev' ? V.cond : null, clues: V.k === 'trib' ? (V.clues || []) : null, q: V.q || null, infWho: V.st === 'rev' ? V.infWho || null : null});
     else if (V.k === 'cere') pub.v = Object.assign(base, {pres: V.st === 'prev' ? V.pres : null, pcaught: V.st === 'prev' ? V.pcaught : null, ptally: V.st === 'prev' ? V.ptally : null, pvoted: Object.keys(V.pvotes || {}), hasPres: !!V.pres,aw: V.awards[Math.min(V.ai, V.awards.length - 1)], ai: V.ai, an: V.awards.length, fin: V.fin, voted: Object.keys(V.votes), tally: V.st === 'crown' || V.st === 'end' ? tally(V) : null, win: V.win || null, scores: Object.fromEntries(V.fin.map(p => [p, clubScore(S, p)]))});
   }
   if (S.phase === 'final' && C.done) pub.final = ids.slice().sort((a, b) => cm(S, b).rank - cm(S, a).rank || clubScore(S, b) - clubScore(S, a)).map(p => ({pid: p, rank: cm(S, p).rank, prest: cm(S, p).prest, xp: cm(S, p).xp, fallen: cm(S, p).fallen}));
@@ -4339,7 +4355,7 @@ async function phConnect(tok, join){
 
 // ---------- pantallas del mando ----------
 function phHead(me, P){ return `<header class="phh">${avH(me, 'md')}<div class="phh-n"><b>${esc(me.name)}</b>${me.host ? '<span class="crown">anfitrión</span>' : ''}</div><div class="phh-s">${P.gm === 'casino' ? '' : P.gm === 'lobos' ? '' : `<span class="pts"><b>${me.pts}</b>pts</span>`}${P.gm === 'lobos' ? '' : `<span class="fch ${P.gm === 'casino' ? 'big' : ''}"><b>${me.fichas}</b><i class="coin"></i></span>`}${me.host && P.phase !== 'lobby' ? '<button class="menub" data-menu="1" aria-label="Menú del anfitrión">⋯</button>' : ''}</div></header>`; }
-function phMenu(P){ if (!PH.menu) return ''; return `<div class="hmenu"><div class="hm-in"><h3>Control de la partida</h3>${PH.me && PH.me.club && PH.me.club.isPres && P.phase !== 'final' ? '<button class="btn gold wide" data-desp="1">🎩 Despacho del Presidente</button>' : ''}<button class="btn wide" data-hop="${P.paused ? 'resume' : 'pause'}">${P.paused ? 'Reanudar' : 'Pausar'}</button><button class="btn wide" data-hop="skip">Saltar esta prueba</button><button class="btn wide" data-hop="inter">${P.inter ? 'Seguir después del intermedio' : '🍸 Intermedio'}</button>${P.gm === 'noche' ? `<button class="btn wide" data-hop="nblock">⏭ Siguiente momento de la noche</button><button class="btn wide" data-hop="nconv">📣 Convocar minijuegos ahora</button><button class="btn wide gold" data-hop="quick">🎉 Reto rápido ahora</button><details class="hm-ev"><summary>⚡ Lanzar un acontecimiento</summary>${[['pres', '📜 Mensaje del Presidente'], ['offer', '🖋️ Ofertas irrechazables'], ['invite', '✉️ Invitación exclusiva'], ['bolsa', '📉 La caída de la bolsa'], ['senal', '⚖️ Miembro señalado'], ['infil', '🕵️ Ronda de infiltrado'], ['clue', '🔍 Pista pública'], ['trib', '🏛️ Tribunal'], ['purga', '🩸 La purga'], ['redada', '🚨 Redada policial']].map(([k, t]) => `<button class="btn wide" data-hop="nev" data-ev="${k}">${t}</button>`).join('')}</details><button class="btn wide ghost" data-hop="ncere">👁️ Ir a la ceremonia final</button>` : ''}<button class="btn wide ghost" data-hop="end">Terminar la partida</button><button class="lnk" data-menu="0">Cerrar</button></div></div>`; }
+function phMenu(P){ if (!PH.menu) return ''; return `<div class="hmenu"><div class="hm-in"><h3>Control de la partida</h3>${PH.me && PH.me.club && PH.me.club.isPres && P.phase !== 'final' ? '<button class="btn gold wide" data-desp="1">🎩 Despacho del Presidente</button>' : ''}<button class="btn wide" data-hop="${P.paused ? 'resume' : 'pause'}">${P.paused ? 'Reanudar' : 'Pausar'}</button><button class="btn wide" data-hop="skip">Saltar esta prueba</button><button class="btn wide" data-hop="inter">${P.inter ? 'Seguir después del intermedio' : '🍸 Intermedio'}</button>${P.gm === 'noche' ? `<button class="btn wide" data-hop="nblock">⏭ Siguiente momento de la noche</button><button class="btn wide" data-hop="nconv">📣 Convocar minijuegos ahora</button><button class="btn wide gold" data-hop="quick">🎉 Reto rápido ahora</button><details class="hm-ev"><summary>⚡ Lanzar un acontecimiento</summary>${[['pres', '👁️ El Ojo habla'], ['offer', '🖋️ Ofertas irrechazables'], ['invite', '✉️ Invitación exclusiva'], ['bolsa', '📉 La caída de la bolsa'], ['senal', '⚖️ Miembro señalado'], ['agente', '🕶️ Revelar al Agente ya'], ['vengador', '🔥 Activar al Vengador ya'], ['clue', '🔍 Pista pública'], ['trib', '🏛️ Tribunal'], ['purga', '🩸 La purga'], ['redada', '🚨 Redada policial']].map(([k, t]) => `<button class="btn wide" data-hop="nev" data-ev="${k}">${t}</button>`).join('')}</details><button class="btn wide ghost" data-hop="ncere">👁️ Ir a la ceremonia final</button>` : ''}<button class="btn wide ghost" data-hop="end">Terminar la partida</button><button class="lnk" data-menu="0">Cerrar</button></div></div>`; }
 function phLobby(P, me){
   const taken = new Set(P.players.filter(p => p.pid !== me.pid).map(p => p.av)); const need = P.gm === 'lobos' ? 5 : 2;
   return `<div class="pc center"><div class="bigav">${avH(me, 'xxl')}</div><h2>Bienvenido al club</h2><p class="muted">Mira la tele: ya ocupas tu sitio en la mesa.</p>
@@ -4482,20 +4498,21 @@ function tvAdmision(P){ const C = P.club || {members: [], form: [], formN: 0}; c
 function pubRanking(P, n = 12){ const C = P.club; if (!C) return ''; const ms = C.members.slice().sort((a, b) => b.rank - a.rank || (b.xp || 0) - (a.xp || 0));
   return `<div class="crank"><div class="ct-h"><span>Jerarquía del club</span><small>por rango</small></div>${ms.slice(0, n).map((m, i) => { const p = pOf(P, m.pid); return `<div class="cr ${m.fallen ? 'fallen' : ''}"><i>${i + 1}</i>${avH(p, 'sm')}<b>${esc(p.name)}</b>${rankH(m.rank, 'sm')}</div>`; }).join('')}</div>`; }
 function feedH(P){ const F = (P.club && P.club.feed) || []; return `<div class="cfeed"><div class="ct-h"><span>Lo que se comenta en el club</span></div>${F.length ? F.map(f => `<div class="cf"><i>${f.ic}</i><span>${esc(f.t)}</span></div>`).join('') : '<p class="note">Todavía nadie ha movido ficha.</p>'}</div>`; }
-function infBox(P){ const I = P.club && P.club.inf; if (!I) return ''; return `<div class="infbox"><div class="ct-h"><span>🕵️ Operación especial · ronda ${I.round}</span></div><p>Hay un infiltrado entre vosotros. Lo que se sabe:</p><ul>${I.clues.map(c => `<li>El infiltrado ${esc(c)}.</li>`).join('')}</ul></div>`; }
-function orderBox(P){ const O = P.club && P.club.order; if (!O) return ''; return `<div class="orderbox"><b>📜 Orden del Presidente</b><span>Registrad ${O.n} encuentros con personas distintas · quedan ${cdH(P, P.vnow + Math.max(0, O.until - Date.now()))}</span><em>${O.done} ya la han cumplido</em></div>`; }
+function infBox(P){ const I = P.club && P.club.inf; if (!I) return ''; return `<div class="infbox"><div class="ct-h"><span>🕵️ Operación especial · ronda ${I.round}</span></div><p>Hay un infiltrado entre vosotros. Lo que se sabe:</p><ul>${I.clues.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`; }
+function orderBox(P){ const O = P.club && P.club.order; if (!O) return ''; return `<div class="orderbox"><b>📜 Orden del Ojo</b><span>Registrad ${O.n} encuentros con personas distintas · quedan ${cdH(P, P.vnow + Math.max(0, O.until - Date.now()))}</span><em>${O.done} ya la han cumplido</em></div>`; }
 function tvClub(P, v){ const C = P.club; const V = C && C.v; if (!V) return '';
   switch (V.k){
     case 'intro': return tvIntroScene(P, V);
     case 'brief': return `<div class="ccall brief"><div class="bell">📱</div><div class="rkick">Antes de empezar</div><h1>Abrid vuestro expediente</h1><p>Mirad el móvil: el club os explica cómo funciona vuestro expediente. La primera convocatoria empieza en</p><div class="bigcd">${cdH(P, V.t1)}</div></div>`;
     case 'call': return `<div class="ccall"><div class="bell">🔔</div><div class="rkick">Convocatoria</div><h1>${esc(V.n)}</h1><p>Todos los miembros, a la tele. Los minijuegos empiezan en</p><div class="bigcd">${cdH(P, V.t1)}</div></div>`;
-    case 'ops': case 'pres': case 'inter': return `<div class="chub"><div class="chub-h"><div><div class="rkick">${V.k === 'pres' ? 'Comunicado oficial' : 'Tiempo de operaciones'}</div><h1>${esc(V.n || '')}</h1><p>${V.k === 'pres' ? 'El Presidente ha hablado.' : 'Levantaos, buscaos, negociad. Vuestras misiones están en el expediente del móvil.'}</p></div><div class="chub-cd"><small>${C.next ? 'Después: ' + esc(C.next) : ''}</small>${cdH(P, V.t1)}</div></div>
+    case 'ops': case 'pres': case 'inter': return `<div class="chub"><div class="chub-h"><div><div class="rkick">${V.k === 'pres' ? 'Comunicado del Ojo' : 'Tiempo de operaciones'}</div><h1>${esc(V.n || '')}</h1><p>${V.k === 'pres' ? 'El Ojo ha hablado. La Corporación ya no es un lugar seguro.' : 'Levantaos, buscaos, negociad. Vuestras misiones están en el expediente del móvil.'}</p></div><div class="chub-cd"><small>${C.next ? 'Después: ' + esc(C.next) : ''}</small>${cdH(P, V.t1)}</div></div>
       <div class="chub-b"><div class="chub-l">${orderBox(P)}${infBox(P)}${feedH(P)}</div>${pubRanking(P)}</div></div>`;
     case 'trib': { const head = `<div class="rkick">El Tribunal del club</div>`; const grid = `<div class="spk">${C.members.map(m => { const p = pOf(P, m.pid); const n = V.tally ? V.tally[m.pid] || 0 : null; return `<div class="sp ${V.inf === m.pid ? 'inf' : ''}">${avH(p, 'md')}<b>${esc(p.name)}</b>${n != null ? `<em>${n}</em>` : ''}</div>`; }).join('')}</div>`;
-      const clues = `<ul class="clues2">${(V.clues || []).map(c => `<li>El infiltrado ${esc(c)}.</li>`).join('')}</ul>`;
-      if (V.st === 'talk') return `<div class="gq trib">${head}<h2 class="q">¿Quién es el infiltrado?</h2>${clues}<p class="shout">🗣️ Debatid. Acusad. Defendeos.</p>${grid}${barH(V.t0, V.t1)}</div>`;
+      const clues = `<ul class="clues2">${(V.clues || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul>`;
+      if (V.st === 'talk') return `<div class="gq trib">${head}<h2 class="q">${esc(V.q || '¿Quién es el intruso?')}</h2>${clues}<p class="shout">🗣️ Debatid. Acusad. Defendeos.</p>${grid}${barH(V.t0, V.t1)}</div>`;
       if (V.st === 'vote') return `<div class="gq trib">${head}<h2 class="q">Votación secreta</h2>${grid}${barH(V.t0, V.t1)}${answeredRow(Object.assign({}, P, {players: P.players.filter(p => V.voters.includes(p.pid))}), V.voted)}</div>`;
-      const X = pOf(P, V.inf); return `<div class="gq trib">${head}<div class="spot"><div class="spot-row"><div class="spot-p">${avH(X, 'xl')}<b>${esc(X.name)}</b></div></div><div class="stamp ${V.caught ? 'tr' : 'li'}">${V.caught ? 'DESENMASCARADO' : 'SE SALIÓ CON LA SUYA'}</div></div>${grid}</div>`; }
+      if (!V.inf) return `<div class="gq trib">${head}<div class="spot"><h2 class="q">El intruso sigue entre vosotros</h2><div class="stamp li">SE OS HA ESCAPADO</div></div>${grid}</div>`;
+      const X = pOf(P, V.inf); return `<div class="gq trib">${head}<div class="spot"><div class="spot-row"><div class="spot-p">${avH(X, 'xl')}<b>${esc(X.name)}</b></div></div><div class="stamp ${V.caught ? 'tr' : 'li'}">${V.infWho ? esc(V.infWho.toUpperCase()) : 'DESENMASCARADO'}</div></div>${grid}</div>`; }
     case 'senal': { const A = pOf(P, V.acc); const who = `<div class="spot-row"><div class="spot-p">${avH(A, 'xl')}<b>${esc(A.name)}</b></div></div>`;
       if (V.st === 'talk') return `<div class="gq"><div class="rkick">El miembro señalado</div>${who}<div class="case"><p>${esc(V.accTxt)}</p></div><p class="shout">🗣️ ${esc(A.name)} tiene la palabra para defenderse</p>${barH(V.t0, V.t1)}</div>`;
       if (V.st === 'vote') return `<div class="gq"><div class="rkick">El miembro señalado</div>${who}<h2 class="q">¿Absolver o condenar?</h2>${barH(V.t0, V.t1)}${answeredRow(Object.assign({}, P, {players: P.players.filter(p => V.voters.includes(p.pid))}), V.voted)}</div>`;
@@ -4529,6 +4546,7 @@ function tvIntroScene(P, V){ const C = P.club; const ps = P.players; let art = '
     case 'house': art = `<div class="isc-house">${[['🥂', 'El Salón', 'Las pruebas'], ['🍳', 'La Cocina', 'Algo se cuece'], ['🚪', 'La Trastienda', 'Asuntos privados'], ['⛔', 'Prohibido el paso', 'Aquí no hay nada']].map(([e, n, s], i) => `<div class="ih ${i === 3 ? 'no' : ''}" style="animation-delay:${.5 + i * 1.6}s"><span>${e}</span><b>${n}</b><small>${s}</small></div>`).join('')}</div>`; break;
     case 'tv': art = `<div class="isc-tv"><span class="bellx">🔔</span><span class="tvx">📺</span></div>`; break;
     case 'pres': art = `<div class="isc-pres"><span>🎩</span></div>`; break;
+    case 'eye': art = `<div class="isc-eye">${typeof OJO_SVG !== 'undefined' ? OJO_SVG : '👁️'}</div>`; break;
     case 'danger': art = `<div class="isc-danger">${['🎭', '🗡️', '🕵️'].map((e, i) => `<span style="animation-delay:${.5 + i * 1.2}s">${e}</span>`).join('')}</div>`; break;
     case 'purga': art = `<div class="isc-purga"><span>🩸</span></div>`; break;
     case 'circle': art = `<div class="isc-circle"><span class="eye">👁️</span></div>`; break;
@@ -4558,22 +4576,22 @@ function clubTVSay(P){ const C = P.club; if (P.phase !== 'club' || !C || !C.v) r
   const k = V.k + ':' + (V.st || '') + ':' + V.t0; if (TVS.cSaid === k) return; TVS.cSaid = k;
   if (V.k === 'intro'){ const fx = {pres: () => SFX.heart(3), house: () => SFX.cards(), city: () => { SFX.bell(1); }, logo: () => SFX.stinger(), guests: () => SFX.glass(), ranks: () => SFX.reveal(), phone: () => SFX.tap(), code: () => SFX.coin(), tv: () => SFX.bell(2), danger: () => SFX.heart(3), purga: () => SFX.boom(), circle: () => { SFX.drum(10); setTimeout(() => SFX.gold(), 1000); }}; try { (fx[V.sc] || (() => {}))(); } catch {} setTimeout(() => say(V.say, null, Object.assign({}, EPIC, {onDur: ms => { try { const S = __E.S, W = S.club && S.club.v; if (W && W.k === 'intro' && W.si === V.si){ const end = vnow(S) + ms + 700; if (Math.abs(end - W.t1) > 300){ W.t1 = end; S.ends = end; __E.change(); } } } catch {} }})), V.si === 0 ? 1400 : 350); return; }
   const nm = p => pOf(P, p).name;
-  const L = {brief: 'Abrid vuestro expediente. Tenéis unos minutos para leerlo antes de la primera convocatoria.', call: `Convocatoria. ${V.n}. Todos los miembros, a la tele.`, ops: `${V.n}. Tenéis tiempo para vuestras misiones. Buscad, preguntad, negociad.`,
-    'trib:talk': 'Se abre el Tribunal del club. Debatid. ¿Quién es el infiltrado?', 'trib:vote': 'Votad en secreto.', 'trib:rev': V.inf ? (V.caught ? `${nm(V.inf)} ha sido desenmascarado.` : `El infiltrado era ${nm(V.inf)}. Y se ha salido con la suya.`) : '',
+  const L = {brief: 'Abrid vuestro expediente. Leedlo con atención. Tenéis unos minutos antes de la primera convocatoria.', call: `${V.n}. Todos ante la pantalla. Ahora.`, ops: `${V.n}. Moveos. Buscad, preguntad, negociad. Yo estaré mirando.`,
+    'trib:talk': V.q ? `Se abre el Tribunal. ${V.q} Debatid.` : 'Se abre el Tribunal. Debatid.', 'trib:vote': 'Votad en secreto.', 'trib:rev': V.inf ? `${nm(V.inf)} ha sido desenmascarado. ${V.infWho || ''}` : 'Os habéis equivocado. El intruso sigue entre vosotros.',
     'senal:talk': V.acc ? (V.accRaw && /^\{n\} /.test(V.accRaw) ? `El club señala a ${nm(V.acc)}. Se le acusa de esto: ${accBare(V.accRaw)} Tiene la palabra.` : `El club señala a ${nm(V.acc)}. ${V.accTxt} Tiene la palabra.`) : '', 'senal:vote': '¿Absolver o condenar? Votad.', 'senal:rev': V.acc ? `${nm(V.acc)} queda ${V.cond ? 'condenado' : 'absuelto'}.` : '',
     purga: V.out ? `Ha llegado la purga. ${V.out.map(p => nm(p) + ' cae.').join(' ')} La invitación no garantiza la permanencia.` : '',
     'cere:awards': V.aw ? `${V.aw.t}. ${nm(V.aw.pid)}.` : '', 'cere:pvote': 'Queda un último secreto. Toda la noche, el Presidente ha movido los hilos desde dentro. ¿Quién es? Votad.', 'cere:prev': V.pres ? `El Presidente se revela. Durante toda la noche, el Presidente en la sombra era… ${nm(V.pres)}. ${V.pcaught ? 'El club le ha descubierto.' : 'Y ha engañado a todo el club.'}` : '',
-    'cere:fin': `Los aspirantes al Círculo Interno son: ${(V.fin || []).map(p => nm(p) + '.').join(' ')}`, 'cere:vote': 'Que vote el club.', 'cere:crown': V.win ? (V.hasPres ? `Damas y caballeros. El Presidente abre la última puerta. ${nm(V.win)} entra en el Círculo Interno.` : `Damas y caballeros. ${nm(V.win)} entra en el Círculo Interno.`) : ''};
+    'cere:fin': `Los aspirantes al Círculo Interno son: ${(V.fin || []).map(p => nm(p) + '.').join(' ')}`, 'cere:vote': 'Que vote el club.', 'cere:crown': V.win ? (V.hasPres ? `Damas y caballeros. El Presidente abre la última puerta. ${nm(V.win)} entra en el Círculo Interno.` : `Está decidido. ${nm(V.win)} entra en el Círculo Interno. Bienvenido al poder.`) : ''};
   const t = L[V.k + ':' + (V.st || '')] || L[V.k]; if (!t) return;
   if (V.k === 'call') SFX.bell(2); if (V.k === 'purga' || (V.k === 'trib' && V.st === 'rev')) SFX.boom(); if (V.st === 'crown'){ SFX.drum(12); setTimeout(() => SFX.gold(), 1100); setTimeout(() => SFX.applause(4), 1500); } if (V.k === 'cere' && V.st === 'awards'){ SFX.drum(6); setTimeout(() => SFX.fanfare(), 600); } if (V.st === 'pvote') SFX.heart(4); if (V.st === 'prev'){ SFX.drum(14); setTimeout(() => SFX.stinger(), 1300); }
   setTimeout(() => say(t, null, EPIC), V.st === 'crown' ? 1600 : V.st === 'prev' ? 1200 : 500); }
 // el intermedio
-const INTER_LINES = ['El club se toma un respiro.', 'Que no falte nada en las copas.', 'Momento para la cena… y para las conspiraciones.', 'Las paredes del club oyen. Hablad bajo.', 'En cuanto el anfitrión lo diga, seguimos.'];
+const INTER_LINES = ['La Corporación se toma un respiro.', 'Que no falte nada en las copas.', 'Momento para la cena… y para las conspiraciones.', 'Las paredes del club oyen. Hablad bajo.', 'En cuanto el anfitrión lo diga, seguimos.'];
 function interH(P){ const line = INTER_LINES[Math.floor(Date.now() / 12000) % INTER_LINES.length]; const C = P.club;
   const right = C && C.on ? pubRanking(P, 10) : (() => { const cas = P.gm === 'casino'; const rows = P.players.slice().sort((a, b) => cas ? b.fichas - a.fichas : b.pts - a.pts).slice(0, 10); return `<div class="clubt"><div class="ct-h"><span>Así va la partida</span></div>${rows.map((p, i) => `<div class="ct-r ${i === 0 ? 'top' : ''}"><i>${i + 1}</i>${avH(p, 'sm')}<b>${esc(p.name)}</b><span></span><em>${cas ? p.fichas : p.pts}</em></div>`).join('')}</div>`; })();
   return `<div class="inter-in"><div class="inter-top">${logoH('big')}<div><h1>Intermedio</h1><p>${line}</p></div></div><div class="inter-cols">${C && C.on ? `<div>${albShowH()}${infBox(P)}</div>` : ''}${right}</div><div class="inter-hint"><button class="btn gold" data-host="inter">Seguir con la noche</button><span>o desde el menú del móvil del anfitrión</span></div></div>`; }
 function interTick(P){ const el = $('#interov'); if (!el) return; el.classList.toggle('on', !!P.inter);
-  if (P.inter){ const h = interH(P); if (h !== TVS.interH){ TVS.interH = h; el.innerHTML = h; } if (!TVS.interOn){ TVS.interOn = true; MUSIC.play('lounge'); say('Intermedio. El club se toma un respiro.', null, {rate: .9, pitch: .7}); } }
+  if (P.inter){ const h = interH(P); if (h !== TVS.interH){ TVS.interH = h; el.innerHTML = h; } if (!TVS.interOn){ TVS.interOn = true; MUSIC.play('lounge'); say('Intermedio. Comed. Bebed. Yo sigo mirando.', null, {rate: .9, pitch: .7}); } }
   else if (TVS.interOn){ TVS.interOn = false; TVS.interH = ''; TVS.lastPhase = null; } }
 
 // ---- overlays de la tele: cuestionario, ajustes y panel del anfitrión ----
@@ -4606,7 +4624,7 @@ function hostPanel(){ const el = $('#hostov'); const S = E.S; const C = S.club;
   el.innerHTML = `<div class="hp"><div class="hp-h"><h2>🎛️ Panel del anfitrión</h2><button class="btn" data-hx="close">Cerrar</button></div>
     <div class="hp-c"><div><h3>La noche</h3><ol class="hp-plan">${P.club.plan.map(b => `<li class="${b.done ? 'done' : ''} ${b.now ? 'now' : ''}">${esc(b.n)}</li>`).join('')}</ol>
       <div class="hp-b"><button class="btn gold" data-host="nblock">⏭ Siguiente momento</button><button class="btn" data-host="nconv">📣 Convocar minijuegos</button><button class="btn" data-host="inter">🍸 Intermedio</button><button class="btn" data-host="pausetoggle">${S.pause ? 'Reanudar' : 'Pausa'}</button><button class="btn ghost" data-host="ncere">👁️ Ceremonia final</button></div></div>
-    <div><h3>Acontecimientos</h3><div class="hp-b">${[['pres', '📜 Mensaje del Presidente'], ['offer', '🖋️ Ofertas irrechazables'], ['invite', '✉️ Invitación exclusiva'], ['bolsa', '📉 La caída de la bolsa'], ['senal', '⚖️ Miembro señalado'], ['infil', '🕵️ Nueva ronda de infiltrado'], ['clue', '🔍 Pista pública'], ['trib', '🏛️ Tribunal'], ['purga', '🩸 La purga']].map(([k, t]) => `<button class="btn" data-host="nev" data-ev="${k}">${t}</button>`).join('')}</div>
+    <div><h3>Acontecimientos</h3><div class="hp-b">${[['pres', '👁️ El Ojo habla'], ['offer', '🖋️ Ofertas irrechazables'], ['invite', '✉️ Invitación exclusiva'], ['bolsa', '📉 La caída de la bolsa'], ['senal', '⚖️ Miembro señalado'], ['agente', '🕶️ Revelar al Agente ya'], ['vengador', '🔥 Activar al Vengador ya'], ['clue', '🔍 Pista pública'], ['trib', '🏛️ Tribunal'], ['purga', '🩸 La purga']].map(([k, t]) => `<button class="btn" data-host="nev" data-ev="${k}">${t}</button>`).join('')}</div>
       <p class="hp-note">Los acontecimientos que ocupan la tele se lanzan al terminar lo que esté pasando. Las ofertas, invitaciones y pistas, al momento.</p></div>
     <div><h3>Miembros</h3><div class="hp-m">${memberIds(S).map(p => { const m = cm(S, p); return `<div class="${isOn(S, p) ? '' : 'off'}">${avH(S.players[p], 'sm')}<b>${nm(p)}</b>${rankH(m.rank, 'sm')}<span><i class="hp-code">${m.code}</i> · ${m.xp} XP · ${S.players[p].fichas} fichas${m.fallen ? ' · caído' : ''}${isOn(S, p) ? '' : ' · sin conexión'}</span></div>`; }).join('')}</div></div></div></div>`;
   el.classList.add('on'); el.onclick = e => { if (e.target.closest('[data-hx]')) el.classList.remove('on'); }; }
@@ -4678,7 +4696,7 @@ function tutH(i){ const [h, p, ic] = TUT[i]; return `<div class="pc tut"><div cl
 // avisos que no pueden esperar: van arriba del camino
 function alertsH(P, me){ const c = me.club;
   const qrem = !c.qDone ? `<div class="inb k-note"><b>Tu cuestionario está a medias</b><p>Sin él tendrás menos misiones. Son un par de minutos.</p><button class="btn gold wide" data-cq="resume">Completarlo ahora</button></div>` : '';
-  const ord = c.order ? `<div class="mis order"><div class="mis-h"><div><small>Orden del Presidente · aparte del camino</small><b>Registrad ${c.order.n} encuentros</b></div><em>+150 XP</em></div><p>Llevas ${c.order.got} de ${c.order.n}. El tiempo corre:</p>${barH(c.order.until - 7 * 60000 - (P.vOff || 0), c.order.until - (P.vOff || 0))}<div class="codein"><input class="field code3" id="cc0" inputmode="numeric" maxlength="3" placeholder="000"><button class="btn gold" data-ccode="0">Registrar</button></div></div>` : '';
+  const ord = c.order ? `<div class="mis order"><div class="mis-h"><div><small>Orden del Ojo · aparte del camino</small><b>Registrad ${c.order.n} encuentros</b></div><em>+150 XP</em></div><p>Llevas ${c.order.got} de ${c.order.n}. El tiempo corre:</p>${barH(c.order.until - 7 * 60000 - (P.vOff || 0), c.order.until - (P.vOff || 0))}<div class="codein"><input class="field code3" id="cc0" inputmode="numeric" maxlength="3" placeholder="000"><button class="btn gold" data-ccode="0">Registrar</button></div></div>` : '';
   const inf = c.isInf ? `<div class="inb k-inf"><b>🕵️ Eres el infiltrado</b><p>Solo tú lo sabes. Así se juega:</p><ol class="inf-steps"><li class="${c.infGot ? 'ok' : ''}"><b>Recoge tu encargo${c.infGot ? ' ✓' : ''}.</b> Ve a la Trastienda cuando quieras (no hay prisa hasta el Tribunal), mira el código del libro de firmas y escríbelo en «Club» → «La Trastienda». +120 XP.</li><li><b>Pasa desapercibido.</b> Haz tus misiones como siempre. No eres el único que va a la Trastienda.</li><li><b>Sobrevive al Tribunal.</b> Si el club no te vota a ti: +450 XP. Si te pillan, solo +50.</li></ol>${c.infGot ? '' : '<button class="btn gold wide" data-gotras="1">Ir a «La Trastienda» del expediente</button>'}</div>` : '';
   const pubI = P.club && P.club.inf; const hunt = !c.isInf && pubI && P.club.on ? `<div class="inb k-note"><b>🕵️ Hay un infiltrado en el club</b><p>Alguien recibe un encargo secreto. En el próximo Tribunal votaréis quién es: si aciertas, +200 XP.</p>${pubI.clues.length ? `<p><b>Pistas públicas:</b><br>${pubI.clues.map(x => 'El infiltrado ' + esc(x) + '.').join('<br>')}</p>` : ''}${c.clues.length ? `<p><b>Tus pistas privadas:</b><br>${c.clues.map(x => 'El infiltrado ' + esc(x) + '.').join('<br>')}</p>` : ''}<p class="muted">Más pistas: en «Fichas» → «Pista sobre el infiltrado» (6 fichas).</p></div>` : '';
   const clues = !hunt && c.clues.length ? `<div class="inb k-note"><b>Tus pistas sobre el infiltrado</b><p>${c.clues.map(x => 'El infiltrado ' + esc(x) + '.').join('<br>')}</p></div>` : '';
@@ -4722,7 +4740,7 @@ const secH = (k, t, h) => { const on = PH.more === k; return `<div class="acc ${
 function clubH(P, me, tOn = true){ const c = me.club;
   const tras = `<p class="muted">Dentro de la Trastienda hay un libro de firmas con un código que cambia cada minuto. Escríbelo aquí y elige qué haces.</p><input class="field code3" id="trasp" autocapitalize="characters" placeholder="T0000" value="${esc(PH.trasPre || '')}">
     ${c.isInf && !c.infGot ? '<button class="btn gold wide" data-tras="enc">Recoger mi encargo</button>' : ''}
-    ${!c.isInf ? '<p class="muted">Si te llega una oferta del Presidente, se firma con el código del libro: escríbelo en la oferta, en tu camino.</p>' : ''}`;
+    ${!c.isInf ? '<p class="muted">Si te llega una oferta del Ojo, se firma con el código del libro: escríbelo en la oferta, en tu camino.</p>' : ''}`;
   const achs = Object.entries(ACH).map(([k, [n, d]]) => `<div class="ach ${c.ach.includes(k) ? 'on' : ''}"><span>${c.ach.includes(k) ? '✓' : '·'}</span><div><b>${esc(n)}</b><small>${esc(d)}</small></div></div>`).join('');
   const st = c.st; const stats = `<div class="stats">${[['Minijuegos', st.games], ['Podios', st.pods], ['Victorias', st.wins], ['Misiones', st.miss], ['Contactos', st.met], ['Investigaciones', st.inv], ['Duelos ganados', st.duelW], ['Tratos', st.trades]].map(([a, b]) => `<div><b>${b}</b><small>${a}</small></div>`).join('')}</div>`;
   const hist = `<div class="hist">${c.hist.map(h => `<div><span>${esc(h.t)}</span><em>${h.xp ? (h.xp > 0 ? '+' : '') + h.xp + ' XP' : h.pr ? '+' + h.pr + ' ★' : ''}</em></div>`).join('') || '<p class="muted">Aún no hay movimientos.</p>'}</div>`;
@@ -4824,7 +4842,7 @@ async function printables(){ const w = window.open('', '_blank'); if (!w) return
   const cardH = CARDS.map(c => `<div class="card"><div class="cs">${seal}</div><small>Tarjeta secreta del club</small><b>${c.code}</b><p>Escribe este código en tu expediente,<br>en la pestaña «Código».<br>Solo vale una vez. Y quizá no sea buena idea contarlo…</p></div>`).join('');
   const tips = {salon: HIDE_TIPS.salon.slice(), cocina: HIDE_TIPS.cocina.slice(), tras: HIDE_TIPS.tras.slice()};
   const strip = TRAS_CODES.map((c, i) => `<div class="strip"><small>La Trastienda · tira ${i + 1}</small><b>${c}</b><span>Un solo uso</span></div>`).join('');
-  const bookH = `<section class="book"><div class="bk-h"><div class="bk-s">${seal}</div><div><h1>Libro de firmas de la Trastienda</h1><p>Arranca una tira solo cuando la necesites: para firmar una oferta del Presidente o si el club te encarga algo aquí. Escribe su código en tu expediente, en la pestaña «Código», y guárdatela. Cada código vale una sola vez: compartirlo no sirve de nada.</p></div></div><div class="strips">${strip}</div></section>`;
+  const bookH = `<section class="book"><div class="bk-h"><div class="bk-s">${seal}</div><div><h1>Libro de firmas de la Trastienda</h1><p>Arranca una tira solo cuando la necesites: para firmar una oferta del Ojo o si el club te encarga algo aquí. Escribe su código en tu expediente, en la pestaña «Código», y guárdatela. Cada código vale una sola vez: compartirlo no sirve de nada.</p></div></div><div class="strips">${strip}</div></section>`;
   const hostH = `<section class="host"><h1>Hoja del anfitrión · dónde esconder cada tarjeta</h1><p>Esconde cada tarjeta en su espacio (la sugerencia es orientativa). No sabrás qué contiene cada una, así que puedes jugar tranquilo; eso sí, como anfitrión no podrás canjearlas: son para tus invitados.</p>
     <table><tr><th>#</th><th>Código</th><th>Espacio</th><th>Sugerencia</th></tr>${CARDS.map(c => `<tr><td>${c.n}</td><td><b>${c.code}</b></td><td>${SPACES[c.where]}</td><td>${tips[c.where].shift() || '—'}</td></tr>`).join('')}</table>
     <p class="pw">Deja el libro de firmas (las tiras recortadas o la hoja entera) dentro de la Trastienda, a la vista pero lejos de la puerta. Hay ${TRAS_CODES.length} tiras: sobran para toda la noche.</p></section>`;
@@ -4854,7 +4872,7 @@ function hostLinkOverlay(){ const el = ovEl(); const url = linkFor('p', E.ctx, {
   el.onclick = e => { if (e.target.closest('[data-hl]')) el.remove(); }; }
 
 // ---- el Presidente en la sombra (móvil del anfitrión) ----
-const modeSel = P => { const md = P.club.presMode; const opts = [['pres', '🎩 Presidente en la sombra', 'Juegas y además mueves los hilos en secreto. Al final, el club intenta adivinar quién eras.'], ['play', '🙂 Jugar como uno más', 'Sin papel especial: compites como todos.'], ['direct', '🎛️ Solo dirigir', 'No juegas: no cuentas en misiones, votos ni clasificaciones.']];
+const modeSel = P => { const md = P.club.presMode === 'pres' ? 'play' : P.club.presMode; const opts = [['play', '🙂 Jugar como uno más', 'Sin papel especial: compites como todos.'], ['direct', '🎛️ Solo dirigir', 'No juegas: no cuentas en misiones, votos ni clasificaciones.']];
   return `<div class="modesel"><b>Tu papel esta noche</b>${opts.map(([k, t, d]) => `<button class="msel ${md === k ? 'on' : ''}" data-hop="presmode" data-mode="${k}"><span>${t}</span><small>${d}</small></button>`).join('')}</div>`; };
 function directH(P, me){ return `<div class="pc exp"><div class="expcard"><div class="exp-st">ANFITRIÓN</div><div class="exp-r"><span class="exp-ic">🎛️</span><div><small>Esta noche</small><b>Diriges el club</b></div></div><p class="gate">No juegas: no cuentas en misiones, votaciones ni clasificaciones.</p></div>
   ${P.phase === 'lobby' ? modeSel(P) + `<button class="btn gold wide" data-hop="start" ${P.players.length < 4 ? 'disabled' : ''}>Abrir la noche</button>` : '<p class="muted center">Usa el menú ⋯ para manejar la noche.</p>'}</div>`; }
@@ -5012,7 +5030,7 @@ function bookCode(room, t){ const m = Math.floor(t / BOOK_MIN); let h = 21661362
     else ok = _tu(S, pid, code);
     if (ok){ const mm = cm(S, pid); if (mm) mm.signs = (mm.signs || 0) + 1; bookLog(S, C.bookCtx, pid); } return ok; }; }
 function bookLog(S, a, pid){ const C = S.club; C.book ||= []; const w = a && a.a === 'tras' ? a.what : 'room';
-  const t = w === 'sign' ? 'Alguien ha firmado un trato con el Presidente' : w === 'enc' ? 'Alguien ha entrado en la Trastienda' : w === 'chivato' ? 'Alguien ha dejado un chivatazo en el buzón' : w === 'room' ? 'Alguien ha dejado su marca en el libro' : 'Alguien ha entrado en la Trastienda';
+  const t = w === 'sign' ? 'Alguien ha firmado un trato con el Ojo' : w === 'enc' ? 'Alguien ha entrado en la Trastienda' : w === 'chivato' ? 'Alguien ha dejado un chivatazo en el buzón' : w === 'room' ? 'Alguien ha dejado su marca en el libro' : 'Alguien ha entrado en la Trastienda';
   C.book.unshift({at: NOW(), t}); C.book = C.book.slice(0, 30); }
 { const _ca = clubAct; clubAct = function(S, pid, a){ if (S.club) S.club.bookCtx = a; try { return _ca(S, pid, a); } finally { if (S.club) S.club.bookCtx = null; } }; }
 
@@ -5192,12 +5210,12 @@ function quickDone(S, pid){ const Q = S.club.quick; if (!Q || Q.st !== 'on' || Q
 // ---------- roles secretos y rival ----------
 const ROLES = [
   {k: 'cotilla', n: 'La Cotilla', ic: '👁️', v: 'El libro de firmas te chiva: te llegan con nombre las 4 primeras firmas que se hagan desde ahora.', o: 'Firma 3 veces en el libro de la Trastienda.', ok: (S, m) => (m.signs || 0) >= 3},
-  {k: 'tahur', n: 'El Tahúr', ic: '🃏', v: 'En el casino, la primera mano que pierdas en cada apertura no te cuesta nada.', o: 'Llega a tener 30 fichas.', ok: (S, m, pid) => S.players[pid].fichas >= 30},
-  {k: 'detective', n: 'El Detective', ic: '🔍', v: 'Cada vez que entra un infiltrado, recibes una pista gratis.', o: 'Vota bien al infiltrado en un Tribunal.', ok: (S, m) => (m.st.tribOk || 0) >= 1},
+  {k: 'tahur', n: 'El Tahúr', ic: '🃏', v: 'En el casino, la primera mano que pierdas en cada apertura no te cuesta nada. Y te avisan de quién gana mucho allí.', o: 'Llega a tener 30 fichas.', ok: (S, m, pid) => S.players[pid].fichas >= 30},
+  {k: 'detective', n: 'El Detective', ic: '🔍', v: 'Recibes una pista gratis cuando aparece cada intruso, y otra sobre quién provocó cada redada.', o: 'Vota bien a un intruso en un Tribunal.', ok: (S, m) => (m.st.tribOk || 0) >= 1},
   {k: 'diplo', n: 'El Diplomático', ic: '🕊️', v: 'Tu voto en el Tribunal cuenta doble.', o: 'Sella dos alianzas.', ok: (S, m, pid) => Object.values(S.club.alli || {}).filter(A => A.st === 'on' && (A.a === pid || A.b === pid)).length >= 2},
-  {k: 'rrpp', n: 'El Relaciones Públicas', ic: '🥂', v: 'Ganas 30 XP extra por cada persona nueva que conozcas.', o: 'Conoce a 10 miembros del club.', ok: (S, m) => Object.keys(m.st.met).length >= Math.min(10, memberIds(S).length - 1)},
-  {k: 'super', n: 'El Superviviente', ic: '🛡️', v: 'La purga no puede tocarte.', o: 'Llega a La Élite.', ok: (S, m) => m.rank >= 4},
-  {k: 'papa', n: 'El Paparazzi', ic: '📸', v: 'Tus misiones de foto dan el doble de XP.', o: 'Sube 4 fotos al álbum.', ok: (S, m) => (m.st.fotos || 0) >= 4},
+  {k: 'rrpp', n: 'El Relaciones Públicas', ic: '🥂', v: 'Ganas 30 XP extra por cada persona nueva que conozcas. Y te avisan de quién pide códigos a los de rango alto.', o: 'Conoce a 10 miembros del club.', ok: (S, m) => Object.keys(m.st.met).length >= Math.min(10, memberIds(S).length - 1)},
+  {k: 'super', n: 'El Superviviente', ic: '🛡️', v: 'Ni la purga ni las redadas pueden tocarte.', o: 'Llega a La Élite.', ok: (S, m) => m.rank >= 4},
+  {k: 'papa', n: 'El Paparazzi', ic: '📸', v: 'Tienes misiones de foto exclusivas que dan pistas sobre los intrusos, y tus fotos dan el doble de XP.', o: 'Sube 4 fotos al álbum.', ok: (S, m) => (m.st.fotos || 0) >= 4},
 ];
 const roleOf = (S, pid) => { const m = cm(S, pid); return m && m.role ? ROLES.find(R => R.k === m.role.k) : null; };
 function rolesAssign(S){ const C = S.club; const PR = presPid(S); const ids = memberIds(S).filter(p => p !== PR && !cm(S, p).role); if (!ids.length) return;
@@ -5307,6 +5325,167 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
     if (k === 'espiar') a.to = $('#b2_espiar').value; if (k === 'msg'){ a.txt = $('#b2_msg').value; if (!a.txt.trim()) return toast('Escribe el mensaje'); $('#b2_msg').value = ''; } if (k === 'reto'){ a.to = $('#b2_reto_to').value; a.r = $('#b2_reto_r').value; }
     if (k === 'redada' && !PH.redConf){ PH.redConf = true; setTimeout(() => PH.redConf = false, 3000); return toast('Pulsa otra vez para llamar a la policía (10 fichas)'); }
     phSend(a); } });
+
+// =====================================================================
+// LOS INTRUSOS Y EL OJO
+// El Agente (desde el principio, se revela tras la 2.ª convocatoria) y el
+// Vengador (aparece tras el Intermedio). El narrador es el Ojo de la Corporación.
+// =====================================================================
+function IN(S){ const C = S.club; return C.intr ||= {ag: {pid: null, on: false, caught: false, done: false, codes: [], signs: 0, cas: false, foto: false, pub: 0, priv: {}, clues: []}, ven: {pid: null, on: false, caught: false, done: false, hits: 0, used: {}, pub: 0, priv: {}, clues: []}, leaks: {}}; }
+const isAlvaro = P => /^[aá]lvaro\b/i.test(String(P && P.name || '').trim());
+function intrPick(S, ex = []){ const c = memberIds(S).filter(p => { const P = S.players[p]; return P && !P.host && !isAlvaro(P) && !ex.includes(p) && !cm(S, p).fallen; });
+  const withQ = c.filter(p => Object.keys(cm(S, p).q || {}).filter(k => !k.startsWith('_')).length >= 3); return pick(withQ.length ? withQ : c) || null; }
+const intrName = S => p => S.players[p] ? S.players[p].name : '';
+const IKEY = {ag: 'el Agente', ven: 'el Vengador'};
+function intrClues(S, k){ const T = IN(S), X = T[k]; if (!X.clues.length && X.pid) X.clues = infClues(S, X.pid).map(c => (k === 'ag' ? 'El Agente ' : 'El Vengador ') + c + '.'); return X.clues; }
+function privClue(S, p, k){ const T = IN(S), X = T[k]; const L = intrClues(S, k); X.priv[p] = (X.priv[p] || X.pub); const i = Math.max(X.priv[p], X.pub); if (i >= L.length) return null; X.priv[p] = i + 1; const c = L[i]; (cm(S, p).clues ||= []).push(c); return c; }
+// coartadas: varios miembros reciben una misión normal que les manda a la Trastienda
+function decoys(S, ex){ const pool = shuffle(memberIds(S).filter(p => !ex.includes(p) && isOn(S, p) && !cm(S, p).fallen)); const free = pool.filter(p => !cm(S, p).side || cm(S, p).side.st !== 'active'); const busy = pool.filter(p => !free.includes(p) && !/^f|pzz/.test(cm(S, p).side.ty));
+  free.concat(busy).slice(0, Math.min(4, Math.max(3, Math.floor(pool.length / 3)))).forEach(p => { const m = cm(S, p); m.side = mkMission(S, p, 'room'); m.sideAt = NOW(); flash(S, p, '📜 Nueva misión secundaria: visita la Trastienda'); }); }
+
+// ---------- el Agente ----------
+function agAssign(S){ const T = IN(S); if (T.ag.pid || memberIds(S).length < 4) return; const p = intrPick(S); if (!p) return; T.ag.pid = p; const m = cm(S, p); m.role = {k: 'intruso', done: true}; m.inbox = m.inbox.filter(i => !/Tu rol secreto/.test(i.t || ''));
+  pushInbox(S, p, {k: 'note', t: '🕶️ Eres el Agente', d: 'Trabajas para las fuerzas especiales. Te has infiltrado en la Corporación para reunir pruebas contra ella. Nadie sabe que existes… todavía. Tu camino es tu tapadera: síguelo como si nada. Tus 4 pruebas están arriba de tu camino. Si las completas sin que te desenmascaren, en la ceremonia detendrás al aspirante con más poder y le dejarás fuera de la final.'}); }
+function agReveal(S){ const T = IN(S); agAssign(S); const A = T.ag; if (!A.pid || A.on) return false; A.on = true; A.pub = 1; const c = intrClues(S, 'ag')[0] || 'está en esta sala.';
+  annc(S, {k: 'msg', ic: '🕶️', h: 'Hay un agente infiltrado', p: `Las fuerzas especiales han colado a uno de los suyos en la Corporación. Ha venido a destruirnos. ${c}`, say: `Escuchadme bien. Hay un agente infiltrado entre vosotros. Trabaja para las fuerzas especiales… y ha venido a destruirnos. Primera pista. ${c}`, ms: 17000});
+  feed(S, 'El Ojo revela que hay un agente infiltrado', '🕶️'); memberIds(S).forEach(p => { if (p !== A.pid) flash(S, p, '🕶️ Hay un agente infiltrado. Las pistas están arriba de tu camino'); });
+  memberIds(S).forEach(p => { const R = roleOf(S, p); if (R && R.k === 'detective'){ const x = privClue(S, p, 'ag'); if (x) pushInbox(S, p, {k: 'note', t: '🔍 Pista del Detective', d: x}); } });
+  decoys(S, [A.pid]); flash(S, A.pid, '🕶️ El Ojo sabe que estás aquí. Ahora te buscan: cuidado'); return true; }
+function agCheck(S){ const A = IN(S).ag; if (!A.pid || A.done || A.caught) return; if (A.codes.length >= 3 && A.signs >= 2 && A.cas && A.foto){ A.done = true; giveXP(S, A.pid, 200, 'Operación del Agente completada');
+    pushInbox(S, A.pid, {k: 'note', t: '🕶️ Operación completada', d: 'Tienes todas las pruebas. Si llegas a la ceremonia sin que te desenmascaren, las fuerzas especiales entrarán y detendrán al aspirante con más poder.'}); } }
+
+// ---------- el Vengador ----------
+function venStart(S){ const T = IN(S); if (T.ven.pid || memberIds(S).length < 6) return false; const p = intrPick(S, [T.ag.pid]); if (!p) return false; const V = T.ven; V.pid = p; V.on = true; V.pub = 1; const m = cm(S, p); m.role = {k: 'intruso', done: true}; m.inbox = m.inbox.filter(i => !/Tu rol secreto/.test(i.t || ''));
+  pushInbox(S, p, {k: 'note', t: '🔥 ¿Recuerdas lo que te hicieron?', d: 'Hace años la Corporación te lo quitó todo. Hoy has vuelto. Ahora eres el Vengador y tu papel anterior queda anulado. Tus herramientas, gratis y arriba de tu camino: llamar a la policía, robar fichas y mandar mensajes anónimos (una vez por bloque cada una), y elegir al próximo señalado. Objetivo: 3 golpes con éxito sin que te desenmascaren. Si lo consigues, en la ceremonia los tres aspirantes más poderosos perderán 300 XP cada uno.'});
+  const c = intrClues(S, 'ven')[0] || 'está en esta sala.';
+  annc(S, {k: 'msg', ic: '🔥', h: 'Alguien ha vuelto', p: `Un antiguo miembro de la Corporación ha regresado. Se lo quitamos todo… y quiere venganza. ${c}`, say: `Un antiguo miembro ha vuelto. La Corporación se lo quitó todo… y ahora quiere venganza. Está entre vosotros. Primera pista. ${c}`, ms: 17000});
+  feed(S, 'Un antiguo miembro ha vuelto para vengarse', '🔥'); memberIds(S).forEach(q => { if (q !== p) flash(S, q, '🔥 Un antiguo miembro ha vuelto. Mira las pistas arriba de tu camino'); });
+  memberIds(S).forEach(q => { const R = roleOf(S, q); if (R && R.k === 'detective'){ const x = privClue(S, q, 'ven'); if (x) pushInbox(S, q, {k: 'note', t: '🔍 Pista del Detective', d: x}); } }); return true; }
+function venHit(S, why){ const V = IN(S).ven; if (!V.pid || V.caught || V.done) return; V.hits++; flash(S, V.pid, `🔥 Golpe ${V.hits} de 3: ${why}`); if (V.hits >= 3){ V.done = true; giveXP(S, V.pid, 200, 'Venganza preparada');
+    pushInbox(S, V.pid, {k: 'note', t: '🔥 Venganza preparada', d: 'Ya tienes tus tres golpes. Si llegas a la ceremonia sin que te desenmascaren, los tres aspirantes más poderosos perderán 300 XP delante de todos.'}); } }
+const blockKey = S => (S.club.dir ? S.club.dir.bi : 0);
+function venAct(S, pid, a){ const T = IN(S), V = T.ven; if (V.pid !== pid || !V.on) return false; if (V.caught){ flash(S, pid, 'Te han desenmascarado: ya no puedes sabotear', false); return true; } const k = a.do + ':' + blockKey(S); const nm = intrName(S);
+  if (a.do !== 'senal' && V.used[k]){ flash(S, pid, 'Ya lo has usado en este momento de la noche. Espera al siguiente bloque', false); return true; }
+  if (a.do === 'raid'){ if (!raidOk(S)){ flash(S, pid, 'Ahora no: solo en Operaciones o Intermedio, sin otros eventos', false); return true; } V.used[k] = 1; raidStart(S, pid); flash(S, pid, '🚨 Has llamado a la policía. Tú te libras.'); return true; }
+  if (a.do === 'rob'){ const t = a.to; if (!S.players[t] || t === pid || !cm(S, t)) return false; const n = Math.min(3, S.players[t].fichas); if (!n){ flash(S, pid, 'No tiene fichas que robar', false); return true; } V.used[k] = 1; S.players[t].fichas -= n; S.players[pid].fichas += n;
+    flash(S, t, `💸 ¡Te han robado ${n} fichas! Alguien de esta sala…`, false); pushInbox(S, t, {k: 'note', t: '💸 Te han robado', d: `Alguien te ha quitado ${n} fichas sin que te dieras cuenta. El Ojo sabe quién ha sido. Tú todavía no.`}); feed(S, 'Alguien ha robado fichas a un miembro', '💸'); venHit(S, `robo a ${nm(t)}`); return true; }
+  if (a.do === 'msg'){ const t = String(a.txt || '').replace(/\s+/g, ' ').trim().slice(0, 90); if (t.length < 3) return false; V.used[k] = 1; annc(S, {k: 'msg', ic: '✉️', h: 'Mensaje anónimo', p: `«${t}»`, say: 'Un mensaje anónimo para la Corporación.', ms: 9000}); feed(S, 'Alguien ha mandado un mensaje anónimo', '✉️'); flash(S, pid, 'Mensaje enviado'); return true; }
+  if (a.do === 'senal'){ if (!cm(S, a.to) || a.to === pid) return false; const D = S.club.dir; if (!D.blocks.slice(D.bi + 1).some(b => b.k === 'senal')){ flash(S, pid, 'Ya no queda ningún miembro señalado esta noche', false); return true; } S.club.nextAcc = a.to; S.club.venAcc = a.to; flash(S, pid, `⚖️ El próximo señalado será ${nm(a.to)}`); return true; }
+  return false; }
+
+// ---------- enganches ----------
+{ const _ns2 = nocheStart; nocheStart = function(S){ _ns2(S); try { IN(S); agAssign(S); } catch (e) { console.warn(e); } }; }
+{ const _ep = eventPresident; eventPresident = function(S){ if (!agReveal(S)) _ep(S); }; }
+{ const _nbk2 = nextBlock; nextBlock = function(S){ _nbk2(S); const C = S.club; if (!C || !C.dir) return; const B = C.dir.blocks[C.dir.bi]; if (!B) return; if (B.ven) venStart(S); if (B.k === 'inter') intrPublic(S); if (B.k === 'cere' || B.k === 'purga') C.whAt = 0; }; }
+function intrPublic(S){ const T = IN(S); let out = false; ['ag', 'ven'].forEach(k => { const X = T[k]; if (!X.on || X.caught) return; const L = intrClues(S, k); if (X.pub >= L.length) return; const c = L[X.pub]; X.pub++; out = true;
+    annc(S, {k: 'msg', ic: k === 'ag' ? '🕶️' : '🔥', h: `Nueva pista sobre ${IKEY[k]}`, p: c, say: `El Ojo ha visto algo. ${c}`, ms: 10000}); }); return out; }
+{ const _ipc = infPublicClue; infPublicClue = function(S){ if (!intrPublic(S)) _ipc(S); }; }
+{ const _ts = tribStart; tribStart = function(S, B){ const T = IN(S); const tg = ['ag', 'ven'].filter(k => T[k].on && !T[k].caught && T[k].pid); if (!tg.length) return nextBlock(S);
+    const q = tg.length === 2 ? '¿Quién es el Agente… o el Vengador?' : tg[0] === 'ag' ? '¿Quién es el Agente?' : '¿Quién es el Vengador?'; const clues = []; tg.forEach(k => clues.push(...intrClues(S, k).slice(0, T[k].pub)));
+    S.phase = 'club'; S.club.v = voteBox(S, {k: 'trib', B, talk: 70000, voteMs: 30000, cands: memberIds(S), title: 'El Tribunal', q, clues}); S.ends = S.club.v.t1; }; }
+{ const _rv2 = resolveVote; resolveVote = function(S, V){ if (V.k !== 'trib') { const r = _rv2(S, V); if (V.k === 'senal' && V.cond && S.club.venAcc && V.acc === S.club.venAcc){ S.club.venAcc = null; venHit(S, `${intrName(S)(V.acc)} ha sido condenado`); } return r; }
+    const T = IN(S); V.dbl = {}; Object.keys(V.votes).forEach(p => { const m = cm(S, p); const R = roleOf(S, p); if (m && (m.dblVote || (R && R.k === 'diplo'))){ V.dbl[p] = 1; m.dblVote = false; } });
+    const c = tally(V); V.tally = c; const max = Math.max(0, ...Object.values(c)); const top = Object.keys(c).filter(k => c[k] === max); const who = top.length === 1 && max > 0 ? top[0] : null;
+    const tg = ['ag', 'ven'].filter(k => T[k].on && !T[k].caught && T[k].pid); const hit = tg.find(k => T[k].pid === who);
+    Object.entries(V.votes).forEach(([p, x]) => { const k = tg.find(k => T[k].pid === x); if (!k || p === x) return; giveXP(S, p, 200, 'Votaste a un intruso'); cm(S, p).st.tribOk = (cm(S, p).st.tribOk || 0) + 1;
+      if (p === T.ag.pid && k === 'ven') giveXP(S, p, 250, 'El Agente ha cazado al Vengador'); if (p === T.ven.pid && k === 'ag') giveXP(S, p, 250, 'El Vengador ha delatado al Agente'); });
+    if (hit){ T[hit].caught = true; V.inf = who; V.caught = true; V.infWho = hit === 'ag' ? 'Era el Agente' : 'Era el Vengador'; cm(S, who).unmasked = hit; giveXP(S, who, 50, 'Desenmascarado');
+      feed(S, `El Tribunal desenmascara a ${intrName(S)(who)}: ${V.infWho.toLowerCase()}`, hit === 'ag' ? '🕶️' : '🔥'); flash(S, who, 'Te han desenmascarado. Tu operación ha fracasado y no podrás ser finalista', false); }
+    else { V.inf = null; V.caught = false; tg.forEach(k => { giveXP(S, T[k].pid, 300, 'Has escapado del Tribunal'); cm(S, T[k].pid).st.fooled = (cm(S, T[k].pid).st.fooled || 0) + 1; }); feed(S, 'El Tribunal ha fallado: los intrusos siguen sueltos', '⚖️'); } }; }
+// pruebas del Agente y chivatazos de los roles
+const leak = (S, k, lim) => { const L = IN(S).leaks; L[k] = (L[k] || 0) + 1; return L[k] <= lim; };
+{ const _mt2 = meet; meet = function(S, a, b){ const first = _mt2(S, a, b); const T = IN(S), A = T.ag; const mb = cm(S, b);
+    if (A.pid === a && mb && mb.rank >= 2 && !A.codes.includes(b)){ A.codes.push(b); flash(S, a, `🕶️ Prueba: código de rango alto (${A.codes.length} de 3)`); agCheck(S); }
+    if (first && A.on && mb && mb.rank >= 2) memberIds(S).forEach(p => { const R = roleOf(S, p); if (!R || R.k !== 'rrpp' || p === a || !leak(S, 'rrpp' + p, 6)) return; pushInbox(S, p, {k: 'note', t: '🥂 Movimientos en la Élite', d: `${intrName(S)(a)} acaba de registrar el código de ${intrName(S)(b)} (${RANKS[mb.rank].n}).`}); });
+    return first; }; }
+{ const _bl2 = bookLog; bookLog = function(S, a, pid){ _bl2(S, a, pid); const A = IN(S).ag; if (pid && A.pid === pid && A.signs < 2){ A.signs++; flash(S, pid, `🕶️ Prueba: firma en el libro (${A.signs} de 2)`); agCheck(S); } }; }
+{ const _cmh2 = casMisHand; casMisHand = function(S, g){ _cmh2(S, g); const X = S.cas, T = IN(S), A = T.ag; if (!X) return; X.tleak ||= {};
+    if (A.pid && !A.cas && (X.net || {})[A.pid] >= 10){ A.cas = true; flash(S, A.pid, '🕶️ Prueba: +10 fichas en el casino'); agCheck(S); }
+    if (A.on) Object.entries(X.net || {}).forEach(([p, n]) => { if (n < 8 || X.tleak[p]) return; X.tleak[p] = 1; memberIds(S).forEach(q => { const R = roleOf(S, q); if (!R || R.k !== 'tahur' || q === p || !leak(S, 'tah' + q, 5)) return; pushInbox(S, q, {k: 'note', t: '🃏 Alguien gana mucho', d: `${intrName(S)(p)} lleva +${n} fichas en el casino en esta apertura.`}); }); }); }; }
+{ const _re = raidEnd; raidEnd = function(S){ const R = S.club.raid; _re(S); const T = IN(S);
+    (R.res.miss || []).slice().forEach(p => { const Rl = roleOf(S, p); if (Rl && Rl.k === 'super'){ giveXP(S, p, R.res.miss.indexOf(p) >= 0 ? 100 : 0, 'El Superviviente no cae'); flash(S, p, '🛡️ La policía no puede contigo'); R.res.miss = R.res.miss.filter(x => x !== p); } });
+    if (R.by && R.by === T.ven.pid && R.res.miss.length) venHit(S, `la policía ha pillado a ${R.res.miss.length}`);
+    memberIds(S).forEach(p => { const Rl = roleOf(S, p); if (!Rl || Rl.k !== 'detective') return; let d;
+      if (R.by && R.by === T.ven.pid){ d = privClue(S, p, 'ven') || 'La pidió el Vengador. No hay más pistas nuevas.'; } else if (R.by){ const c = infClues(S, R.by)[0]; d = c ? 'La redada la pidió alguien que ' + c + '.' : 'La pidió alguien de la sala.'; } else d = 'Esta redada no la pidió nadie de la sala: fue cosa del Ojo.';
+      pushInbox(S, p, {k: 'note', t: '🔍 Sobre la redada', d}); }); }; }
+{ const _ca3 = clubAct; clubAct = function(S, pid, a){ if (a.a === 'ven') return venAct(S, pid, a);
+    if (a.a === 'agfoto'){ const A = IN(S).ag; if (A.pid !== pid || A.foto || !PF_OK(a.img)) return false; A.foto = true; flash(S, pid, '🕶️ Prueba: foto del libro de firmas'); agCheck(S); return true; }
+    return _ca3(S, pid, a); }; }
+// el Paparazzi: misiones de foto exclusivas que dan pistas
+const PZZ = ['Fotografía a alguien saliendo de la Trastienda', 'Haz una foto de quien esté jugando en el casino ahora mismo', 'Pilla a alguien mirando el móvil a escondidas', 'Foto de dos personas cuchicheando', 'Fotografía a alguien que parezca nervioso', 'Haz una foto del rincón más tranquilo de la casa… y de quien esté allí'];
+{ const _md3 = misDone; misDone = function(S, pid, mis, extra = ''){ const r = _md3(S, pid, mis, extra); if (mis && mis.ty === 'pzz'){ const T = IN(S); const ks = ['ag', 'ven'].filter(k => T[k].on && !T[k].caught); const k = pick(ks); const c = k ? privClue(S, pid, k) : null; pushInbox(S, pid, {k: 'note', t: '📸 Lo que revela tu foto', d: c || 'Esta vez la foto no revela nada nuevo.'}); } return r; }; }
+// pista del mercado negro: ahora sobre los intrusos
+{ const M0 = MARKET.find(x => x.k === 'clue'); if (M0){ M0.n = 'Pista sobre los intrusos'; M0.d = 'Una pista privada sobre el Agente o el Vengador.';
+    M0.can = (S, pid) => { const T = IN(S); const ks = ['ag', 'ven'].filter(k => T[k].on && !T[k].caught && T[k].pid !== pid); if (!ks.length) return 'Todavía no hay ningún intruso al descubierto'; return ks.some(k => intrClues(S, k).length > Math.max(T[k].priv[pid] || 0, T[k].pub)) ? true : 'Ya no quedan pistas que comprar'; };
+    M0.buy = (S, pid) => { const T = IN(S); const ks = shuffle(['ag', 'ven'].filter(k => T[k].on && !T[k].caught && T[k].pid !== pid)); for (const k of ks){ const c = privClue(S, pid, k); if (c){ pushInbox(S, pid, {k: 'note', t: '🔍 Pista comprada', d: c}); return; } } }; } }
+// el Ojo susurra durante las operaciones
+const OJO_LINES = ['La Corporación lo ve todo.', 'Alguien en esta sala está mintiendo.', 'No os fiéis de quien sonríe demasiado.', 'Sigo aquí. Siempre sigo aquí.', 'Os estoy observando.', 'Alguien acaba de cometer un error.', 'El poder no se pide. Se arrebata.', 'Hay secretos que pesan más que las fichas.'];
+const OJO_NAMED = ['{n}… te estoy viendo.', '{n}… ¿de verdad crees que nadie se ha dado cuenta?', '{n}… la Corporación no olvida.'];
+{ const _ct3 = clubTick; clubTick = function(S){ let ch = _ct3(S); const C = S.club; if (!C || !C.on) return ch; const v = vnow(S); const T = IN(S);
+    const okb = S.phase === 'club' && C.v && ['ops', 'inter'].includes(C.v.k) && !C.raid && !C.quick;
+    if (okb && !C.whAt) C.whAt = v + (180 + Math.random() * 240) * 1000;
+    if (okb && C.whAt && v >= C.whAt){ C.whAt = v + (240 + Math.random() * 240) * 1000; const ids = memberIds(S).filter(p => !S.players[p].bot); const named = ids.length && Math.random() < .45;
+      C.wh = {id: C.nid++, at: NOW(), t: named ? pick(OJO_NAMED).replace('{n}', S.players[pick(ids)].name) : pick(OJO_LINES)}; ch = true; }
+    memberIds(S).forEach(p => { const R = roleOf(S, p); const m = cm(S, p); if (!R || R.k !== 'papa' || !T.ag.on || m.side || NOW() - (m.sideAt || 0) < 60000) return; const id = C.nid++; m.side = {id, ty: 'pzz', gate: false, cat: 'Paparazzi', ic: '📸', xp: 120, tries: 0, at: NOW(), st: 'active', need: 'photo', t: pick(PZZ), d: 'Misión exclusiva del Paparazzi. Haz la foto sin que se note: te revelará algo sobre los intrusos.'}; ch = true; });
+    return ch; }; }
+// la ceremonia: finales de los intrusos
+{ const _cs2 = cereStart; cereStart = function(S, B){ const T = IN(S); const nm = intrName(S); const saved = {};
+    try { const A = T.ag, V = T.ven; const L = [];
+      if (A.pid){ L.push(`${nm(A.pid)} era el Agente${A.caught ? ' (desenmascarado)' : A.done ? ' (operación completada)' : ' (no completó su operación)'}`); }
+      if (V.pid){ L.push(`${nm(V.pid)} era el Vengador${V.caught ? ' (desenmascarado)' : V.done ? ' (venganza cumplida)' : ' (no logró su venganza)'}`); }
+      if (L.length) annc(S, {k: 'msg', ic: '👁️', h: 'Los intrusos de la noche', p: L.join(' · '), say: 'Antes de la ceremonia, el Ojo revela quiénes eran los intrusos.', ms: 14000});
+      if (V.pid && V.done && !V.caught){ const top = memberIds(S).filter(p => p !== V.pid).sort((a, b) => clubScore(S, b) - clubScore(S, a)).slice(0, 3); top.forEach(p => giveXP(S, p, -300, 'La venganza del Vengador')); giveXP(S, V.pid, 400, 'Venganza cumplida');
+        annc(S, {k: 'msg', ic: '🔥', h: 'El Vengador se cobra su venganza', p: `${nm(V.pid)} ha cumplido su venganza sin que nadie le descubriera. Los tres aspirantes más poderosos pierden 300 XP: ${top.map(nm).join(', ')}.`, say: `El Vengador se cobra su venganza. ${top.map(nm).join(', ')}… perdéis trescientos puntos de experiencia.`, ms: 15000}); }
+      if (A.pid && A.done && !A.caught){ const elig = memberIds(S).filter(p => p !== A.pid && !cm(S, p).fallen && !cm(S, p).unmasked).sort((a, b) => cm(S, b).rank - cm(S, a).rank || clubScore(S, b) - clubScore(S, a)); const x = elig[0];
+        giveXP(S, A.pid, 500, 'Operación del Agente');
+        if (x){ cm(S, x).arrested = true; annc(S, {k: 'msg', ic: '🕶️', h: 'El Agente desmantela la Corporación', p: `${nm(A.pid)} ha completado su operación sin que nadie le descubriera. Las fuerzas especiales detienen a ${nm(x)}, el aspirante con más poder: queda fuera de la final.`, say: `Las fuerzas especiales entran en la Corporación. ${nm(x)}… quedas detenido. No optarás a la silla.`, ms: 16000}); } }
+      memberIds(S).forEach(p => { const m = cm(S, p); if (m.unmasked || m.arrested){ saved[p] = m.fallen; m.fallen = true; } }); } catch (e) { console.warn(e); }
+    const r = _cs2(S, B); Object.entries(saved).forEach(([p, f]) => { if (!cm(S, p).arrested) cm(S, p).fallen = f; }); return r; }; }
+{ const _hc2 = hostCmd; hostCmd = function(S, op, a = {}){ if (op === 'nev' && a.ev === 'agente'){ if (!S.club || !S.club.on) return false; return agReveal(S); } if (op === 'nev' && a.ev === 'vengador'){ if (!S.club || !S.club.on) return false; return venStart(S); }
+    if (op === 'nev' && a.ev === 'clue'){ return !!(S.club && S.club.on && intrPublic(S)); } return _hc2(S, op, a); }; }
+
+// ---------- lo que se publica ----------
+{ const _pv3 = pubView; pubView = function(S){ const P = _pv3(S); const C = S.club; if (C && C.intr){ const T = C.intr; const nm = intrName(S); const pub = k => { const X = T[k]; return X.on ? {on: true, caught: X.caught, name: X.caught ? nm(X.pid) : null, clues: intrClues(S, k).slice(0, X.pub)} : null; };
+    P.intr = {ag: pub('ag'), ven: pub('ven')}; } if (C && C.wh) P.wh = C.wh; return P; }; }
+{ const _mv6 = meView; meView = function(S, pid){ const M = _mv6(S, pid); const C = S.club; if (!M || M.gone || !C || !C.intr) return M; const T = C.intr; const nm = intrName(S);
+    if (T.ag.pid === pid) M.iam = {k: 'ag', on: T.ag.on, caught: T.ag.caught, done: T.ag.done, codes: T.ag.codes.length, signs: T.ag.signs, cas: T.ag.cas, foto: T.ag.foto};
+    if (T.ven.pid === pid){ const bk = blockKey(S); M.iam = {k: 'ven', caught: T.ven.caught, done: T.ven.done, hits: T.ven.hits, used: ['raid', 'rob', 'msg'].filter(k => T.ven.used[k + ':' + bk]), acc: C.venAcc ? nm(C.venAcc) : null, canRaid: raidOk(S)}; }
+    if (M.club) M.club.clues = (cm(S, pid).clues || []).slice(-6); return M; }; }
+
+// ---------- tele ----------
+const OJO_SVG = `<svg class="ojo-svg" viewBox="0 0 200 120"><defs><radialGradient id="ojir" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f6e3a8"/><stop offset=".55" stop-color="#c9a45c"/><stop offset="1" stop-color="#6b4a16"/></radialGradient><clipPath id="ojclip"><path class="ojo-lid" d="M8 60 Q100 -8 192 60 Q100 128 8 60Z"/></clipPath></defs><path d="M8 60 Q100 -8 192 60 Q100 128 8 60Z" fill="#0b0906" stroke="#c9a45c" stroke-width="3"/><g clip-path="url(#ojclip)"><g class="ojo-iris"><circle cx="100" cy="60" r="34" fill="url(#ojir)"/><circle cx="100" cy="60" r="15" fill="#050403"/><circle cx="92" cy="51" r="5" fill="#fff8e6" opacity=".85"/></g></g><path class="ojo-blink" d="M8 60 Q100 -8 192 60 Q100 -8 8 60Z" fill="#050403"/></svg>`;
+function infBoxIntr(P){ const I = P.intr; if (!I || (!I.ag && !I.ven)) return ''; const row = (k, X) => X ? `<div class="ib-r"><b>${k === 'ag' ? '🕶️ El Agente' : '🔥 El Vengador'}</b>${X.caught ? `<span class="ib-c">Desenmascarado: ${esc(X.name)}</span>` : `<ul>${X.clues.map(c => `<li>${esc(c)}</li>`).join('')}</ul>`}</div>` : '';
+  return `<div class="infbox"><div class="ct-h"><span>Intrusos en la Corporación</span></div>${row('ag', I.ag)}${row('ven', I.ven)}</div>`; }
+{ const _ib = infBox; infBox = function(P){ return infBoxIntr(P) || _ib(P); }; }
+// el Ojo aparece cuando habla
+function ojoShow(text){ if (typeof document === 'undefined' || !document.body || !document.body.classList.contains('v-tv')) return; const P = window.__E && __E.pubV; if (P && ((P.club && P.club.v && P.club.v.k === 'intro') || ['play', 'count', 'rules', 'intro', 'wheel'].includes(P.phase))) return; const ann = !!$('#trov.on');
+  let el = $('#ojo'); if (!el){ el = document.createElement('div'); el.id = 'ojo'; document.body.appendChild(el); } el.innerHTML = `${OJO_SVG}${ann ? '' : `<p>${esc(text)}</p>`}`; el.classList.add('on'); clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('on'), Math.max(3500, (typeof estSpeak === 'function' ? estSpeak(text) / .86 : text.length * 70) + 1200)); }
+{ const _say2 = say; say = function(text, onend, opts){ try { ojoShow(String(text || '')); } catch {} return _say2(text, onend, opts); }; }
+{ const _it4 = interTick; interTick = function(P){ _it4(P); if (P && P.wh && P.wh.id !== TVS.whId){ TVS.whId = P.wh.id; if (Date.now() - (P.wh.at || 0) < 20000){ try { MUSIC.duck && MUSIC.duck(true, true); setTimeout(() => MUSIC.duck(false), 6000); } catch {} say(P.wh.t, null, {rate: .82, pitch: .6}); } } }; }
+
+// ---------- móvil ----------
+const AGF = {img: ''};
+function agFotoPick(){ let inp = $('#agfin'); if (!inp){ inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.id = 'agfin'; inp.style.display = 'none'; document.body.appendChild(inp); }
+  inp.value = ''; inp.setAttribute('capture', 'environment'); inp.onchange = () => { const f = inp.files && inp.files[0]; if (!f) return; const url = URL.createObjectURL(f); const im = new Image(); im.onload = () => { URL.revokeObjectURL(url); const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const m = Math.min(im.width, im.height); g.drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, 128, 128); let q = .6, d = c.toDataURL('image/jpeg', q); while (d.length > 9000 && q > .2){ q -= .1; d = c.toDataURL('image/jpeg', q); } phSend({t: 'club', a: 'agfoto', img: d}); toast('Foto enviada a tus superiores'); }; im.src = url; }; inp.click(); }
+function iamH(P, me){ const X = me.iam; if (!X) return '';
+  if (X.k === 'ag'){ const st = (ok, t) => `<li class="${ok ? 'ok' : ''}">${ok ? '✓' : '○'} ${t}</li>`;
+    return `<div class="iam ag"><b>🕶️ Eres el Agente${X.caught ? ' · desenmascarado' : X.done ? ' · operación completada' : ''}</b>${X.caught ? '<p>Te han descubierto. Tu operación ha fracasado, pero sigues jugando tu camino.</p>' : `<p>${X.on ? 'El Ojo ya ha anunciado que hay un agente. Te buscan.' : 'Nadie sabe que existes… todavía.'}</p><ul>${st(X.codes >= 3, `Códigos de 3 miembros de rango Iniciado o superior (${Math.min(3, X.codes)}/3)`)}${st(X.signs >= 2, `Firmar 2 veces en el libro de la Trastienda (${X.signs}/2)`)}${st(X.cas, 'Ganar +10 fichas en una sola apertura del casino')}${st(X.foto, 'Fotografiar el libro de firmas sin que te vean')}</ul>${X.foto ? '' : '<button class="btn wide" data-agf="1">📷 Foto del libro (privada)</button>'}`}</div>`; }
+  const ms = (P.club ? P.club.members : []).filter(m => m.pid !== me.pid).map(m => `<option value="${m.pid}">${esc(pOf(P, m.pid).name)}</option>`).join(''); const u = k => X.used.includes(k);
+  return `<div class="iam ven"><b>🔥 Eres el Vengador${X.caught ? ' · desenmascarado' : X.done ? ' · venganza preparada' : ''}</b>${X.caught ? '<p>Te han descubierto. Ya no puedes sabotear.</p>' : `<p>Golpes: <b>${X.hits} de 3</b>. Cada herramienta, una vez por bloque.</p>
+    <div class="vt"><button class="btn ${u('raid') || !X.canRaid ? '' : 'gold'}" data-ven="raid" ${u('raid') ? 'disabled' : ''}>🚨 Llamar a la policía</button></div>
+    <div class="vt"><select class="field" id="ven_rob">${ms}</select><button class="btn ${u('rob') ? '' : 'gold'}" data-ven="rob" ${u('rob') ? 'disabled' : ''}>💸 Robar 3 fichas</button></div>
+    <div class="vt"><input class="field" id="ven_msg" maxlength="90" placeholder="Mensaje anónimo"><button class="btn ${u('msg') ? '' : 'gold'}" data-ven="msg" ${u('msg') ? 'disabled' : ''}>✉️ Enviar</button></div>
+    <div class="vt"><select class="field" id="ven_acc">${ms}</select><button class="btn" data-ven="senal">⚖️ Elegir señalado</button></div>${X.acc ? `<p class="muted">Próximo señalado: ${esc(X.acc)}</p>` : ''}`}</div>`; }
+function huntH(P, me){ const I = P.intr; if (!I || me.iam && !me.iam.caught && ((me.iam.k === 'ag' && !I.ven) || (me.iam.k === 'ven' && !I.ag))) return ''; if (!I.ag && !I.ven) return '';
+  const row = (k, X) => X && !(me.iam && me.iam.k === k) ? `<p><b>${k === 'ag' ? '🕶️ El Agente' : '🔥 El Vengador'}:</b> ${X.caught ? 'desenmascarado (' + esc(X.name) + ')' : X.clues.map(esc).join(' ') || 'sin pistas aún'}</p>` : '';
+  const priv = (me.club.clues || []).length ? `<p class="muted"><b>Tus pistas privadas:</b> ${me.club.clues.map(esc).join(' ')}</p>` : '';
+  return `<div class="inb k-note hunt2"><b>👁️ Intrusos en la Corporación</b>${row('ag', I.ag)}${row('ven', I.ven)}${priv}<p class="muted">En los Tribunales votaréis quiénes son: +200 XP si aciertas.</p></div>`; }
+{ const _nb4 = nocheBody; nocheBody = function(P, me, v){ let r = _nb4(P, me, v); const c = me.club; if (r == null || !c || !c.qDone || c.vote || (PH.tab || 'path') !== 'path') return r; if (/class="pc evph|pfin|cas-ph/.test(r)) return r; return iamH(P, me) + huntH(P, me) + r; }; }
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('click', e => { if (!document.body.classList.contains('v-ph')) return; const t = e.target.closest('[data-ven],[data-agf]'); if (!t) return;
+  if (t.dataset.agf) return agFotoPick(); const k = t.dataset.ven; const a = {t: 'club', a: 'ven', do: k};
+  if (k === 'rob') a.to = $('#ven_rob').value; if (k === 'senal') a.to = $('#ven_acc').value; if (k === 'msg'){ a.txt = $('#ven_msg').value; if (!a.txt.trim()) return toast('Escribe el mensaje'); $('#ven_msg').value = ''; }
+  if (k === 'raid' && !PH.venConf){ PH.venConf = true; setTimeout(() => PH.venConf = false, 3000); return toast('Pulsa otra vez para llamar a la policía'); } phSend(a); });
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
@@ -5467,7 +5646,7 @@ function vzLines(){ const L = []; const add = (...t) => t.forEach(x => x && L.pu
     'Queda un último secreto. Toda la noche, el Presidente ha movido los hilos desde dentro. ¿Quién es? Votad.', 'El club le ha descubierto.', 'Y ha engañado a todo el club.',
     'Los aspirantes al Círculo Interno son:', 'Que vote el club.', 'Damas y caballeros. El Presidente abre la última puerta.', 'Damas y caballeros.', 'Ha llegado la purga.', 'La invitación no garantiza la permanencia.', 'Intermedio. El club se toma un respiro.',
     'Se abre el mercado negro. Desde ahora, las fichas compran ventajas.', 'La Trastienda abre sus puertas.', 'Alguien acaba de recoger un encargo en la Trastienda. ¿Quién ha salido de allí hace un momento?',
-    'Algunos miembros acaban de recibir una oferta del Presidente. Una oferta… irrechazable.', 'Algunos miembros han recibido una invitación exclusiva. Tendrán que colaborar.',
+    'Algunos miembros acaban de recibir una oferta del Ojo. Una oferta… irrechazable.', 'Algunos miembros han recibido una invitación exclusiva. Tendrán que colaborar.',
     'Atención, miembros del club. Hay un infiltrado entre vosotros. Primera pista.', 'Nueva pista sobre el infiltrado.', 'El infiltrado está en esta sala.', 'Prueba final.', 'Siguiente prueba:', 'El Presidente dice:');
   RANKS.slice(1).forEach(R => add(`A partir de ahora es… ${R.n}.`));
   if (typeof PATATA_CMDS !== 'undefined') PATATA_CMDS.forEach(c => add(c));
