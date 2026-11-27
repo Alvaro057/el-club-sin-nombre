@@ -1143,6 +1143,11 @@ body:has(#juice.on) #toast{opacity:0!important}
 .iam .vt{display:flex;gap:8px;margin:8px 0}.iam .vt .field{flex:1;min-width:0}.iam .vt .btn{white-space:nowrap}
 .hunt2 p{font-size:14px;margin:6px 0}
 .infbox .ib-r{margin:1vh 0}.infbox .ib-r ul{margin:.6vh 0 0 1.2vw;padding:0}.infbox .ib-c{color:var(--ok)}
+
+/* botones de respuesta tipo Kahoot: solo color */
+.pbtns.buzz .ob.kh{min-height:22vh;border-radius:16px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.28)}.pbtns.buzz .ob.kh:active{transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.28)}
+.pbtns.buzz.n2 .ob.kh{min-height:34vh}.pbtns.buzz .ob.kh.sel{outline:4px solid #fff;outline-offset:-4px}
+.brieflock{position:relative}.brieflock .mis{opacity:.45;pointer-events:none;filter:grayscale(.4)}.brieflock .bl-msg{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:rgba(201,164,92,.12);border:1px solid rgba(201,164,92,.4);font-size:13px;color:var(--gold2)}
 </style></head><body><div id="app"></div><div id="toast"></div>
 <script>
 // =====================================================================
@@ -2106,7 +2111,7 @@ const GAMES = {};
 const def = (k, o) => { GAMES[k] = Object.assign({k, min: 2}, o); };
 
 // ---------- piezas comunes de interfaz ----------
-const OPTC = ['#c9a04a', '#a3324a', '#3f6fb0', '#3d8f62', '#7a4fb0', '#c8692c'];
+const OPTC = ['#d03a4c', '#2f6fd6', '#d9a520', '#2e9a4a', '#8a55c9', '#e0742e'];
 const OPTL = ['A', 'B', 'C', 'D', 'E', 'F'];
 const OPTS_SH = ['circle', 'square', 'triangle', 'star', 'circle', 'square'];
 const pOf = (P, pid) => P.players.find(p => p.pid === pid) || {name: '—', av: 'zorro'};
@@ -2132,9 +2137,9 @@ const rPub = g => ({r: g.r, n: g.n, st: g.st, t0: g.t0, t1: g.t1, done: Object.k
 const sumRaw = (S, g, f) => { const raw = {}; pidsAll(S).forEach(pid => { let t = null; g.ans.forEach((a, i) => { if (a[pid] != null){ t = (t || 0) + (f(a[pid], i, pid) || 0); } }); raw[pid] = t; }); return raw; };
 
 // opciones de colores para preguntas (tele y móvil)
-const tvOpts = (opts, st, correct, picks, P) => `<div class="opts n${opts.length}">${opts.map((o, i) => `<div class="opt ${st === 'rev' ? (correct === i || (Array.isArray(correct) && correct.includes(i)) ? 'win' : 'lose') : ''}" style="--oc:${OPTC[i % 6]}"><i>${OPTL[i]}</i><span>${esc(o)}</span>${st === 'rev' && picks ? `<div class="opick">${Object.entries(picks).filter(([, a]) => a === i).map(([pid]) => avH(pOf(P, pid), 'sm')).join('')}</div>` : ''}</div>`).join('')}</div>`;
+const tvOpts = (opts, st, correct, picks, P) => `<div class="opts n${opts.length}">${opts.map((o, i) => `<div class="opt ${st === 'rev' ? (correct === i || (Array.isArray(correct) && correct.includes(i)) ? 'win' : 'lose') : ''}" style="--oc:${OPTC[i % 6]}"><span>${esc(o)}</span>${st === 'rev' && picks ? `<div class="opick">${Object.entries(picks).filter(([, a]) => a === i).map(([pid]) => avH(pOf(P, pid), 'sm')).join('')}</div>` : ''}</div>`).join('')}</div>`;
 // En el móvil solo hay botones de colores: las respuestas se leen en la tele, como en un concurso
-const phOpts = (opts, mine, act, extra = {}) => `<p class="lookup">👀 Mira la tele y pulsa tu respuesta</p><div class="pbtns buzz n${opts.length}">${opts.map((o, i) => gbtn(Object.assign({a: act, i}, extra), `<b>${OPTL[i]}</b>`, `ob ${mine === i ? 'sel' : ''} ${mine != null && mine !== i ? 'dim' : ''}`, `style="--oc:${OPTC[i % 6]}" aria-label="Opción ${OPTL[i]}" ${mine != null ? 'disabled' : ''}`)).join('')}</div>`;
+const phOpts = (opts, mine, act, extra = {}) => `<p class="lookup">👀 Mira la tele y pulsa tu respuesta</p><div class="pbtns buzz n${opts.length}">${opts.map((o, i) => gbtn(Object.assign({a: act, i}, extra), '', `ob kh ${mine === i ? 'sel' : ''} ${mine != null && mine !== i ? 'dim' : ''}`, `style="--oc:${OPTC[i % 6]}" aria-label="Opción ${i + 1}" ${mine != null ? 'disabled' : ''}`)).join('')}</div>`;
 const phVerdict = (ok, txt) => `<div class="verd ${ok ? 'ok' : 'ko'}"><b>${ok ? '¡Bien!' : 'Fallo'}</b><span>${txt || ''}</span></div>`;
 
 // ---------- teclado numérico propio (más cómodo que el del móvil) ----------
@@ -5486,6 +5491,12 @@ if (typeof document !== 'undefined' && document.addEventListener) document.addEv
   if (t.dataset.agf) return agFotoPick(); const k = t.dataset.ven; const a = {t: 'club', a: 'ven', do: k};
   if (k === 'rob') a.to = $('#ven_rob').value; if (k === 'senal') a.to = $('#ven_acc').value; if (k === 'msg'){ a.txt = $('#ven_msg').value; if (!a.txt.trim()) return toast('Escribe el mensaje'); $('#ven_msg').value = ''; }
   if (k === 'raid' && !PH.venConf){ PH.venConf = true; setTimeout(() => PH.venConf = false, 3000); return toast('Pulsa otra vez para llamar a la policía'); } phSend(a); });
+
+// ---------- mientras se lee el expediente, el camino no avanza ----------
+const isBrief = S => !!(S.club && S.club.v && S.club.v.k === 'brief');
+{ const _ca4 = clubAct; clubAct = function(S, pid, a){ if (isBrief(S) && !['quiz', 'quizdone', 'seen', 'inbox'].includes(a.a)){ flash(S, pid, 'Ahora toca leer el expediente. Las misiones se activan en cuanto empiece la primera convocatoria', false); return true; } return _ca4(S, pid, a); }; }
+{ const _cfo = clubFotoOk; clubFotoOk = function(S, pid, mid, mt){ if (isBrief(S)){ flash(S, pid, 'Foto guardada en el álbum. La misión contará cuando empiece la noche', false); return true; } return _cfo(S, pid, mid, mt); }; }
+{ const _mc = misCard; misCard = function(P, me, x, side){ const h = _mc(P, me, x, side); if (P.club && P.club.v && P.club.v.k === 'brief') return `<div class="brieflock"><div class="bl-msg">🔒 Lee tu expediente con calma. Las misiones se activan en cuanto empiece la primera convocatoria.</div>${h}</div>`; return h; }; }
 
 // =====================================================================
 // LAS FOTOS DEL CLUB
