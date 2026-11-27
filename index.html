@@ -5832,6 +5832,16 @@ vzPlay = function(urls, gen, onend, opts){ let i = 0, tot = 0, told = false; try
     const a = new Audio(); a.crossOrigin = 'anonymous'; a.src = urls[i++]; a.onloadedmetadata = () => { tot += (a.duration || 0) * 1000; if (opts && opts.onDur && i === urls.length && !told){ told = true; opts.onDur(tot + (urls.length - 1) * 140); } };
     VZP.a = a; try { const c = ac(); if (c.state === 'suspended') c.resume(); c.createMediaElementSource(a).connect(vzBus()); a.volume = 1; } catch { a.volume = Math.min(1, (typeof VOL === 'number' ? VOL : .8) + .2); }
     a.onended = () => setTimeout(next, 140); a.onerror = () => next(); a.play().catch(() => next()); }; next(); };
+// pistas: la intro tiene su propia canción y cambia con un fundido
+const BSO_MAIN = 'musica/banda-sonora.mp3', BSO_INTRO = 'musica/intro.mp3', BSO_BUF = {};
+bsoLoad = function(){ const url = BSO.url; if (!BSO_BUF[url]) BSO_BUF[url] = (async () => { try { const r = await fetch(url); if (!r.ok) throw new Error(r.status); const ab = await r.arrayBuffer(); const b = await new Promise((res, rej) => ac().decodeAudioData(ab, res, rej)); if (BSO.url === url) BSO.buf = b; return b; } catch (e) { console.warn('Música', e); delete BSO_BUF[url]; return null; } })();
+  return BSO_BUF[url].then(b => { if (BSO.url === url) BSO.buf = b; return b; }); };
+function bsoTrack(url){ if (BSO.url === url) return; const old = BSO.src, og = BSO.g; BSO.url = url; BSO.buf = null; BSO.src = null; BSO.g = null; BSO.duckG = null;
+  if (old && og){ try { og.gain.setTargetAtTime(.0001, ac().currentTime, .6); setTimeout(() => { try { old.stop(); og.disconnect(); } catch {} }, 3000); } catch {} }
+  if (old || BSO.want) bsoStart(); }
+const bsoForTV = P => BSO.url === 'musica/casino.mp3' ? 0 : bsoTrack(P && P.phase === 'club' && P.club && P.club.v && P.club.v.k === 'intro' ? BSO_INTRO : BSO_MAIN);
+{ const _ct = clubTVSay; clubTVSay = function(P){ try { bsoForTV(P); } catch {} return _ct(P); }; }
+{ const _op = onTVPhase; onTVPhase = function(P){ try { bsoForTV(P); } catch {} return _op(P); }; }
 
 // =====================================================================
 // PLAN B · MODO SIN MÓVILES
